@@ -33,4 +33,4 @@ for indiv in onto.individuals():
 # 2. Implement all types incontraints.
 # 2. Implement extensions to constraintGroup and generation of whole table
 # 3. Tests ?
-# 2. Git Repo.
+# 2. Git Repo. Done asdfadfga
