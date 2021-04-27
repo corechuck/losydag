@@ -1,5 +1,5 @@
 from owlready2 import *
-from core_classes.ConstraintTypes import extend_core
+from core_classes.Constraints import extend_core
 
 onto_path.append("./resources/core/")
 onto_path.append("./resources/development/")
@@ -30,7 +30,7 @@ for indiv in onto.individuals():
 
 # TODO:
 # 1. Move core to core !!!!!! DONE
-# 2. Implement all types incontraints.
+# 2. Git Repo. Done
+# 2. Implement all types in constraints. Done
 # 2. Implement extensions to constraintGroup and generation of whole table
 # 3. Tests ?
-# 2. Git Repo. Done asdfadfga
