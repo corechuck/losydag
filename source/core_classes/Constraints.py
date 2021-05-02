@@ -20,7 +20,7 @@ def extend_core(_core):
             return ""
 
         def _get_constrained_data_type(self):
-            return self.isConstrainingColumn.hasDataType
+            return self.is_constraining_column.has_data_type
 
 
     class RegexConstraint(Thing):
@@ -31,16 +31,16 @@ def extend_core(_core):
         
         def _generate(self):
             if isinstance(self._get_constrained_data_type(), _core.Varchar):
-                return rstr.xeger(self.hasRegexFormat)
+                return rstr.xeger(self.has_regex_format)
 
             if isinstance(self._get_constrained_data_type(), _core.Date):
-                return rstr.xeger(self.hasRegexFormat)
+                return rstr.xeger(self.has_regex_format)
 
             if isinstance(self._get_constrained_data_type(), _core.Number):
-                generated_number_str = rstr.xeger(self.hasRegexFormat)
+                generated_number_str = rstr.xeger(self.has_regex_format)
                 if not generated_number_str.isnumeric():
                     raise Exception(
-                        "Regex Constraint could not generate number from {self.hasRegexFormat}")
+                        "Regex Constraint could not generate number from {self.has_regex_format}")
                 return generated_number_str
 
             if isinstance(self._get_constrained_data_type(), _core.Number):
@@ -54,9 +54,9 @@ def extend_core(_core):
         #     super().__init__()
         
         def _generate(self):
-            amount_of_picks = len(self.hasPicks)
+            amount_of_picks = len(self.has_picks)
             chosen_pick = random.randint(1, amount_of_picks-1)
-            return self.hasPicks[chosen_pick]
+            return self.has_picks[chosen_pick]
 
 
     class RangeConstriant(Thing):
@@ -68,7 +68,7 @@ def extend_core(_core):
         def _generate(self):
             
             if isinstance(self._get_constrained_data_type(), _core.Decimal):
-                chosen_number = random.randint(int(self.hasMinRange), int(self.hasMaxRange))
+                chosen_number = random.randint(int(self.has_min_range), int(self.has_max_range))
                 return chosen_number
 
             #return rstr.xeger(r"Rng__\w{1,7}")

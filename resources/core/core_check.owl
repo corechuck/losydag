@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://corechack.com/modeling/core_check#"
-     xml:base="http://corechack.com/modeling/core_check"
+<rdf:RDF xmlns="http://corechuck.com/modeling/core_check#"
+     xml:base="http://corechuck.com/modeling/core_check"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://corechack.com/modeling/core_check"/>
+    <owl:Ontology rdf:about="http://corechuck.com/modeling/core_check"/>
     
 
 
@@ -21,34 +21,34 @@
     
 
 
-    <!-- http://corechack.com/modeling/core_check#containsRealizations -->
+    <!-- http://corechuck.com/modeling/core_check#contains_realizations -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#containsRealizations">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#RealizationCase"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#RealizationDefinition"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#contains_realizations">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RealizationCase"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasColumn -->
+    <!-- http://corechuck.com/modeling/core_check#has_column -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#hasColumn">
-        <owl:inverseOf rdf:resource="http://corechack.com/modeling/core_check#isPartOfTable"/>
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Table"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#Column"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_column">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_part_of_table"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasConstraints -->
+    <!-- http://corechuck.com/modeling/core_check#has_constraints -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#hasConstraints">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#ConstraintGroup"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_constraints">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Constraint"/>
-                    <rdf:Description rdf:about="http://corechack.com/modeling/core_check#ConstraintGroup"/>
+                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Constraint"/>
+                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -56,64 +56,64 @@
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasDataType -->
+    <!-- http://corechuck.com/modeling/core_check#has_data_type -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#hasDataType">
-        <owl:inverseOf rdf:resource="http://corechack.com/modeling/core_check#isDefiningTypeForColumn"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_data_type">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_defining_type_for_column"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Column"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#DataType"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasMinReqs -->
+    <!-- http://corechuck.com/modeling/core_check#has_min_reqs -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#hasMinReqs">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Table"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#MinConstraints"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_min_reqs">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#MinConstraints"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#isConstrainingColumn -->
+    <!-- http://corechuck.com/modeling/core_check#is_constraining_column -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#isConstrainingColumn">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Constraint"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#Column"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#isConstrainingTables -->
+    <!-- http://corechuck.com/modeling/core_check#is_constraining_tables -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#isConstrainingTables">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#ConstraintGroup"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#Table"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraining_tables">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
         <owl:propertyChainAxiom rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#hasConstraints"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#isConstrainingColumn"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#isPartOfTable"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#has_constraints"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_part_of_table"/>
         </owl:propertyChainAxiom>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#isDefiningTypeForColumn -->
+    <!-- http://corechuck.com/modeling/core_check#is_defining_type_for_column -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#isDefiningTypeForColumn">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#DataType"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#Column"/>
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_defining_type_for_column">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#isPartOfTable -->
+    <!-- http://corechuck.com/modeling/core_check#is_part_of_table -->
 
-    <owl:ObjectProperty rdf:about="http://corechack.com/modeling/core_check#isPartOfTable">
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_part_of_table">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Column"/>
-        <rdfs:range rdf:resource="http://corechack.com/modeling/core_check#Table"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
     </owl:ObjectProperty>
     
 
@@ -129,81 +129,81 @@
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasFormatDefinition -->
+    <!-- http://corechuck.com/modeling/core_check#has_format_definition -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasFormatDefinition"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_format_definition"/>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasMaxRange -->
+    <!-- http://corechuck.com/modeling/core_check#has_max_range -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasMaxRange">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#RangeConstriant"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_max_range">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeConstriant"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasMinRange -->
+    <!-- http://corechuck.com/modeling/core_check#has_min_range -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasMinRange">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#RangeConstriant"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_min_range">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeConstriant"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasOperator -->
+    <!-- http://corechuck.com/modeling/core_check#has_operator -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasOperator">
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_operator">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#ConstraintGroup"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasPicks -->
+    <!-- http://corechuck.com/modeling/core_check#has_picks -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasPicks">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#ListConstraint"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_picks">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ListConstraint"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasPrecision -->
+    <!-- http://corechuck.com/modeling/core_check#has_precision -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasPrecision">
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_precision">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Decimal"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Decimal"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasRegexFormat -->
+    <!-- http://corechuck.com/modeling/core_check#has_regex_format -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasRegexFormat">
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#RegexConstraint"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_regex_format">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RegexConstraint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#hasScale -->
+    <!-- http://corechuck.com/modeling/core_check#has_scale -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#hasScale">
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_scale">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://corechack.com/modeling/core_check#Decimal"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Decimal"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#prohibitedRegex -->
+    <!-- http://corechuck.com/modeling/core_check#prohibited_regex -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#prohibitedRegex"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#prohibited_regex"/>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#prohibitedValues -->
+    <!-- http://corechuck.com/modeling/core_check#prohibited_values -->
 
-    <owl:DatatypeProperty rdf:about="http://corechack.com/modeling/core_check#prohibitedValues"/>
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#prohibited_values"/>
     
 
 
@@ -218,223 +218,223 @@
     
 
 
-    <!-- http://corechack.com/modeling/core_check#AndGroup -->
+    <!-- http://corechuck.com/modeling/core_check#AndGroup -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#AndGroup">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Operators"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#AndGroup">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Operators"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Boolean -->
+    <!-- http://corechuck.com/modeling/core_check#Boolean -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Boolean">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DataType"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Boolean">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Column -->
+    <!-- http://corechuck.com/modeling/core_check#Column -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Column">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DB"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Column">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DB"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Constraint -->
+    <!-- http://corechuck.com/modeling/core_check#Constraint -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Constraint">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Modeling"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Constraint">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#ConstraintGroup -->
+    <!-- http://corechuck.com/modeling/core_check#ConstraintGroup -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#ConstraintGroup">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Modeling"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#DB -->
+    <!-- http://corechuck.com/modeling/core_check#DB -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#DB"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#DB"/>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#DataType -->
+    <!-- http://corechuck.com/modeling/core_check#DataType -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#DataType">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DB"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#DataType">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DB"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Date -->
+    <!-- http://corechuck.com/modeling/core_check#Date -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Date">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DataType"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Date">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Decimal -->
+    <!-- http://corechuck.com/modeling/core_check#Decimal -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Decimal">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DataType"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Decimal">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#EqualToDependency -->
+    <!-- http://corechuck.com/modeling/core_check#EqualToDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#EqualToDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#EqualToDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#FormatDependency -->
+    <!-- http://corechuck.com/modeling/core_check#FormatDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#FormatDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#FormatDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#GreaterOrEqualThenDependency -->
+    <!-- http://corechuck.com/modeling/core_check#GreaterOrEqualThenDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#GreaterOrEqualThenDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#GreaterOrEqualThenDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#GreaterThenDependency -->
+    <!-- http://corechuck.com/modeling/core_check#GreaterThenDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#GreaterThenDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#GreaterThenDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#LesserOrEqualThenDependency -->
+    <!-- http://corechuck.com/modeling/core_check#LesserOrEqualThenDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#LesserOrEqualThenDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#LesserOrEqualThenDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#LesserThenDependency -->
+    <!-- http://corechuck.com/modeling/core_check#LesserThenDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#LesserThenDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#LesserThenDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#ListConstraint -->
+    <!-- http://corechuck.com/modeling/core_check#ListConstraint -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#ListConstraint">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Constraint"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#ListConstraint">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Logic -->
+    <!-- http://corechuck.com/modeling/core_check#Logic -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Logic">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Modeling"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Logic">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#MinConstraints -->
+    <!-- http://corechuck.com/modeling/core_check#MinConstraints -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#MinConstraints">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ConstraintGroup"/>
-        <owl:disjointWith rdf:resource="http://corechack.com/modeling/core_check#RealizationDefinition"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#MinConstraints">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
+        <owl:disjointWith rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Modeling -->
+    <!-- http://corechuck.com/modeling/core_check#Modeling -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Modeling"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Modeling"/>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Operators -->
+    <!-- http://corechuck.com/modeling/core_check#Operators -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Operators">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Logic"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Operators">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Logic"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#OrGroup -->
+    <!-- http://corechuck.com/modeling/core_check#OrGroup -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#OrGroup">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Operators"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#OrGroup">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Operators"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#RangeConstriant -->
+    <!-- http://corechuck.com/modeling/core_check#RangeConstriant -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#RangeConstriant">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Constraint"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RangeConstriant">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#RealizationCase -->
+    <!-- http://corechuck.com/modeling/core_check#RealizationCase -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#RealizationCase">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Modeling"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RealizationCase">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#RealizationDefinition -->
+    <!-- http://corechuck.com/modeling/core_check#RealizationDefinition -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#RealizationDefinition">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#ConstraintGroup"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RealizationDefinition">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#RegexConstraint -->
+    <!-- http://corechuck.com/modeling/core_check#RegexConstraint -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#RegexConstraint">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Constraint"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RegexConstraint">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Table -->
+    <!-- http://corechuck.com/modeling/core_check#Table -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Table">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DB"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Table">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DB"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#ValueDependency -->
+    <!-- http://corechuck.com/modeling/core_check#ValueDependency -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#ValueDependency">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#Constraint"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#ValueDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:Class>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#Varchar -->
+    <!-- http://corechuck.com/modeling/core_check#Varchar -->
 
-    <owl:Class rdf:about="http://corechack.com/modeling/core_check#Varchar">
-        <rdfs:subClassOf rdf:resource="http://corechack.com/modeling/core_check#DataType"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Varchar">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
     </owl:Class>
     
 
@@ -450,21 +450,21 @@
     
 
 
-    <!-- http://corechack.com/modeling/core_check#DataType_Date -->
+    <!-- http://corechuck.com/modeling/core_check#DataType_Date -->
 
-    <owl:NamedIndividual rdf:about="http://corechack.com/modeling/core_check#DataType_Date"/>
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/core_check#DataType_Date"/>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#DataType_Decimal -->
+    <!-- http://corechuck.com/modeling/core_check#DataType_Decimal -->
 
-    <owl:NamedIndividual rdf:about="http://corechack.com/modeling/core_check#DataType_Decimal"/>
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/core_check#DataType_Decimal"/>
     
 
 
-    <!-- http://corechack.com/modeling/core_check#DataType_String -->
+    <!-- http://corechuck.com/modeling/core_check#DataType_String -->
 
-    <owl:NamedIndividual rdf:about="http://corechack.com/modeling/core_check#DataType_String"/>
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/core_check#DataType_String"/>
     
 
 
@@ -479,46 +479,46 @@
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Boolean"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Date"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Decimal"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Varchar"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Boolean"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Date"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Decimal"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Varchar"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Column"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#DataType"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Table"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Column"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#DataType"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Table"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#Constraint"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#ConstraintGroup"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#RealizationCase"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Constraint"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#RealizationCase"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#EqualToDependency"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#FormatDependency"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#GreaterOrEqualThenDependency"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#GreaterThenDependency"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#LesserOrEqualThenDependency"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#LesserThenDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#EqualToDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#FormatDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#GreaterOrEqualThenDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#GreaterThenDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#LesserOrEqualThenDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#LesserThenDependency"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#ListConstraint"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#RangeConstriant"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#RegexConstraint"/>
-            <rdf:Description rdf:about="http://corechack.com/modeling/core_check#ValueDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ListConstraint"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#RangeConstriant"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#RegexConstraint"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ValueDependency"/>
         </owl:members>
     </rdf:Description>
 </rdf:RDF>
