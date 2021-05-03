@@ -104,23 +104,6 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
-    // Classes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://corechuck.com/modeling/dependent_onto#OrGroup -->
-
-    <owl:Class rdf:about="http://corechuck.com/modeling/dependent_onto#OrGroup"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
     // Individuals
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +171,7 @@
     <!-- http://corechuck.com/modeling/dependent_onto#ConstGroup.Test1.Col1.RangeOr -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#ConstGroup.Test1.Col1.RangeOr">
-        <rdf:type rdf:resource="http://corechuck.com/modeling/dependent_onto#OrGroup"/>
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OrGroup"/>
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1"/>
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2"/>
     </owl:NamedIndividual>
@@ -282,6 +265,7 @@
     <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col3_list -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col3_list">
+        <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col3_text"/>
         <core_check:has_picks>Rock</core_check:has_picks>
         <core_check:has_picks>Tree</core_check:has_picks>
     </owl:NamedIndividual>
@@ -329,9 +313,9 @@
     <!-- http://corechuck.com/modeling/dependent_onto#Table.Test1 -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Table.Test1">
-        <core_check:has_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col1_n"/>
-        <core_check:has_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col2_d"/>
-        <core_check:has_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col3_text"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col1_n"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col2_d"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col3_text"/>
         <has_min_reqs rdf:resource="http://corechuck.com/modeling/dependent_onto#Min.Table_test1"/>
     </owl:NamedIndividual>
     
@@ -340,9 +324,9 @@
     <!-- http://corechuck.com/modeling/dependent_onto#Table.Test2 -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Table.Test2">
-        <core_check:has_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col1_n"/>
-        <core_check:has_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col2_d"/>
-        <core_check:has_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col3_text"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col1_n"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col2_d"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col3_text"/>
         <has_min_reqs rdf:resource="http://corechuck.com/modeling/dependent_onto#Min.Table_test2"/>
     </owl:NamedIndividual>
 </rdf:RDF>

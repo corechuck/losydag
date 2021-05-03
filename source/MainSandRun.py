@@ -7,8 +7,6 @@ onto_path.append("./resources/development/")
 
 print("INFO: Running Ontology")
 onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
-# onto = get_ontology("http://corechuck.com/modeling/dependent_ontos")
-
 onto.load()
 
 core = onto.imported_ontologies[0]  # <- core classes are in wrong ontology
@@ -18,15 +16,30 @@ extend_constraint_groups(core)
 sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True,keep_tmp_file = 1,debug=1)
 print("INFO: Reasoned with pellet.")
 
-print("Constraints:")
+print("# Constraints:")
 for indiv in onto.individuals():
     if isinstance(indiv, core.Constraint):
         print(indiv.generate())
 
 
-print("Constraints group:")
+print("# Constraints group:")
 for indiv in onto.individuals():
-    if isinstance(indiv, core.ConstraintGroup):
+    if isinstance(indiv, core.RealizationDefinition):
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
         print(indiv.fullfil_constraints())
 
 
