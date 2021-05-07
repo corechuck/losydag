@@ -20,31 +20,31 @@ extend_simple_types(core)
 sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True,keep_tmp_file = 1,debug=1)
 print("INFO: Reasoned with pellet.")
 
-print("# Constraints:")
-for indiv in onto.individuals():
-    if isinstance(indiv, core.Constraint):
-        print(indiv.generate())
+# print("# Constraints:")
+# for indiv in onto.individuals():
+#     if isinstance(indiv, core.Constraint):
+#         print(indiv.generate())
 
 
 print("# Constraints group:")
 for indiv in onto.individuals():
     if isinstance(indiv, core.RealizationDefinition):
         print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
-        print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
+        # print(indiv.fullfil_constraints())
 
 
 # TODO:

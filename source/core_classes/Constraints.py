@@ -1,6 +1,7 @@
 import rstr
 import random
 import datetime
+import math
 from owlready2 import Thing
 #from SyntheticExceptions import GenerationTypeException
 
@@ -30,8 +31,11 @@ def extend_core(_core):
             if isinstance(self._get_constrained_data_type(), _core.Date):
                 return datetime.datetime.now().strftime("%x")
 
-            if isinstance(self._get_constrained_data_type(), _core.Number):
-                return round((random.random()-0.5)*10000)
+            if isinstance(self._get_constrained_data_type(), _core.Decimal):
+                decimal_type = self._get_constrained_data_type()
+                expanded_scale = math.pow(10, decimal_type.has_scale)
+                expanded_precision = math.pow(10, decimal_type.has_precision)
+                return round((random.random()-0.5)*expanded_scale)/expanded_precision
 
             return "#non-value"
 
@@ -52,16 +56,14 @@ def extend_core(_core):
             if isinstance(self._get_constrained_data_type(), _core.Date):
                 return rstr.xeger(self.has_regex_format)
 
-            if isinstance(self._get_constrained_data_type(), _core.Number):
+            if isinstance(self._get_constrained_data_type(), _core.Decimal):
                 generated_number_str = rstr.xeger(self.has_regex_format)
                 if not generated_number_str.isnumeric():
                     raise Exception(
                         "Regex Constraint could not generate number from {self.has_regex_format}")
                 return generated_number_str
 
-            if isinstance(self._get_constrained_data_type(), _core.Number):
-                return str(True)
-
+            return "#non-value"
 
     class ListConstraint(Thing):
         namespace = _core

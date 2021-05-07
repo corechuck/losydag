@@ -130,6 +130,30 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#DataType_Date -->
+
+    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#DataType_Date">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#Date"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#DataType_Decimal -->
+
+    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#DataType_Decimal">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#Decimal"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#DataType_String -->
+
+    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#DataType_String">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#Varchar"/>
+    </rdf:Description>
+    
+
+
     <!-- http://corechuck.com/modeling/dependent_onto#Case.FirstCase -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Case.FirstCase">
@@ -367,7 +391,7 @@
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col0__id_random">
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test3.Col0_id"/>
-        <core_check:has_regex_format>\d{4:9}</core_check:has_regex_format>
+        <core_check:has_regex_format>\d{4,9}</core_check:has_regex_format>
     </owl:NamedIndividual>
     
 
