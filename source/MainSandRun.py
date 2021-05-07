@@ -52,7 +52,9 @@ for indiv in onto.individuals():
 # 2. Git Repo. Done
 # 2. Implement all types in constraints. Done
 # 2. Implement extensions to constraintGroup and generation of whole table - done
-# 3. Merge Realization with Minimum requirements
+# 3. Merge Realization with Minimum requirements - done
 # 3. abriviate column names.
-# 4. DependencyConstraints inside group 
+# 4. Dependency inside group - 
+# 4. Dependency outside group -
+# 4. RangeConstraint - default min and max
 # 3. Tests ?

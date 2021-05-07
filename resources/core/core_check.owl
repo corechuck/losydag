@@ -60,6 +60,7 @@
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_constraints">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_part_of_constraints"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:ObjectProperty>
@@ -125,6 +126,21 @@
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
     </owl:ObjectProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#composed_key_over_columns -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#composed_key_over_columns">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#is_part_of_constraints -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_part_of_constraints"/>
     
 
 
