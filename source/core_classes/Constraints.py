@@ -35,6 +35,9 @@ def extend_core(_core):
 
             return "#non-value"
 
+        def is_constraining_same_column_as(self, _other_constraint):
+            return _other_constraint.is_constraining_column.name == self.is_constraining_column.name
+
 
     class RegexConstraint(Thing):
         namespace = _core

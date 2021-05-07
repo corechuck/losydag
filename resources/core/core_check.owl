@@ -21,6 +21,22 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#contains_constraint_groups -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#contains_constraint_groups">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Constraint"/>
+                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#contains_realizations -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#contains_realizations">
@@ -43,15 +59,9 @@
     <!-- http://corechuck.com/modeling/core_check#has_constraints -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_constraints">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Constraint"/>
-                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:ObjectProperty>
     
 
