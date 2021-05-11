@@ -14,17 +14,17 @@ def extend_core(_core):
         # def __init__(self):
         #     pass
         
-        def generate(self):
+        def generate(self, local_dict):
             # return f"{self.name} generated: " + str(self._generate())
-            return str(self._generate())
+            return str(self._generate(local_dict))
 
-        def is_ready(self):
+        def is_ready(self, _local_dict):
             return True
 
         def _get_constrained_data_type(self):
             return self.is_constraining_column.has_data_type
             
-        def _generate(self):
+        def _generate(self, _local_dict):
             if isinstance(self._get_constrained_data_type(), _core.Varchar):
                 return rstr.xeger(r"[\w ]{8,16}")
 
@@ -49,7 +49,7 @@ def extend_core(_core):
         # def __init__(self):
         #     super().__init__()
         
-        def _generate(self):
+        def _generate(self, __yagni):
             if isinstance(self._get_constrained_data_type(), _core.Varchar):
                 return rstr.xeger(self.has_regex_format)
 
@@ -71,7 +71,7 @@ def extend_core(_core):
         # def __init__(self):
         #     super().__init__()
         
-        def _generate(self):
+        def _generate(self, __yagni):
             amount_of_picks = len(self.has_picks)
             chosen_pick = random.randint(0, amount_of_picks-1)
             return self.has_picks[chosen_pick]
@@ -83,7 +83,7 @@ def extend_core(_core):
         # def __init__(self):
         #     super().__init__()
         
-        def _generate(self):
+        def _generate(self, __yagni):
             
             if isinstance(self._get_constrained_data_type(), _core.Decimal):
                 chosen_number = random.randint(int(self.has_min_range), int(self.has_max_range))

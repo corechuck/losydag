@@ -8,6 +8,7 @@ onto_path.append("./resources/development/")
 
 print("INFO: Running Ontology")
 onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
+# core = get_ontology("http://corechuck.com/modeling/core_check")
 onto.load()
 
 # onto.get_namespace("http://purl.obolibrary.org/obo/")
@@ -26,10 +27,24 @@ print("INFO: Reasoned with pellet.")
 #         print(indiv.generate())
 
 
+last_realization = None
 print("# Constraints group:")
 for indiv in onto.individuals():
     if isinstance(indiv, core.RealizationDefinition):
+        is_th_same = last_realization is None or last_realization is indiv
+        last_realization = indiv
+        print(f"DEBUG: {indiv} is the same as {last_realization}: {is_th_same}")
+        #print(f"INFO: Result based on: {indiv.name}")
         print(indiv.fullfil_constraints())
+        print(indiv.fullfil_constraints())
+
+print("# Second pass:")
+for indiv in onto.individuals():
+    if isinstance(indiv, core.RealizationDefinition):
+        last_realization = indiv
+        print(f"INFO: Result based on: {indiv.name}")
+        print(indiv.fullfil_constraints())
+
         # print(indiv.fullfil_constraints())
         # print(indiv.fullfil_constraints())
         # print(indiv.fullfil_constraints())
