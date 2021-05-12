@@ -36,7 +36,7 @@ def extend_core(_core):
             
             if len(not_ready_constraints) == 0:
                 break
-            last_not_ready_constraints = len(last_not_ready_constraints)
+            last_not_ready_constraints = len(not_ready_constraints)
             print(f"INFO: Not resolved dependencies {not_ready_constraints}")
 
 
@@ -110,10 +110,12 @@ def extend_core(_core):
             return self._return_dict
 
         def _try_generating_for_all_constraints(self, not_ready_accumulator):
+            print(f"DEBUG: try X for {self.name}")
             for constraint in self.has_constraints:
                 if not constraint.is_ready(self._return_dict):
                     not_ready_accumulator.append(constraint)
                     continue
+                print(f"DEBUG: Generating {constraint.name}") 
                 self._return_dict[constraint.is_constraining_column.plain_name] = (
                     constraint.generate(self._return_dict)
                 )

@@ -2,6 +2,7 @@ from owlready2 import *
 from core_classes.Constraints import extend_core as extend_constraints
 from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
 from core_classes.SimpleExtensions import extend_core as extend_simple_types
+from core_classes.Dependencies import extend_core as extend_dependencies
 
 onto_path.append("./resources/core/")
 onto_path.append("./resources/development/")
@@ -13,8 +14,10 @@ onto.load()
 
 # onto.get_namespace("http://purl.obolibrary.org/obo/")
 
+
 core = onto.imported_ontologies[0]  # <- core classes are in wrong ontology
 extend_constraints(core)
+extend_dependencies(core)
 extend_constraint_groups(core)
 extend_simple_types(core)
 
