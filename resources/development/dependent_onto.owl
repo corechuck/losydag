@@ -14,7 +14,6 @@
     
 
 
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -279,7 +278,6 @@
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test2_col5__external_tbl1">
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col5_external_dep"/>
         <core_check:is_depending_on_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col0_id"/>
-        <core_check:is_depending_on_realization rdf:resource="http://corechuck.com/modeling/dependent_onto#Realization.Test1.first"/>
     </owl:NamedIndividual>
     
 
@@ -375,7 +373,7 @@
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test3.Col1__reference_tbl2_id">
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test3.Col1_tbl2_reference"/>
-        <core_check:is_depending_on_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test3.Col0_id"/>
+        <core_check:is_depending_on_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col0_id"/>
         <core_check:is_depending_on_realization rdf:resource="http://corechuck.com/modeling/dependent_onto#Realization.Test2.first_colors"/>
     </owl:NamedIndividual>
     
@@ -488,6 +486,7 @@
         <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col2_d"/>
         <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col3_text"/>
         <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col4_formatted"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col5_external_dep"/>
         <core_check:has_min_reqs rdf:resource="http://corechuck.com/modeling/dependent_onto#Min.Table_test2"/>
     </owl:NamedIndividual>
     

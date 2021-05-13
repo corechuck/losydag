@@ -144,6 +144,8 @@
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_depending_on_realization">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
     </owl:ObjectProperty>
     
 

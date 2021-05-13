@@ -11,28 +11,52 @@ def extend_core(_core):
 
         def is_ready(self, _local_dict):
             "This should tell if data has already been gereated from dependent relalization."
+            if not self.is_externally_dependent:
+                return self._is_local_dependency_ready(_local_dict)
+            else:
+                return self.is_depending_on_realization.has_realized_constraints
+            
+            # return (
+            #     self.is_depending_on_realization is not None and 
+            #     self.is_depending_on_realization.has_realized_constraints
+            # ) or (
+            #     self.is_depending_on_realization is None and 
+            #     self._is_local_dependency_ready(_local_dict)
+            # )
+        
+        @property
+        def is_externally_dependent(self):
             return (
-                self.is_depending_on_realization is not None and 
-                self.is_depending_on_realization.has_realized_constraints
-            ) or (
-                self.is_depending_on_realization is None and 
-                self._is_local_dependency_ready(_local_dict)
+                self.is_depending_on_column is not None and
+                self.is_depending_on_column.is_part_of_table.name != 
+                    self.is_constraining_column.is_part_of_table.name
             )
-             
-
-            # return _data_bucket[self.is_depending_on_column.is_part_of_table.name] \
-            #     [self.is_depending_on_realization.name] is not None
                     
         def _generate(self, _local_dict):
-            if not self._is_local_dependency_ready(_local_dict):
-                raise Exception(f"ERROR: Dependency {self.name} not ready. "
-                    "That should never happen. Between isReady and generate something changed.")
+            if not self.is_externally_dependent:
+                if not self._is_local_dependency_ready(_local_dict):
+                    raise Exception(f"ERROR: Dependency {self.name} not ready. "
+                        "That should never happen. Between isReady and generate something changed.")
 
-            return _local_dict[self.is_depending_on_column.name]
+                return _local_dict[self.is_depending_on_column.plain_name]
+
+            if self.is_externally_dependent:
+                from_column_name = self.is_depending_on_column.plain_name
+                if not self.is_depending_on_realization.has_realized_constraints:
+                    raise Exception(f"ERROR: Dependency {self.name} not ready. "
+                        "That should never happen. Between isReady and generate something changed.")
+                return self.is_depending_on_realization._return_dict[from_column_name]
 
         def _is_local_dependency_ready(self, _local_dict):
-            col_name = self.is_depending_on_column.name
+            col_name = self.is_depending_on_column.plain_name
             return col_name in _local_dict and _local_dict[col_name] is not None
+
+        def set_missing_realization_definition(self, _table_to_def_dict):
+            needed_table_name = self.is_depending_on_column.is_part_of_table.name
+            can_use = needed_table_name in _table_to_def_dict
+            if can_use:
+                self.is_depending_on_realization = _table_to_def_dict[needed_table_name]
+            return can_use
 
 
     class FormatDependency(Thing):

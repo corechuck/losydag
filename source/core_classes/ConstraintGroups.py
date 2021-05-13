@@ -65,9 +65,9 @@ def extend_core(_core):
         namespace = _core
         _return_dict = dict()
 
-        # def __init__(self, name, namespace):
-        #     self._return_dict = dict()
-        #     super().__init__(name, namespace)
+        def __init__(self, name, namespace):
+            super().__init__(name, namespace)
+            self.compliment_with(self.constraint_table.has_min_reqs)
 
         # def __new__(self, name, namespace):
         #      super().__new__(Thing, name, namespace)
@@ -77,11 +77,30 @@ def extend_core(_core):
 
         @property
         def constraint_table(self):
+            self._validate_one_table()
             return self.is_constraining_tables[0]
         
         @property
         def has_realized_constraints(self):
             return len(self._return_dict) > 0
+
+        @property
+        def is_having_external_dependencies(self):
+            return any(map(lambda const: const.is_externally_dependent, self.has_dependencies))
+
+        @property
+        def has_dependencies(self):
+            return list(filter(lambda cons: isinstance(cons, _core.ValueDependency), self.has_constraints))
+
+        def prepare_external_dependencies_with_single_realization_definition(self, _table_to_def_dict):
+            for dependency in self.has_dependencies:
+                has_been_set = True
+                if dependency.is_externally_dependent and not dependency.is_depending_on_realization:
+                    has_been_set = dependency.set_missing_realization_definition(_table_to_def_dict)
+                if not has_been_set:
+                    raise Exception(f"ERROR: Constarint {dependency.name} have external dependency "
+                            f"and no realization definition could be chosen from {_table_to_def_dict}. "
+                            "Verify setup of this constraint.")
         
         def fullfil_constraints_renew(self):
             self._return_dict = dict()
@@ -101,7 +120,6 @@ def extend_core(_core):
             for column in self.constraint_table.has_columns:
                 self._return_dict[column.plain_name] = None
 
-            self.compliment_with(self.constraint_table.has_min_reqs)
             print(f"INFO: Result based on: {self.name}")
 
             ## Heavy lifting
@@ -115,7 +133,7 @@ def extend_core(_core):
                 if not constraint.is_ready(self._return_dict):
                     not_ready_accumulator.append(constraint)
                     continue
-                print(f"DEBUG: Generating {constraint.name}") 
+                # print(f"DEBUG: Generating {constraint.name}") 
                 self._return_dict[constraint.is_constraining_column.plain_name] = (
                     constraint.generate(self._return_dict)
                 )
@@ -125,6 +143,7 @@ def extend_core(_core):
                 return True
 
             is_same = True
+            print(f"{self.name}")
             first_table_name = self.is_constraining_tables[0].name
             for suspect_table in self.is_constraining_tables:
                 is_same = is_same and suspect_table.name == first_table_name
