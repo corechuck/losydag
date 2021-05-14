@@ -57,24 +57,6 @@ for real_case in onto.individuals():
         # contains_realizations
         print(real_case.realize())
 
-        
-
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-        # print(indiv.fullfil_constraints())
-
 
 # TODO:
 # 1. Move core to core !!!!!! DONE
@@ -85,5 +67,6 @@ for real_case in onto.individuals():
 # 3. abriviate column names. done
 # 4. Dependency inside group - done
 # 4. Dependency outside group -
+# 5. Find missing table definition - in RealizationCase
 # 4. RangeConstraint - default min and max
 # 3. Tests ?

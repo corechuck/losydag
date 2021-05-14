@@ -92,6 +92,16 @@ def extend_core(_core):
         def has_dependencies(self):
             return list(filter(lambda cons: isinstance(cons, _core.ValueDependency), self.has_constraints))
 
+        def get_reffered_tables(self):
+            li = set()
+            for c in self.has_dependencies:
+                ref_table = c.get_reffered_table()
+                if ref_table:
+                    li.add(ref_table)
+            return li
+            # return [c.get_reffered_table() for c in self.has_dependencies]
+            # return list(map(lambda c: c.get_reffered_table(), self.has_dependencies))
+
         def prepare_external_dependencies_with_single_realization_definition(self, _table_to_def_dict):
             for dependency in self.has_dependencies:
                 has_been_set = True

@@ -31,6 +31,12 @@ def extend_core(_core):
                 self.is_depending_on_column.is_part_of_table.name != 
                     self.is_constraining_column.is_part_of_table.name
             )
+
+        def get_reffered_table(self):
+            if not self.is_externally_dependent:
+                return None
+            else:
+                return self.is_depending_on_column.is_part_of_table 
                     
         def _generate(self, _local_dict):
             if not self.is_externally_dependent:
