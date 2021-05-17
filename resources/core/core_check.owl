@@ -411,7 +411,6 @@
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#MinConstraints">
         <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
-        <owl:disjointWith rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
     </owl:Class>
     
 

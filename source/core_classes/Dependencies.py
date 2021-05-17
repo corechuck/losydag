@@ -10,19 +10,11 @@ def extend_core(_core):
         namespace = _core
 
         def is_ready(self, _local_dict):
-            "This should tell if data has already been gereated from dependent relalization."
+            "This should tell if refferenced data is prepared and this can be generated."
             if not self.is_externally_dependent:
                 return self._is_local_dependency_ready(_local_dict)
             else:
                 return self.is_depending_on_realization.has_realized_constraints
-            
-            # return (
-            #     self.is_depending_on_realization is not None and 
-            #     self.is_depending_on_realization.has_realized_constraints
-            # ) or (
-            #     self.is_depending_on_realization is None and 
-            #     self._is_local_dependency_ready(_local_dict)
-            # )
         
         @property
         def is_externally_dependent(self):
@@ -31,6 +23,13 @@ def extend_core(_core):
                 self.is_depending_on_column.is_part_of_table.name != 
                     self.is_constraining_column.is_part_of_table.name
             )
+
+        @property
+        def is_external_dependency_ready(self):
+            if not self.is_externally_dependent:
+                print("WARN: You sure? checking external dependency readiness for internal dependency !")
+            return self.is_depending_on_realization.has_realized_constraints
+
 
         def get_reffered_table(self):
             if not self.is_externally_dependent:
@@ -71,7 +70,7 @@ def extend_core(_core):
         def _is_local_dependency_ready(self, _local_dict):
             checking_dict = CheckingDictFormatter()
             checking_dict.format(self.has_format_definition, **_local_dict)
-            return checking_dict.has_all_values_ready()
+            return checking_dict.has_all_values_ready
 
         def _generate(self, _local_dict):
             _generation_formatter.set_increment(self)
@@ -132,12 +131,15 @@ class CheckingDictFormatter(string.Formatter):
         if "autoincrement" == field_name:
             return "0",field_name
         if field_name not in _passed_dict.keys():
-            raise Exception(f"ERROR: referenced in format not existing key {field_name}")
+            self.not_ready_columns.append(field_name)
+            return "-",field_name
+            # raise Exception(f"ERROR: referenced in format not existing key {field_name}")
         if _passed_dict[field_name] is None:
             self.not_ready_columns.append(field_name)
             return "~",field_name
         return _passed_dict[field_name],field_name
 
+    @property
     def has_all_values_ready(self):
         return len(self.not_ready_columns) == 0
             

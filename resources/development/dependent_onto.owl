@@ -49,10 +49,18 @@
     
 
 
-    <!-- http://corechuck.com/modeling/dependent_onto#Case.FirstCase -->
+    <!-- http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col0_id -->
 
-    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Case.FirstCase">
-        <core_check:contains_realizations rdf:resource="http://corechuck.com/modeling/dependent_onto#Realization.Test1.first"/>
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col0_id">
+        <core_check:has_data_type rdf:resource="http://corechuck.com/modeling/dependent_onto#Decimal_10_3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col1_range -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col1_range">
+        <core_check:has_data_type rdf:resource="http://corechuck.com/modeling/dependent_onto#Decimal_10_3"/>
     </owl:NamedIndividual>
     
 
@@ -175,6 +183,26 @@
         <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OrGroup"/>
         <core_check:contains_constraint_groups rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1"/>
         <core_check:contains_constraint_groups rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#Constraint.Ref1.Col0_id -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Ref1.Col0_id">
+        <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col0_id"/>
+        <core_check:has_max_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</core_check:has_max_range>
+        <core_check:has_min_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</core_check:has_min_range>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#Constraint.Ref1.Col1_range -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Ref1.Col1_range">
+        <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col1_range"/>
+        <core_check:has_max_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</core_check:has_max_range>
+        <core_check:has_min_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-99999</core_check:has_min_range>
     </owl:NamedIndividual>
     
 
@@ -379,11 +407,29 @@
     
 
 
+    <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test3.Col3__reftblref_col1 -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test3.Col3__reftblref_col1">
+        <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test3.Col2_property1_number"/>
+        <core_check:is_depending_on_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col0_id"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://corechuck.com/modeling/dependent_onto#Decimal_10_3 -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Decimal_10_3">
         <core_check:has_precision rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</core_check:has_precision>
         <core_check:has_scale rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</core_check:has_scale>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#Min.Table_ref1 -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Min.Table_ref1">
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#Constraint.Ref1.Col0_id"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#Constraint.Ref1.Col1_range"/>
     </owl:NamedIndividual>
     
 
@@ -450,6 +496,7 @@
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Realization.Test3.first">
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test3.Col1__reference_tbl2_id"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test3.Col3__reftblref_col1"/>
     </owl:NamedIndividual>
     
 
@@ -461,6 +508,16 @@
         <core_check:contains_realizations rdf:resource="http://corechuck.com/modeling/dependent_onto#Realization.Test2.first_colors"/>
         <core_check:contains_realizations rdf:resource="http://corechuck.com/modeling/dependent_onto#Realization.Test2.second_directions"/>
         <core_check:contains_realizations rdf:resource="http://corechuck.com/modeling/dependent_onto#Realization.Test3.first"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#Table.Ref_01 -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Table.Ref_01">
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col0_id"/>
+        <core_check:has_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Ref1.Col1_range"/>
+        <core_check:has_min_reqs rdf:resource="http://corechuck.com/modeling/dependent_onto#Min.Table_ref1"/>
     </owl:NamedIndividual>
     
 

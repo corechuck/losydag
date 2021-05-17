@@ -1,3 +1,4 @@
+import pprint
 from owlready2 import *
 from core_classes.Constraints import extend_core as extend_constraints
 from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
@@ -23,39 +24,27 @@ extend_constraint_groups(core)
 extend_simple_types(core)
 extend_realization_case(core)
 
-sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True,keep_tmp_file = 1,debug=1)
+sync_reasoner_hermit(infer_property_values=True)
+# sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True)
+# sync_reasoner_pellet()  # infer_data_property_values=True, infer_property_values=True)
 print("INFO: Reasoned with pellet.")
 
-# print("# Constraints:")
-# for indiv in onto.individuals():
-#     if isinstance(indiv, core.Constraint):
-#         print(indiv.generate())
-
-
-# last_realization = None
-# print("# Constraints group:")
-# for indiv in onto.individuals():
-#     if isinstance(indiv, core.RealizationDefinition):
-#         is_th_same = last_realization is None or last_realization is indiv
-#         last_realization = indiv
-#         print(f"DEBUG: {indiv} is the same as {last_realization}: {is_th_same}")
-#         #print(f"INFO: Result based on: {indiv.name}")
-#         print(indiv.fullfil_constraints())
-#         print(indiv.fullfil_constraints())
-
-# print("# Second pass:")
-# for indiv in onto.individuals():
-#     if isinstance(indiv, core.RealizationDefinition):
-#         last_realization = indiv
-#         print(f"INFO: Result based on: {indiv.name}")
-#         print(indiv.fullfil_constraints())
-
+pp = pprint.PrettyPrinter(indent=2)
 print("# Realization case:")
 for real_case in onto.individuals():
     if isinstance(real_case, core.RealizationCase):
         print(f"INFO: Result based on: {real_case.name}")
         # contains_realizations
-        print(real_case.realize())
+        pp.pprint(real_case.realize())
+        print("----------------------------")
+        real_case._verbal = False
+        pp.pprint(real_case.realize_anew())
+        print("----------------------------")
+        pp.pprint(real_case.realize_anew())
+        print("----------------------------")
+        pp.pprint(real_case.realize_anew())
+        print("----------------------------")
+        pp.pprint(real_case.realize_anew())
 
 
 # TODO:
@@ -66,7 +55,8 @@ for real_case in onto.individuals():
 # 3. Merge Realization with Minimum requirements - done
 # 3. abriviate column names. done
 # 4. Dependency inside group - done
-# 4. Dependency outside group -
-# 5. Find missing table definition - in RealizationCase
+# 4. Dependency outside group - done
+# 5. Find missing table definition - in RealizationCase done
 # 4. RangeConstraint - default min and max
+# 6. Ad infinitum - deriving needed tables that were not presnet in realization case.
 # 3. Tests ?

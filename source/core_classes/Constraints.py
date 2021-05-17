@@ -10,12 +10,8 @@ def extend_core(_core):
 
     class Constraint(Thing):
         namespace = _core
-
-        # def __init__(self):
-        #     pass
         
         def generate(self, local_dict):
-            # return f"{self.name} generated: " + str(self._generate())
             return str(self._generate(local_dict))
 
         def is_ready(self, _local_dict):
@@ -45,9 +41,6 @@ def extend_core(_core):
 
     class RegexConstraint(Thing):
         namespace = _core
-
-        # def __init__(self):
-        #     super().__init__()
         
         def _generate(self, __yagni):
             if isinstance(self._get_constrained_data_type(), _core.Varchar):
@@ -67,9 +60,6 @@ def extend_core(_core):
 
     class ListConstraint(Thing):
         namespace = _core
-
-        # def __init__(self):
-        #     super().__init__()
         
         def _generate(self, __yagni):
             amount_of_picks = len(self.has_picks)
@@ -79,15 +69,10 @@ def extend_core(_core):
 
     class RangeConstriant(Thing):
         namespace = _core
-
-        # def __init__(self):
-        #     super().__init__()
         
         def _generate(self, __yagni):
             
             if isinstance(self._get_constrained_data_type(), _core.Decimal):
                 chosen_number = random.randint(int(self.has_min_range), int(self.has_max_range))
                 return chosen_number
-
-            #return rstr.xeger(r"Rng__\w{1,7}")
 

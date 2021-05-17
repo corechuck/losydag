@@ -1,50 +1,17 @@
 import rstr
 import random
 from owlready2 import Thing
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
 #from SyntheticExceptions import GenerationTypeException
 
 
 
 
 def extend_core(_core):
-    
-    def _merge_groups_left_prio(group1, group2):
-        """ Left prio means that if group1 and group2 has contraint for same column, 
-        left-group1 will be taken and group2 not"""
-
-        # temp_group = _core.ConstraintGroup(
-        #     f"tconstgrp_{random.randint(100000,999999)}__based_{group1.name}")
-        # temp_group.has_constraints 
-        new_merged_list = group1.has_constraints.copy()
-
-        for other_constraint in group2.has_constraints:
-            if other_constraint.is_constraining_column.name \
-                    not in group1.names_of_constrained_columns:
-                new_merged_list.append(other_constraint)
-            
-        return new_merged_list
-
-    def _supervise_constraint_generation(__internal_generation_function_with_leftovers):
-        not_ready_constraints = list()
-        last_not_ready_constraints = -1
-        while True:
-            not_ready_constraints = list()
-            __internal_generation_function_with_leftovers(not_ready_constraints)
-
-            if last_not_ready_constraints == len(not_ready_constraints):
-                raise Exception(f"ERROR: Could not resolve dependencies {not_ready_constraints}")
-            
-            if len(not_ready_constraints) == 0:
-                break
-            last_not_ready_constraints = len(not_ready_constraints)
-            print(f"INFO: Not resolved dependencies {not_ready_constraints}")
 
 
     class ConstraintGroup(Thing):
         namespace = _core
-
-        # def __init__(self):
-        #     pass
         
         def fullfil_constraints(self):
             list_of_constraints = self.has_constraints
@@ -64,25 +31,20 @@ def extend_core(_core):
     class RealizationDefinition(Thing):
         namespace = _core
         _return_dict = dict()
+        has_realized_constraints = False
 
-        def __init__(self, name, namespace):
+        def __init__(self, name, namespace, _complimen_with_group = None):
             super().__init__(name, namespace)
-            self.compliment_with(self.constraint_table.has_min_reqs)
-
-        # def __new__(self, name, namespace):
-        #      super().__new__(Thing, name, namespace)
-
-        # def __init__(self):
-        #     self._return_dict = dict()
-
+            if len(self.has_constraints) > 0:
+                self.compliment_with(self.constraint_table.has_min_reqs)
+                
         @property
         def constraint_table(self):
+            if len(self.is_constraining_tables) == 0:
+                return None
+
             self._validate_one_table()
             return self.is_constraining_tables[0]
-        
-        @property
-        def has_realized_constraints(self):
-            return len(self._return_dict) > 0
 
         @property
         def is_having_external_dependencies(self):
@@ -92,6 +54,21 @@ def extend_core(_core):
         def has_dependencies(self):
             return list(filter(lambda cons: isinstance(cons, _core.ValueDependency), self.has_constraints))
 
+        @property
+        def is_ready(self):
+            part_list = []
+            for const in self.has_dependencies:
+                if const.is_externally_dependent:
+                    part_list.append(const.is_external_dependency_ready)
+            return all(part_list)
+
+        def _prepare_return_dict(self):
+            if len(self._return_dict) > 0 or self.constraint_table is None:
+                return
+            self._return_dict = dict()
+            for column in self.constraint_table.has_columns:
+                self._return_dict[column.plain_name] = None
+
         def get_reffered_tables(self):
             li = set()
             for c in self.has_dependencies:
@@ -99,8 +76,6 @@ def extend_core(_core):
                 if ref_table:
                     li.add(ref_table)
             return li
-            # return [c.get_reffered_table() for c in self.has_dependencies]
-            # return list(map(lambda c: c.get_reffered_table(), self.has_dependencies))
 
         def prepare_external_dependencies_with_single_realization_definition(self, _table_to_def_dict):
             for dependency in self.has_dependencies:
@@ -118,29 +93,33 @@ def extend_core(_core):
         
         def fullfil_constraints(self):
             if self.has_realized_constraints:
-                print("INFO: already generated:")
                 return self._return_dict
 
             if not self._validate_one_table():
                 print ("ERROR: Realization def should be defined for one table." 
                     "TODO: serious exception!")
-            
-            print("INFO: Generating new values:")
-            self._return_dict = dict()
-            for column in self.constraint_table.has_columns:
-                self._return_dict[column.plain_name] = None
 
-            print(f"INFO: Result based on: {self.name}")
+            self._prepare_return_dict()
 
             ## Heavy lifting
-            _supervise_constraint_generation(self._try_generating_for_all_constraints)
-
+            self.has_realized_constraints = (
+                _supervise_constraint_generation(
+                    self._try_generating_for_all_constraints, 
+                    f"RD {self.name}"
+                    )
+            )
             return self._return_dict
 
+        def clear_results(self):
+            self.has_realized_constraints = False
+            self._return_dict = dict()
+
         def _try_generating_for_all_constraints(self, not_ready_accumulator):
-            print(f"DEBUG: try X for {self.name}")
             for constraint in self.has_constraints:
                 if not constraint.is_ready(self._return_dict):
+                    if constraint.is_externally_dependent:
+                        raise Exception("ERROR: should not be here yet !! External dependencies" 
+                                        "should be ready before calling this.")
                     not_ready_accumulator.append(constraint)
                     continue
                 # print(f"DEBUG: Generating {constraint.name}") 
@@ -153,7 +132,6 @@ def extend_core(_core):
                 return True
 
             is_same = True
-            print(f"{self.name}")
             first_table_name = self.is_constraining_tables[0].name
             for suspect_table in self.is_constraining_tables:
                 is_same = is_same and suspect_table.name == first_table_name
@@ -162,3 +140,9 @@ def extend_core(_core):
 
 
 
+
+
+
+
+        # def __init__(self):
+        #     self._return_dict = dict()
