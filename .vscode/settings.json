@@ -1,3 +1,14 @@
 {
-    "python.pythonPath": "C:\\ProgramData\\Miniconda3\\python.exe"
+    "python.pythonPath": "C:\\ProgramData\\Miniconda3\\python.exe",
+    "python.autoComplete.extraPaths": ["./source"],
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.testing.pytestArgs": [
+        "source",
+        "-s"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.autoTestDiscoverOnSaveEnabled": true
 }

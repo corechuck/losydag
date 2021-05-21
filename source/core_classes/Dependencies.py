@@ -77,6 +77,7 @@ def extend_core(_core):
             resolved_format = _generation_formatter.format(self.has_format_definition, **_local_dict)
             return rstr.xeger(resolved_format)
 
+
 class GenerationTrackingFormatter(string.Formatter):
 
     def __init__(self, _tracker):

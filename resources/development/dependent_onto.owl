@@ -17,6 +17,31 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#is_constraining_column -->
+
+    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/dependent_onto#is_constraint_by"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#is_constraint_by -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/dependent_onto#is_constraint_by"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Individuals
     //
     ///////////////////////////////////////////////////////////////////////////////////////

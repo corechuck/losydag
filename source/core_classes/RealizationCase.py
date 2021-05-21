@@ -3,7 +3,7 @@ import random
 import datetime
 import math
 from owlready2 import Thing, sync_reasoner_pellet, sync_reasoner, sync_reasoner_hermit
-from utils.utils import _supervise_constraint_generation
+from ..utils.utils import _supervise_constraint_generation
 
 def extend_core(_core):
     
@@ -29,6 +29,16 @@ def extend_core(_core):
             [rd.clear_results() for rd in self.contains_realizations]
             _supervise_constraint_generation(self._realize, f"{self.name}")
             return self._get_agregated_results()
+
+        def positive_case_breakdown(self):
+            """This method breaks down this Realization Case to all and precise POSITIVE cases of
+            modelled custom constraints. This uses pairwaise approach of defining positive cases."""
+            pass
+
+        def negative_case_breakdown(self):
+            """This method breaks down this Realization Case to all and precise NEGATIVE cases of
+            modelled custom constraints. This produces realization case that has single column negative value."""
+            pass
 
         def _realize(self, not_ready_acc):
             for definition in self.contains_realizations:

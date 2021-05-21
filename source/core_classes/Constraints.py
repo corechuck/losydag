@@ -58,6 +58,7 @@ def extend_core(_core):
 
             return "#non-value"
 
+
     class ListConstraint(Thing):
         namespace = _core
         

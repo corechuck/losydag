@@ -1,7 +1,7 @@
 import rstr
 import random
 from owlready2 import Thing
-from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
+from ..utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
 #from SyntheticExceptions import GenerationTypeException
 
 
@@ -62,13 +62,6 @@ def extend_core(_core):
                     part_list.append(const.is_external_dependency_ready)
             return all(part_list)
 
-        def _prepare_return_dict(self):
-            if len(self._return_dict) > 0 or self.constraint_table is None:
-                return
-            self._return_dict = dict()
-            for column in self.constraint_table.has_columns:
-                self._return_dict[column.plain_name] = None
-
         def get_reffered_tables(self):
             li = set()
             for c in self.has_dependencies:
@@ -110,9 +103,18 @@ def extend_core(_core):
             )
             return self._return_dict
 
+
+
         def clear_results(self):
             self.has_realized_constraints = False
             self._return_dict = dict()
+
+        def _prepare_return_dict(self):
+            if len(self._return_dict) > 0 or self.constraint_table is None:
+                return
+            self._return_dict = dict()
+            for column in self.constraint_table.has_columns:
+                self._return_dict[column.plain_name] = None
 
         def _try_generating_for_all_constraints(self, not_ready_accumulator):
             for constraint in self.has_constraints:
