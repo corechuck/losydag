@@ -3,7 +3,7 @@ import random
 import datetime
 import math
 from owlready2 import Thing, sync_reasoner_pellet, sync_reasoner, sync_reasoner_hermit
-from ..utils.utils import _supervise_constraint_generation
+from utils.utils import _supervise_constraint_generation
 
 def extend_core(_core):
     

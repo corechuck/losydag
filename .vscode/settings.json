@@ -1,12 +1,12 @@
 {
     "python.pythonPath": "C:\\ProgramData\\Miniconda3\\python.exe",
-    "python.autoComplete.extraPaths": ["./source"],
+    "python.autoComplete.extraPaths": ["C:\\work\\Import_onto_project\\source"],
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
+    "python.linting.enabled": false,
     "python.testing.pytestArgs": [
-        "source",
-        "-s"
+        ""
     ],
+    "python.testing.cwd": "C:\\work\\Import_onto_project\\source",
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": true,

@@ -11,14 +11,18 @@
             "type": "python",
             "request": "launch",
             "program": "C:\\work\\Import_onto_project\\source\\MainSandRun.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "env": {"PYTHONPATH": "C:\\work\\Import_onto_project\\source"},
+            "cwd": "${workspaceFolder}"
         },
         {
             "name": "Debug Tests",
             "type": "python",
-            "request": "test",
-            "console": "internalConsole",
-            "justMyCode": false
+            "request": "launch",
+            "module":"pytest",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {"PYTHONPATH": "C:\\work\\Import_onto_project\\source"}
         }
     ]
 }

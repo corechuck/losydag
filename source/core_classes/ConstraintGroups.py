@@ -1,9 +1,8 @@
 import rstr
 import random
 from owlready2 import Thing
-from ..utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
 #from SyntheticExceptions import GenerationTypeException
-
 
 
 

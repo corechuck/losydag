@@ -163,8 +163,19 @@
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
     </owl:ObjectProperty>
+
+
+    <!-- http://corechuck.com/modeling/core_check#is_constraining_column -->
+
+    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_constraint_by"/>
+    </rdf:Description>
     
 
+
+    <!-- http://corechuck.com/modeling/core_check#is_constraint_by -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraint_by"/>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////

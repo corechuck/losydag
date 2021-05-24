@@ -1,50 +1,57 @@
 import pprint
 from owlready2 import *
-from core_classes.Constraints import extend_core as extend_constraints
-from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
-from core_classes.SimpleExtensions import extend_core as extend_simple_types
-from core_classes.Dependencies import extend_core as extend_dependencies
-from core_classes.RealizationCase import extend_core as extend_realization_case
-
-onto_path.append("./resources/core/")
-onto_path.append("./resources/development/")
-
-print("INFO: Running Ontology")
-onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
-# core = get_ontology("http://corechuck.com/modeling/core_check")
-onto.load()
-
-# onto.get_namespace("http://purl.obolibrary.org/obo/")
+from LosydagGenerator import LosydagGenerator
 
 
-core = onto.imported_ontologies[0]  # <- core classes are in wrong ontology
-extend_constraints(core)
-extend_dependencies(core)
-extend_constraint_groups(core)
-extend_simple_types(core)
-extend_realization_case(core)
-
-sync_reasoner_hermit(infer_property_values=True)
-# sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True)
-# sync_reasoner_pellet()  # infer_data_property_values=True, infer_property_values=True)
-print("INFO: Reasoned with pellet.")
-
+generator = LosydagGenerator("http://corechuck.com/modeling/dependent_onto")
 pp = pprint.PrettyPrinter(indent=2)
-print("# Realization case:")
-for real_case in onto.individuals():
-    if isinstance(real_case, core.RealizationCase):
-        print(f"INFO: Result based on: {real_case.name}")
-        # contains_realizations
-        pp.pprint(real_case.realize())
-        print("----------------------------")
-        real_case._verbal = False
-        pp.pprint(real_case.realize_anew())
-        print("----------------------------")
-        pp.pprint(real_case.realize_anew())
-        print("----------------------------")
-        pp.pprint(real_case.realize_anew())
-        print("----------------------------")
-        pp.pprint(real_case.realize_anew())
+
+pp.pprint(generator.realize_fresh("RealizationCase.Check1"))
+print("----------------------------")
+pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+print("----------------------------")
+pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+print("----------------------------")
+pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+print("----------------------------")
+pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+
+# from core_classes.Constraints import extend_core as extend_constraints
+# from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
+# from core_classes.SimpleExtensions import extend_core as extend_simple_types
+# from core_classes.Dependencies import extend_core as extend_dependencies
+# from core_classes.RealizationCase import extend_core as extend_realization_case
+
+# onto_path.append("./resources/core/")
+# onto_path.append("./resources/development/")
+
+# print("INFO: Running Ontology")
+# onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
+# # core = get_ontology("http://corechuck.com/modeling/core_check")
+# onto.load()
+
+# # onto.get_namespace("http://purl.obolibrary.org/obo/")
+
+
+# core = onto.imported_ontologies[0]  # <- core classes are in wrong ontology
+# extend_constraints(core)
+# extend_dependencies(core)
+# extend_constraint_groups(core)
+# extend_simple_types(core)
+# extend_realization_case(core)
+
+# sync_reasoner_hermit(infer_property_values=True)
+# # sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True)
+# # sync_reasoner_pellet()  # infer_data_property_values=True, infer_property_values=True)
+# print("INFO: Reasoned with pellet.")
+
+# pp = pprint.PrettyPrinter(indent=2)
+# print("# Realization case:")
+# for real_case in onto.individuals():
+#     if isinstance(real_case, core.RealizationCase):
+#         print(f"INFO: Result based on: {real_case.name}")
+#         # contains_realizations
+
 
 
 # TODO:
@@ -60,3 +67,4 @@ for real_case in onto.individuals():
 # 4. RangeConstraint - default min and max
 # 6. Ad infinitum - deriving needed tables that were not presnet in realization case.
 # 3. Tests ?
+# 6. Add Column uniqueness and used values
