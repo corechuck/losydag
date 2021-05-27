@@ -15,8 +15,8 @@ def extend_core(_core):
         def __init__(self, name, namespace):
             super().__init__(name, namespace)
             self.__prepare_min_reqs_for_not_custom_constrained_but_reffered_tables(namespace)
-            sync_reasoner_hermit(infer_property_values=True)
-            # sync_reasoner_pellet(infer_data_property_values=False, infer_property_values=True)
+            # sync_reasoner_hermit(infer_property_values=True)
+            sync_reasoner_pellet(infer_data_property_values=False, infer_property_values=True)
 
             self.__prepare_table_name_to_singular_realization_def_dict()
             self.__setup_external_dependencies_with_single_realizations_definitions()
