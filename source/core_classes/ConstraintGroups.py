@@ -2,17 +2,14 @@ import rstr
 import random
 from owlready2 import Thing
 from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
-#from SyntheticExceptions import GenerationTypeException
-
 
 
 def extend_core(_core):
 
-
     class ConstraintGroup(Thing):
         namespace = _core
         
-        def fullfil_constraints(self):
+        def fulfill_constraints(self):
             list_of_constraints = self.has_constraints
             return f"{self.name} has {len(list_of_constraints)} constraints."
 
@@ -25,14 +22,24 @@ def extend_core(_core):
         @property
         def names_of_constrained_columns(self):
             return [const.is_constraining_column.name for const in self.has_constraints]
-        
-        
+
+        def _is_constraining_single_table(self):
+            if len(self.is_constraining_tables) == 1:
+                return True
+
+            is_same = True
+            first_table_name = self.is_constraining_tables[0].name
+            for suspect_table in self.is_constraining_tables:
+                is_same = is_same and suspect_table.name == first_table_name
+
+            return is_same
+
     class RealizationDefinition(Thing):
         namespace = _core
         _return_dict = dict()
         has_realized_constraints = False
 
-        def __init__(self, name, namespace, _complimen_with_group = None):
+        def __init__(self, name, namespace):
             super().__init__(name, namespace)
             if len(self.has_constraints) > 0:
                 self.compliment_with(self.constraint_table.has_min_reqs)
@@ -42,7 +49,7 @@ def extend_core(_core):
             if len(self.is_constraining_tables) == 0:
                 return None
 
-            self._validate_one_table()
+            self._is_constraining_single_table()
             return self.is_constraining_tables[0]
 
         @property
@@ -61,7 +68,7 @@ def extend_core(_core):
                     part_list.append(const.is_external_dependency_ready)
             return all(part_list)
 
-        def get_reffered_tables(self):
+        def get_referred_tables(self):
             li = set()
             for c in self.has_dependencies:
                 ref_table = c.get_reffered_table()
@@ -75,25 +82,26 @@ def extend_core(_core):
                 if dependency.is_externally_dependent and not dependency.is_depending_on_realization:
                     has_been_set = dependency.set_missing_realization_definition(_table_to_def_dict)
                 if not has_been_set:
-                    raise Exception(f"ERROR: Constarint {dependency.name} have external dependency "
-                            f"and no realization definition could be chosen from {_table_to_def_dict}. "
-                            "Verify setup of this constraint.")
+                    raise Exception(
+                        f"ERROR: Constraint {dependency.name} have external dependency "
+                        f"and no realization definition could be chosen from {_table_to_def_dict}. "
+                        "Verify setup of this constraint.")
         
-        def fullfil_constraints_renew(self):
+        def fulfill_constraints_renew(self):
             self._return_dict = dict()
-            return self.fullfil_constraints()
+            return self.fulfill_constraints()
         
-        def fullfil_constraints(self):
+        def fulfill_constraints(self):
             if self.has_realized_constraints:
                 return self._return_dict
 
-            if not self._validate_one_table():
-                print ("ERROR: Realization def should be defined for one table." 
-                    "TODO: serious exception!")
+            if not self._is_constraining_single_table():
+                print("ERROR: Realization def should be defined for one table." 
+                      "TODO: serious exception!")
 
             self._prepare_return_dict()
 
-            ## Heavy lifting
+            # Heavy lifting
             self.has_realized_constraints = (
                 _supervise_constraint_generation(
                     self._try_generating_for_all_constraints, 
@@ -101,8 +109,6 @@ def extend_core(_core):
                     )
             )
             return self._return_dict
-
-
 
         def clear_results(self):
             self.has_realized_constraints = False
@@ -127,23 +133,3 @@ def extend_core(_core):
                 self._return_dict[constraint.is_constraining_column.plain_name] = (
                     constraint.generate(self._return_dict)
                 )
-
-        def _validate_one_table(self):
-            if len(self.is_constraining_tables) == 1:
-                return True
-
-            is_same = True
-            first_table_name = self.is_constraining_tables[0].name
-            for suspect_table in self.is_constraining_tables:
-                is_same = is_same and suspect_table.name == first_table_name
-
-            return is_same
-
-
-
-
-
-
-
-        # def __init__(self):
-        #     self._return_dict = dict()

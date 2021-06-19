@@ -13,6 +13,26 @@
     </owl:Ontology>
     
 
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#contains_realizations -->
+
+    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#contains_realizations">
+        <rdfs:comment>TODO: rename to contains definitions of containts_realization_definitions</rdfs:comment>
+    </rdf:Description>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -180,8 +200,18 @@
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#ConstGroup.Test1.Col1.RangeOr">
         <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OrGroup"/>
-        <core_check:contains_constraint_groups rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1"/>
-        <core_check:contains_constraint_groups rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#ConstGroup.Test2.not_same_table_or -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#ConstGroup.Test2.not_same_table_or">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OrGroup"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col3_list"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test2.Col3_colors"/>
     </owl:NamedIndividual>
     
 
@@ -462,6 +492,18 @@
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Min.Table_test3">
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col0__id_random"/>
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#NonUnifiedGroup.test1 -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#NonUnifiedGroup.test1">
+        <core_check:contains_constraint_groups rdf:resource="http://corechuck.com/modeling/dependent_onto#ConstGroup.Test2.not_same_table_or"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1"/>
+        <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test2.Col3_directions"/>
+        <rdfs:comment>Case Merge or groups with other from other level</rdfs:comment>
+        <rdfs:comment>Generation request language</rdfs:comment>
     </owl:NamedIndividual>
     
 

@@ -66,5 +66,5 @@ pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
 # 5. Find missing table definition - in RealizationCase done
 # 4. RangeConstraint - default min and max
 # 6. Ad infinitum - deriving needed tables that were not presnet in realization case.
-# 3. Tests ?
+# 3. Tests - part 1 done
 # 6. Add Column uniqueness and used values

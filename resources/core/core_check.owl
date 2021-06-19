@@ -24,6 +24,7 @@
     <!-- http://corechuck.com/modeling/core_check#contains_constraint_groups -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#contains_constraint_groups">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_part_of_constraint_group"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
         <rdfs:range>
             <owl:Class>
@@ -100,6 +101,7 @@
     <!-- http://corechuck.com/modeling/core_check#is_constraining_column -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_constraint_by"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
@@ -118,6 +120,12 @@
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_part_of_table"/>
         </owl:propertyChainAxiom>
     </owl:ObjectProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#is_constraint_by -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraint_by"/>
     
 
 
@@ -150,6 +158,12 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#is_part_of_constraint_group -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_part_of_constraint_group"/>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#is_part_of_constraints -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_part_of_constraints"/>
@@ -163,19 +177,8 @@
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
     </owl:ObjectProperty>
-
-
-    <!-- http://corechuck.com/modeling/core_check#is_constraining_column -->
-
-    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column">
-        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_constraint_by"/>
-    </rdf:Description>
     
 
-
-    <!-- http://corechuck.com/modeling/core_check#is_constraint_by -->
-
-    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraint_by"/>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -257,6 +260,23 @@
     <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_scale">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Decimal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#not_matching_regex -->
+
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#not_matching_regex">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#not_picks -->
+
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#not_picks">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:DatatypeProperty>
     
 

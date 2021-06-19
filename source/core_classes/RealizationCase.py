@@ -5,6 +5,7 @@ import math
 from owlready2 import Thing, sync_reasoner_pellet, sync_reasoner, sync_reasoner_hermit
 from utils.utils import _supervise_constraint_generation
 
+
 def extend_core(_core):
     
     class RealizationCase(Thing):
@@ -23,12 +24,12 @@ def extend_core(_core):
         
         def realize(self):
             _supervise_constraint_generation(self._realize, f"{self.name}")
-            return self._get_agregated_results()
+            return self._get_aggregated_results()
         
         def realize_anew(self):
             [rd.clear_results() for rd in self.contains_realizations]
             _supervise_constraint_generation(self._realize, f"{self.name}")
-            return self._get_agregated_results()
+            return self._get_aggregated_results()
 
         def positive_case_breakdown(self):
             """This method breaks down this Realization Case to all and precise POSITIVE cases of
@@ -42,39 +43,40 @@ def extend_core(_core):
 
         def _realize(self, not_ready_acc):
             for definition in self.contains_realizations:
-                if self._verbal: print(f"INFO: Evaluating {definition.name}:")
+                if self._verbal:
+                    print(f"INFO: Evaluating {definition.name}:")
                 if definition.has_realized_constraints:
-                    if self._verbal: print(f"INFO: Already realized : {definition.name}")
+                    if self._verbal:
+                        print(f"INFO: Already realized : {definition.name}")
                     continue
 
                 if definition.is_ready:
-                    if self._verbal: print(f"INFO: Realizing : {definition.name}")
-                    definition.fullfil_constraints()
+                    if self._verbal:
+                        print(f"INFO: Realizing : {definition.name}")
+                    definition.fulfill_constraints()
                 else:
-                    if self._verbal: print(f"INFO: Not ready : {definition.name}")
+                    if self._verbal:
+                        print(f"INFO: Not ready : {definition.name}")
                     not_ready_acc.append(definition)
 
-        def _get_agregated_results(self):
+        def _get_aggregated_results(self):
             aggregate = dict()
             for definition in self.contains_realizations:
                 if not definition.has_realized_constraints:
-                    print(f"WARN: cannot agregate not realized constraint {definition.name}")
+                    print(f"WARN: cannot aggregate not realized constraint {definition.name}")
                     continue
-                if not definition.constraint_table.name in aggregate.keys():
+                if definition.constraint_table.name not in aggregate.keys():
                     aggregate[definition.constraint_table.name] = list()
 
                 aggregate[definition.constraint_table.name].append(definition._return_dict)
             
             return aggregate
 
-                
-
         def __setup_external_dependencies_with_single_realizations_definitions(self):
             for definition in self.contains_realizations:
                 if definition.is_having_external_dependencies:
                     definition.prepare_external_dependencies_with_single_realization_definition(
                         self.mapping_dict)
-
 
         def __prepare_table_name_to_singular_realization_def_dict(self):
             if self.mapping_dict is not None:
@@ -93,7 +95,7 @@ def extend_core(_core):
         def __prepare_min_reqs_for_not_custom_constrained_but_reffered_tables(self, namespace):
             case_needed_tables = set()
             for definition in self.contains_realizations:
-                case_needed_tables = case_needed_tables | definition.get_reffered_tables()
+                case_needed_tables = case_needed_tables | definition.get_referred_tables()
 
             for needed_table in case_needed_tables:
                 is_needed_table_in_realization_case = \
@@ -111,4 +113,3 @@ def extend_core(_core):
             print(f"INFO: Referenced tables: {case_needed_tables}")
 
             # TODO: Extend ontology with new Table and expect magic to happen
-        

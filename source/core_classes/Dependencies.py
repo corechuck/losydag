@@ -2,6 +2,7 @@ from owlready2 import Thing
 import string
 import rstr
 
+
 def extend_core(_core):
     _compound_keys_tracker = dict()
     _generation_formatter = GenerationTrackingFormatter(_compound_keys_tracker)
@@ -29,7 +30,6 @@ def extend_core(_core):
             if not self.is_externally_dependent:
                 print("WARN: You sure? checking external dependency readiness for internal dependency !")
             return self.is_depending_on_realization.has_realized_constraints
-
 
         def get_reffered_table(self):
             if not self.is_externally_dependent:
@@ -63,7 +63,6 @@ def extend_core(_core):
                 self.is_depending_on_realization = _table_to_def_dict[needed_table_name]
             return can_use
 
-
     class FormatDependency(Thing):
         namespace = _core
 
@@ -84,9 +83,7 @@ class GenerationTrackingFormatter(string.Formatter):
         self.not_ready_columns = list()
         self.tracker = _tracker
 
-    # def __format__(self, spec):
     def format_field(self, value, spec):
-        intu = 0
         return value
 
     def set_increment(self, dependency):
@@ -104,8 +101,7 @@ class GenerationTrackingFormatter(string.Formatter):
     def __increment_and_return_set_column(self):
         self.tracker[self.const_table][self.composed_key] += 1
         return str(self.tracker[self.const_table][self.composed_key])
-        
-    # def __getitem__(self, name):
+
     def get_field(self, field_name, args, kwargs):
         _passed_dict = kwargs  # I dont care about other for now or ever.
 
@@ -120,27 +116,24 @@ class CheckingDictFormatter(string.Formatter):
     def __init__(self):
         self.not_ready_columns = list()
 
-    # def __format__(self, spec):
     def format_field(self, value, spec):
         intu = 0
         return value
 
-    # def __getitem__(self, name):
     def get_field(self, field_name, args, kwargs):
         _passed_dict = kwargs  # I dont care about other for now or ever.
 
         if "autoincrement" == field_name:
-            return "0",field_name
+            return "0", field_name
         if field_name not in _passed_dict.keys():
             self.not_ready_columns.append(field_name)
-            return "-",field_name
+            return "-", field_name
             # raise Exception(f"ERROR: referenced in format not existing key {field_name}")
         if _passed_dict[field_name] is None:
             self.not_ready_columns.append(field_name)
-            return "~",field_name
+            return "~", field_name
         return _passed_dict[field_name],field_name
 
     @property
     def has_all_values_ready(self):
         return len(self.not_ready_columns) == 0
-            
