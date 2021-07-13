@@ -6,15 +6,19 @@ from LosydagGenerator import LosydagGenerator
 generator = LosydagGenerator("http://corechuck.com/modeling/dependent_onto")
 pp = pprint.PrettyPrinter(indent=2)
 
+cons = generator.core.Constraint()
+
+cons_2 = generator.onto.search_one(iri=f"*Constraint.Test2_Col3__list")
+
 pp.pprint(generator.realize_fresh("RealizationCase.Check1"))
-print("----------------------------")
-pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-print("----------------------------")
-pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-print("----------------------------")
-pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-print("----------------------------")
-pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+# print("----------------------------")
+# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+# print("----------------------------")
+# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+# print("----------------------------")
+# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
+# print("----------------------------")
+# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
 
 # from core_classes.Constraints import extend_core as extend_constraints
 # from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
@@ -60,11 +64,11 @@ pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
 # 2. Implement all types in constraints. Done
 # 2. Implement extensions to constraintGroup and generation of whole table - done
 # 3. Merge Realization with Minimum requirements - done
-# 3. abriviate column names. done
+# 3. abriviate column names. - done
 # 4. Dependency inside group - done
 # 4. Dependency outside group - done
 # 5. Find missing table definition - in RealizationCase done
 # 4. RangeConstraint - default min and max
-# 6. Ad infinitum - deriving needed tables that were not presnet in realization case.
-# 3. Tests - part 1 done
+# 6. Ad infinitum - deriving needed tables that were not present in realization case.
+# 3. Tests - part 1 - done
 # 6. Add Column uniqueness and used values

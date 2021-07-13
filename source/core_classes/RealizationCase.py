@@ -65,10 +65,10 @@ def extend_core(_core):
                 if not definition.has_realized_constraints:
                     print(f"WARN: cannot aggregate not realized constraint {definition.name}")
                     continue
-                if definition.constraint_table.name not in aggregate.keys():
-                    aggregate[definition.constraint_table.name] = list()
+                if definition.constraints_table.name not in aggregate.keys():
+                    aggregate[definition.constraints_table.name] = list()
 
-                aggregate[definition.constraint_table.name].append(definition._return_dict)
+                aggregate[definition.constraints_table.name].append(definition._return_dict)
             
             return aggregate
 
@@ -84,11 +84,11 @@ def extend_core(_core):
 
             self.mapping_dict = dict()
             for definition in self.contains_realizations:
-                if definition.constraint_table.name not in self.mapping_dict:
-                    self.mapping_dict[definition.constraint_table.name] = definition
+                if definition.constraints_table.name not in self.mapping_dict:
+                    self.mapping_dict[definition.constraints_table.name] = definition
                     continue
-                if definition.constraint_table.name in self.mapping_dict:
-                    self.mapping_dict[definition.constraint_table.name] = None
+                if definition.constraints_table.name in self.mapping_dict:
+                    self.mapping_dict[definition.constraints_table.name] = None
 
             self.mapping_dict = dict(filter(lambda el: el[1], self.mapping_dict.items()))
                 
@@ -100,7 +100,7 @@ def extend_core(_core):
             for needed_table in case_needed_tables:
                 is_needed_table_in_realization_case = \
                     any(map(
-                        lambda rd: rd.constraint_table.name == needed_table.name, 
+                        lambda rd: rd.constraints_table.name == needed_table.name,
                         self.contains_realizations))
                 if not is_needed_table_in_realization_case:
                     # TODO: this part should not be here but somewhere deeper

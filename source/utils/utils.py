@@ -4,14 +4,14 @@ def _merge_groups_left_prio(group1, group2):
     """ Left prio means that if group1 and group2 has contraint for same column, 
     left-group1 will be taken and group2 not"""
 
-    new_merged_list = group1.has_constraints.copy()
+    new_overwritten_list = group1.has_constraints.copy()
 
     for other_constraint in group2.has_constraints:
         if other_constraint.is_constraining_column.name \
                 not in group1.names_of_constrained_columns:
-            new_merged_list.append(other_constraint)
+            new_overwritten_list.append(other_constraint)
         
-    return new_merged_list
+    return new_overwritten_list
 
 def _supervise_constraint_generation(__internal_generation_function_with_leftovers, comment):
     not_ready_constraints = list()

@@ -325,7 +325,7 @@
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test2_col4__formatted_internal_dep">
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test2.Col4_formatted"/>
-        <core_check:has_format_definition>{Col3_text}</core_check:has_format_definition>
+        <core_check:has_format_definition>{Col3_text}_copy</core_check:has_format_definition>
     </owl:NamedIndividual>
     
 

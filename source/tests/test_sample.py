@@ -66,11 +66,11 @@ def test_all_realizations_follow_its_own_internal_dependency(realized_case):
     tab2_r1 = realized_case['Table.Test2'][0]
     tab2_r2 = realized_case['Table.Test2'][1]
 
-    assert tab2_r1["Col3_text"] == tab2_r1["Col4_formatted"]
-    assert tab2_r2["Col3_text"] == tab2_r2["Col4_formatted"]
+    assert tab2_r1["Col3_text"]+"_copy" == tab2_r1["Col4_formatted"]
+    assert tab2_r2["Col3_text"]+"_copy" == tab2_r2["Col4_formatted"]
 
-    assert tab2_r1["Col3_text"] != tab2_r2["Col3_text"]
-    assert tab2_r1["Col4_formatted"] != tab2_r2["Col4_formatted"]
+    assert tab2_r1["Col3_text"]+"_copy" != tab2_r2["Col3_text"]
+    assert tab2_r1["Col4_formatted"]+"_copy" != tab2_r2["Col4_formatted"]
 
 
 def test_min_requirement_overridden_by_custom_from_realization_definition(realized_case):
