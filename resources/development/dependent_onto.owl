@@ -210,6 +210,7 @@
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#ConstGroup.Test2.not_same_table_or">
         <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OrGroup"/>
+        <core_check:contains_constraint_groups rdf:resource="http://corechuck.com/modeling/dependent_onto#ConstGroup.Test1.Col1.RangeOr"/>
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col3_list"/>
         <core_check:has_constraints rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test2.Col3_colors"/>
     </owl:NamedIndividual>

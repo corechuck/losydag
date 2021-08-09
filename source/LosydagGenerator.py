@@ -35,3 +35,31 @@ class LosydagGenerator:
 
         print(f"INFO: Realizing: {real_case.name}")
         return real_case.realize_anew()
+
+    def generate_all_positive_datasets_from_generic_group(self, group_iri):
+        generic_group = self.onto.search_one(iri=f"*{group_iri}")
+        list_of_realization_cases = generic_group.convert_to_positive_cases()
+        return self._realize_all_cases(list_of_realization_cases)
+
+    def generate_all_negative_datasets_from_generic_group(self, group_iri):
+        generic_group = self.onto.search_one(iri=f"*{group_iri}")
+        list_of_realization_cases = generic_group.convert_to_negative_cases()
+        return self._realize_all_cases(list_of_realization_cases)
+
+    @staticmethod
+    def _realize_all_cases(_list_of_realization_cases):
+        realized_datasets = defaultdict(list)
+        for realization_case in _list_of_realization_cases:
+            realized_datasets[realization_case.name] = realization_case.realize_all_test_case_relevant_datasets()
+        return realized_datasets
+
+
+    # def positive_case_breakdown(self):
+    #     """This method breaks down this Realization Case to all and precise POSITIVE cases of
+    #     modelled custom constraints. This uses pairwaise approach of defining positive cases."""
+    #     pass
+    #
+    # def negative_case_breakdown(self):
+    #     """This method breaks down this Realization Case to all and precise NEGATIVE cases of
+    #     modelled custom constraints. This produces realization case that has single column negative value."""
+    #     pass

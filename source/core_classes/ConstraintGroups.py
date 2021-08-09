@@ -86,6 +86,20 @@ def extend_core(_core):
             realization_case.contains_realizations = list(table_to_group_cache.values())
             return realization_case
 
+        def convert_to_positive_cases(self):
+            # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
+            # 2. Merge groups
+            # 3. Convert to Realization cases
+            # 4. Return
+            pass
+
+        def convert_to_positive_cases(self):
+            # 1. for each constraint negate it and make new group out of it recursively
+            # 2. Merge groups
+            # 3. Convert to Realization cases
+            # 4. Return
+            pass
+
     class RealizationDefinition(Thing):
         namespace = _core
         _return_dict = dict()

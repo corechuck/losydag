@@ -41,6 +41,7 @@
     <!-- http://corechuck.com/modeling/core_check#contains_realizations -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#contains_realizations">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_part_of_case"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RealizationCase"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
     </owl:ObjectProperty>
@@ -155,6 +156,12 @@
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
     </owl:ObjectProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#is_part_of_case -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_part_of_case"/>
     
 
 

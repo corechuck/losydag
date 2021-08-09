@@ -25,21 +25,19 @@ def extend_core(_core):
         def realize(self):
             _supervise_constraint_generation(self._realize, f"{self.name}")
             return self._get_aggregated_results()
+
+        def realize_all_test_case_relevant_datasets(self):
+            """ This method generates datasets using generators that keep track of boundary conditions and returns
+            all meaningfully variable datasets for all constraints contain in that group:
+
+             Consider to mark constraints that should give all potential variances of test data and treat that as
+             relevant. That one for positive all are relevant, but for negative take only negated ones."""
+            pass
         
         def realize_anew(self):
             [rd.clear_results() for rd in self.contains_realizations]
             _supervise_constraint_generation(self._realize, f"{self.name}")
             return self._get_aggregated_results()
-
-        def positive_case_breakdown(self):
-            """This method breaks down this Realization Case to all and precise POSITIVE cases of
-            modelled custom constraints. This uses pairwaise approach of defining positive cases."""
-            pass
-
-        def negative_case_breakdown(self):
-            """This method breaks down this Realization Case to all and precise NEGATIVE cases of
-            modelled custom constraints. This produces realization case that has single column negative value."""
-            pass
 
         def _realize(self, not_ready_acc):
             for definition in self.contains_realizations:

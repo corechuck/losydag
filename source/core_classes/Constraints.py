@@ -3,8 +3,6 @@ import re
 import random
 import datetime
 import math
-
-from astroid import Const
 from owlready2 import Thing, destroy_entity
 
 
