@@ -1,69 +1,5 @@
 import pytest
-from _pytest.fixtures import fixture
-from owlready2 import sync_reasoner_pellet, destroy_entity
-from datetime import datetime
-
-
-@fixture()
-def prepared_table(prepared_core):
-    min_reqs = prepared_core.ConstraintGroup(f"min_req_{datetime.now()}")
-    pre_table = prepared_core.Table("internal_test_table_01")
-    pre_table.has_min_reqs = min_reqs
-    column_1 = prepared_core.Column("Column.Internal1.column_01")
-    pre_table.has_columns.append(column_1)
-    column_2 = prepared_core.Column("Column.Internal1.column_02")
-    pre_table.has_columns.append(column_2)
-    yield pre_table
-
-
-@fixture()
-def prepared_table_2(prepared_core):
-    min_reqs = prepared_core.ConstraintGroup(f"min_req_2_{datetime.now()}")
-    pre_table = prepared_core.Table("internal_test_table_02")
-    pre_table.has_min_reqs = min_reqs
-    column_1 = prepared_core.Column("Column.Internal2.column_01")
-    pre_table.has_columns.append(column_1)
-    column_2 = prepared_core.Column("Column.Internal2.column_02")
-    pre_table.has_columns.append(column_2)
-    yield pre_table
-
-
-@fixture()
-def prepared_column(prepared_core, prepared_table):
-    yield prepared_table.has_columns[0]
-
-
-@fixture()
-def list_constraint_under_test(prepared_core, prepared_column):
-    list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
-    list_const.is_constraining_column = prepared_column
-    list_const.has_picks = ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
-    yield list_const
-    destroy_entity(list_const)
-
-
-@fixture()
-def min_range_constraint_under_test(prepared_core, prepared_column):
-    range_const = prepared_core.RangeConstraint("gajskdufhakdh")
-    range_const.is_constraining_column = prepared_column
-    range_const.has_min_range = 40
-    return range_const
-
-
-@fixture()
-def max_range_constraint_under_test(prepared_core, prepared_column):
-    range_const = prepared_core.RangeConstraint("gajskdufhakdh")
-    range_const.is_constraining_column = prepared_column
-    range_const.has_max_range = 40
-    return range_const
-
-
-@fixture()
-def regex_constraint_under_test(prepared_core, prepared_column):
-    regex_const = prepared_core.RegexConstraint("rekajnisokdljf")
-    regex_const.is_constraining_column = prepared_column
-    regex_const.has_regex_format = "[a-z]oo"
-    return regex_const
+from owlready2 import sync_reasoner_pellet
 
 
 def test_not_unified_constraint_group_throws_exception(
@@ -192,7 +128,7 @@ def test_not_in_list_merged_with_list(prepared_core, prepared_column, list_const
 def test_list_merged_with_not_match(prepared_core, prepared_column, list_constraint_under_test):
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
-    generic_constraint.not_matching_regex = ['.oo', '.aa', '-.*']
+    generic_constraint.not_matching_regexes = ['.oo', '.aa', '-.*']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(list_constraint_under_test)
@@ -211,7 +147,7 @@ def test_list_merged_with_not_match(prepared_core, prepared_column, list_constra
 def test_list_merged_with_multiple_not_matches(prepared_core, prepared_column, list_constraint_under_test):
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
-    generic_constraint.not_matching_regex = ['^x.$', '^.$', '^..$', '^-.*$']
+    generic_constraint.not_matching_regexes = ['^x.$', '^.$', '^..$', '^-.*$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(generic_constraint)
@@ -251,7 +187,7 @@ def test_not_in_list_merged_with_regex(prepared_core, prepared_column, regex_con
 def test_regex_merged_with_multiple_not_matches(prepared_core, prepared_column, regex_constraint_under_test):
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
-    generic_constraint.not_matching_regex = ['^[a-f]oo$', '^[t-z]oo$']
+    generic_constraint.not_matching_regexes = ['^[a-f]oo$', '^[t-z]oo$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(regex_constraint_under_test)
@@ -302,7 +238,7 @@ def test_range_merged_with_not_match(prepared_core, prepared_column):
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
-    generic_constraint.not_matching_regex = ['^4.$']
+    generic_constraint.not_matching_regexes = ['^4.$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
@@ -327,7 +263,7 @@ def test_range_merged_with_multiple_not_matches(prepared_core, prepared_column):
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
-    generic_constraint.not_matching_regex = ['^4.$', '^.[5-9]$']
+    generic_constraint.not_matching_regexes = ['^4.$', '^.[5-9]$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
@@ -371,7 +307,7 @@ def test_unification_of_constraint_works_with_dependencies(prepared_core, prepar
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
-    generic_constraint.not_matching_regex = ['^4.$', '^.[5-9]$']
+    generic_constraint.not_matching_regexes = ['^4.$', '^.[5-9]$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
@@ -421,7 +357,7 @@ def test_constraints_for_multiple_tables_in_constraints_group_bad_convertion_to_
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_table.has_columns[0]
-    generic_constraint.not_matching_regex = ['^4.$', '^.[5-9]$']
+    generic_constraint.not_matching_regexes = ['^4.$', '^.[5-9]$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
@@ -446,7 +382,7 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_table.has_columns[0]
-    generic_constraint.not_matching_regex = ['^4.$', '^.[5-9]$']
+    generic_constraint.not_matching_regexes = ['^4.$', '^.[5-9]$']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)

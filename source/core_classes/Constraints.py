@@ -34,8 +34,8 @@ def extend_core(_core):
             return "#non-value-002"
 
         def __is_value_matching_prohibited_regexes(self, question_value):
-            partial_checks = [pat for pat in self.not_matching_regex if re.search(pat, question_value)]
-            return len(self.not_matching_regex) > 0 and len(partial_checks) > 0
+            partial_checks = [pat for pat in self.not_matching_regexes if re.search(pat, question_value)]
+            return len(self.not_matching_regexes) > 0 and len(partial_checks) > 0
 
         def is_ready(self, _local_dict):
             return True
@@ -88,7 +88,7 @@ def extend_core(_core):
         def _merge_with(self, right_constraint):
             # print(f"WARNING: Requested merging {self.name} with {right_constraint.name} without reasoning types.")
             self.not_picks.extend(right_constraint.not_picks)
-            self.not_matching_regex.extend(right_constraint.not_matching_regex)
+            self.not_matching_regexes.extend(right_constraint.not_matching_regexes)
             return self
 
         def merge_with(self, right_constraint):
@@ -111,6 +111,8 @@ def extend_core(_core):
 
             return left_constraint._merge_with(right_constraint)
 
+        def negation(self):
+            return None
 
     class ListConstraint(Thing):
         namespace = _core

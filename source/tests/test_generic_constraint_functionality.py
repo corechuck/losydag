@@ -28,21 +28,21 @@ def test_not_picks_restricts_generation(prepared_core):
         assert list_constraint_under_test.generate(result) in ['foo', 'baa', '-3.14']
 
 
-def test_not_matching_regex_restricts_generation(prepared_core):
+def test_not_matching_regexes_restricts_generation(prepared_core):
     list_constraint_under_test = prepared_core.ListConstraint()
     list_constraint_under_test.has_picks = ['foo', 'moo', '1', 'baa', '-3.14', 'xD']
-    list_constraint_under_test.not_matching_regex = [".oo"]
+    list_constraint_under_test.not_matching_regexes = [".oo"]
 
     result = dict()
     for i in range(100):
         assert list_constraint_under_test.generate(result) in ['1', 'baa', '-3.14', 'xD']
 
 
-def test_not_matching_regex_with_picks_restricts_generation_for_regex(prepared_core):
+def test_not_matching_regexes_with_picks_restricts_generation_for_regex(prepared_core):
     regex_constraint_under_test = prepared_core.RegexConstraint()
     regex_constraint_under_test.has_regex_format = "TT_[abc]_[4567]"
     regex_constraint_under_test.not_picks = ['TT_b_7', 'TT_c_4', 'TT_c_5']
-    regex_constraint_under_test.not_matching_regex = ["TT_a.*"]
+    regex_constraint_under_test.not_matching_regexes = ["TT_a.*"]
 
     result = dict()
     for i in range(100):

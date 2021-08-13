@@ -271,9 +271,9 @@
     
 
 
-    <!-- http://corechuck.com/modeling/core_check#not_matching_regex -->
+    <!-- http://corechuck.com/modeling/core_check#not_matching_regexes -->
 
-    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#not_matching_regex">
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#not_matching_regexes">
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>

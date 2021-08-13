@@ -58,7 +58,8 @@ def test_that_for_table2_two_entries_has_been_generated(realized_case):
 def test_autoincrements(realized_case):
     parts_01 = realized_case['Table.Test2'][0]['Col0_id'].split("_")
     parts_02 = realized_case['Table.Test2'][1]['Col0_id'].split("_")
-    assert int(parts_01[1]) < int(parts_02[1])
+    assert abs(int(parts_01[1]) - int(parts_02[1])) == 1
+    assert int(parts_01[1]) != int(parts_02[1])
 
 
 def test_all_realizations_follow_its_own_internal_dependency(realized_case):
