@@ -2,7 +2,24 @@
 
 Logic driven synthetic data generator:
 
-There are features inside that data set like autoincrement that works, or deriving which tables have to be generated like Talbe.Ref1 (curently just single depth) and others
+It is an engine that based on graph/ontology is able to read database strucutre and later parse a sql-like query to generate data sets that break down a logical sentence.
+```
+GENERATE ALL|CONSTRAINT 
+FOR Table.Test1 as realization_1
+FOR Table.Test1 as realization_2
+WHERE realization_1.Col1_n IN (‘3’, ‘0.111’, ‘14’) AND
+               ( realization_2.Col3_text IN (‘moo’, ‘boo’, ‘foo’) OR
+                  realization_2.Col4_not_constrained MATCH ‘Ref_{Col3_text}_\d\d\d’ 
+               )
+```
+```
+GENERATE *
+FOR Table.Test2
+FOR Table.Test1 based on Column.Test2.Col5_external_dep = Column.Test1.Col0_id -- derived based on min generation requirements storeg in graph
+WHERE Table.Test2.Col3_text IN (‘copper’, ‘iron’, ‘nickel’, ‘astronium’)
+```
+
+There are features inside that data set like autoincrement that works, or deriving which tables have to be generated like Table.Ref1 (curently just single depth) and others
 
 Example output (without dependencies):
 ```
