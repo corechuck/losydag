@@ -2,7 +2,7 @@
 
 Logic driven synthetic data generator:
 
-There are features inside that data set like autoincrement that works, or deriving which tables have to be generated like Talbe.Ref1 (curently just single depth) and others
+There are features inside that data set like autoincrement that works, or deriving which tables have to be generated like Table.Ref1 (curently just single depth) and others
 
 Example output (without dependencies):
 ```
