@@ -53,6 +53,8 @@ def extend_core(_core):
             return self.is_constraining_tables[0]
 
         def unify_constraints(self):
+            if isinstance(self, _core.OrGroup):
+                return
 
             column_to_merged_constraint = dict()
             for constraint in self.has_constraints:

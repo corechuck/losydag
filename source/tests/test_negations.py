@@ -12,6 +12,8 @@
 2. negation of RangeConstraint - which has_min <= MIN   >>  only group with rangeConst from r.has_max to MAX
 3. negation of RangeConstraint - which has_max >= MIN   >>  only group with rangeConst from MIN to r.has_min
 4. open/close boundaries
+5. Range with not_picks and not_matches_regexes
+
 
 
 ### GROUPS !!
@@ -33,32 +35,40 @@ negation of group ->
 """
 from datetime import datetime
 
+import pytest
+
+from utils.negations_factory import prepare_negation
 
 """ TODO: Empty generic negation what will give you? """
 
 
-def test_negation_of_generic_constraint_not_in(prepared_core, prepared_column):
+@pytest.fixture()
+def negate(prepared_core):
+    return prepare_negation(prepared_core)
+
+
+def test_negation_of_generic_constraint_not_in(prepared_core, prepared_column, negate):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_picks = ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
 
-    actual_negation_group = list_const.negation()
+    actual_negation_group = negate(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
            not isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
-    assert list_const.has_picks != actual_negation_group.has_constraints[0].not_picks
+    assert id(list_const.not_picks) != id(actual_negation_group.has_constraints[0].has_picks)
     for vv in list_const.has_picks:
-        assert vv in actual_negation_group.has_constraints[0].not_picks
+        assert vv in actual_negation_group.has_constraints[0].has_picks
 
 
-def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, prepared_column):
+def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, prepared_column, negate):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*']
 
-    actual_negation_group = list_const.negation()
+    actual_negation_group = negate(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
@@ -67,14 +77,14 @@ def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, prepa
     assert actual_negation_group.has_constraints[0].has_regex_format == 'boo.*'
 
 
-def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, prepared_column):
+def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, prepared_column, negate):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*', '.*foo.*' ]
 
-    expected_list_of_regexes = ['boo.*', '.*foo.*', ]
+    expected_list_of_regexes = ['boo.*', '.*foo.*']
 
-    actual_negation_group = list_const.negation()
+    actual_negation_group = negate(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
@@ -90,7 +100,7 @@ def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, pre
     assert len(expected_list_of_regexes) == 0
 
 
-def test_negation_of_generic_constraint_multiple_types(prepared_core, prepared_column):
+def test_negation_of_generic_constraint_multiple_types(prepared_core, prepared_column, negate):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*']
@@ -98,7 +108,7 @@ def test_negation_of_generic_constraint_multiple_types(prepared_core, prepared_c
     is_there_list_constraint = False
     is_there_regex_constraint = False
 
-    actual_negation_group = list_const.negation()
+    actual_negation_group = negate(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
 
@@ -112,8 +122,8 @@ def test_negation_of_generic_constraint_multiple_types(prepared_core, prepared_c
     assert is_there_list_constraint
 
 
-def test_negation_of_regex_constraint(prepared_core, regex_constraint_under_test):
-    actual_negation_group = regex_constraint_under_test.negation()
+def test_negation_of_regex_constraint(prepared_core, regex_constraint_under_test, negate):
+    actual_negation_group = negate(regex_constraint_under_test)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
            not isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -122,17 +132,16 @@ def test_negation_of_regex_constraint(prepared_core, regex_constraint_under_test
     assert "[a-z]oo" in actual_negation_group.has_constraints[0].not_matching_regexes
 
 
-def test_negation_of_regex_constraint(prepared_core, list_constraint_under_test):
-    actual_negation_group = list_constraint_under_test.negation()
+def test_negation_of_regex_constraint(prepared_core, list_constraint_under_test, negate):
+    actual_negation_group = negate(list_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
            not isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
-    assert list_constraint_under_test.has_picks != actual_negation_group.has_constraints[0].not_picks
-    for vv in list_constraint_under_test.has_picks:
-        assert vv in actual_negation_group.has_constraints[0].not_picks
+    assert id(list_constraint_under_test.has_picks) != id(actual_negation_group.has_constraints[0].not_picks)
+    assert list_constraint_under_test.has_picks == actual_negation_group.has_constraints[0].not_picks
 
 
 

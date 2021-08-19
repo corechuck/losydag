@@ -12,6 +12,10 @@ def extend_core(_core):
         namespace = _core
         TRIES_COUNT = 500
 
+        def __init__(self, namespace):
+            self.not_picks = list()
+            self.not_matching_regexes = list()
+
         def generate(self, local_dict):
             tries = 0
             tried_values = list()
