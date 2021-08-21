@@ -5,6 +5,8 @@ import datetime
 import math
 from owlready2 import Thing, destroy_entity
 
+MAX_RANGE = 999999999
+MIN_RANGE = -999999999
 
 def extend_core(_core):
 
@@ -184,8 +186,6 @@ def extend_core(_core):
 
     class RangeConstraint(Thing):
         namespace = _core
-        MAX_RANGE = 999999999
-        MIN_RANGE = -999999999
 
         def _prepare_min_max(self):
             if self.has_min_range is None:

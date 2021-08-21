@@ -37,6 +37,7 @@ from datetime import datetime
 
 import pytest
 
+from core_classes.Constraints import MAX_RANGE as CONSTRAINTS_MAX_RANGE
 from utils.negations_factory import prepare_negation
 
 """ TODO: Empty generic negation what will give you? """
@@ -47,7 +48,7 @@ def negate(prepared_core):
     return prepare_negation(prepared_core)
 
 
-def test_negation_of_generic_constraint_not_in(prepared_core, prepared_column, negate):
+def test_negation_of_generic_constraint_not_in(prepared_core, negate, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_picks = ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
@@ -63,7 +64,7 @@ def test_negation_of_generic_constraint_not_in(prepared_core, prepared_column, n
         assert vv in actual_negation_group.has_constraints[0].has_picks
 
 
-def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, prepared_column, negate):
+def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, negate, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*']
@@ -77,7 +78,7 @@ def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, prepa
     assert actual_negation_group.has_constraints[0].has_regex_format == 'boo.*'
 
 
-def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, prepared_column, negate):
+def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, negate, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*', '.*foo.*' ]
@@ -100,7 +101,7 @@ def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, pre
     assert len(expected_list_of_regexes) == 0
 
 
-def test_negation_of_generic_constraint_multiple_types(prepared_core, prepared_column, negate):
+def test_negation_of_generic_constraint_multiple_types(prepared_core, negate, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*']
@@ -122,7 +123,7 @@ def test_negation_of_generic_constraint_multiple_types(prepared_core, prepared_c
     assert is_there_list_constraint
 
 
-def test_negation_of_regex_constraint(prepared_core, regex_constraint_under_test, negate):
+def test_negation_of_regex_constraint(prepared_core, negate, regex_constraint_under_test):
     actual_negation_group = negate(regex_constraint_under_test)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
@@ -132,7 +133,7 @@ def test_negation_of_regex_constraint(prepared_core, regex_constraint_under_test
     assert "[a-z]oo" in actual_negation_group.has_constraints[0].not_matching_regexes
 
 
-def test_negation_of_regex_constraint(prepared_core, list_constraint_under_test, negate):
+def test_negation_of_regex_constraint(prepared_core, negate, list_constraint_under_test):
     actual_negation_group = negate(list_constraint_under_test)
 
     assert actual_negation_group
@@ -143,5 +144,60 @@ def test_negation_of_regex_constraint(prepared_core, list_constraint_under_test,
     assert id(list_constraint_under_test.has_picks) != id(actual_negation_group.has_constraints[0].not_picks)
     assert list_constraint_under_test.has_picks == actual_negation_group.has_constraints[0].not_picks
 
+# def min_range_constraint_under_test(prepared_core, prepared_column):
+
+
+# def max_range_constraint_under_test(prepared_core, prepared_column):
+
+
+def test_negation_of_range_less_or_equal_then(prepared_core, negate, max_range_constraint_under_test):
+    actual_negation_group = negate(max_range_constraint_under_test)
+
+    assert actual_negation_group
+    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
+           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert actual_negation_group.has_constraints
+    assert len(actual_negation_group.has_constraints) == 1
+    actual_negated_constraint = actual_negation_group.has_constraints[0]
+    assert actual_negated_constraint.has_min_range == max_range_constraint_under_test.has_max_range
+    assert actual_negated_constraint.has_max_range == CONSTRAINTS_MAX_RANGE
+    assert actual_negated_constraint.not_picks
+    assert len(actual_negated_constraint.not_picks) == 1
+    assert actual_negated_constraint.not_picks[0] == max_range_constraint_under_test.has_max_range
+
+
+def test_negation_of_range_less_then(prepared_core, negate, max_range_constraint_under_test):
+    max_range_constraint_under_test.not_picks = [max_range_constraint_under_test.has_max_range]
+    actual_negation_group = negate(max_range_constraint_under_test)
+
+    assert actual_negation_group
+    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
+           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert actual_negation_group.has_constraints
+    assert len(actual_negation_group.has_constraints) == 1
+    actual_negated_constraint = actual_negation_group.has_constraints[0]
+    assert actual_negated_constraint.has_min_range == max_range_constraint_under_test.has_max_range
+    assert actual_negated_constraint.has_max_range == CONSTRAINTS_MAX_RANGE
+    assert not actual_negated_constraint.not_picks or len(actual_negated_constraint.not_picks) == 0
+
+
+def test_negation_og_range_greater_or_equal_then(prepared_core):
+    assert False
+
+
+def test_negation_of_range_greater_then(prepared_core, min_range_constraint_under_test):
+    assert False
+
+
+def test_negation_of_actual_range_left_open_to_or_group(prepared_core):
+    assert False
+
+
+def test_negation_of_range_with_not_in_list(prepared_core):
+    assert False
+
+
+def test_negation_of_range_with_not_in_regexes(prepared_core):
+    assert False
 
 
