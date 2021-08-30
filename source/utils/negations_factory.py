@@ -23,27 +23,34 @@ def _negate_range_constraint(range_constraint, _core):
     container_group = _core.ConstraintGroup(f"temp_{round(random() * 100000)}")
     container_group.has_constraints = list()
 
-    if range_constraint.has_min_range == MIN_RANGE:
+    if range_constraint.has_max_range < MAX_RANGE:
         negated_part_constraint = _core.RangeConstraint(f"temp_{round(random() * 100000)}")
         negated_part_constraint.is_constraining_column = range_constraint.is_constraining_column
         negated_part_constraint.has_min_range = range_constraint.has_max_range
-        negated_part_constraint.not_picks = range_constraint.not_picks.copy()
-        if range_constraint.has_max_range in range_constraint.not_picks:
-            negated_part_constraint.not_picks.remove(range_constraint.has_max_range)
-        else:
-            negated_part_constraint.not_picks.append(range_constraint.has_max_range)
+        negated_part_constraint.not_picks = []
+        if range_constraint.has_max_range not in range_constraint.not_picks:
+            negated_part_constraint.not_picks = [range_constraint.has_max_range]
         container_group.has_constraints.append(negated_part_constraint)
 
-    elif range_constraint.has_max_range == MAX_RANGE:
+    if range_constraint.has_min_range > MIN_RANGE:
         negated_part_constraint = _core.RangeConstraint(f"temp_{round(random() * 100000)}")
         negated_part_constraint.is_constraining_column = range_constraint.is_constraining_column
         negated_part_constraint.has_max_range = range_constraint.has_min_range
-        negated_part_constraint.not_picks = range_constraint.not_picks.copy()
-        if range_constraint.has_min_range in range_constraint.not_picks:
-            negated_part_constraint.not_picks.remove(range_constraint.has_min_range)
-        else:
-            negated_part_constraint.not_picks.append(range_constraint.has_min_range)
+        negated_part_constraint.not_picks = []
+        if range_constraint.has_min_range not in range_constraint.not_picks:
+            negated_part_constraint.not_picks = [range_constraint.has_min_range]
         container_group.has_constraints.append(negated_part_constraint)
+
+    contained_in_range_not_picks_list = \
+        [v for v in range_constraint.not_picks if range_constraint.has_min_range < v < range_constraint.has_max_range]
+    if len(contained_in_range_not_picks_list) > 0:
+        negated_part_constraint_internal = _core.ListConstraint(f"temp_{round(random()*100000)}")
+        negated_part_constraint_internal.is_constraining_column = range_constraint.is_constraining_column
+        negated_part_constraint_internal.has_picks = contained_in_range_not_picks_list
+        container_group.has_constraints.append(negated_part_constraint_internal)
+
+    if len(container_group.has_constraints) > 1:
+        container_group.is_a.append(_core.OrGroup)
 
     container_group.unify_constraints()
     # sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)

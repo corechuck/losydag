@@ -263,7 +263,7 @@ def test_negation_of_range_with_not_in_list(prepared_core, negate, actual_range_
     lower_range = next(c for c in actual_negation_group.has_constraints if c.has_min_range == CONSTRAINTS_MIN_RANGE)
     assert len(lower_range.not_picks) == 0
     higher_range = next(c for c in actual_negation_group.has_constraints if c.has_max_range == CONSTRAINTS_MAX_RANGE)
-    assert len(higher_range.not_picks) == 0
+    assert len(higher_range.not_picks) == 1
     internal_to_range_picks = \
         next(c for c in actual_negation_group.has_constraints if isinstance(c, prepared_core.ListConstraint))
     assert internal_to_range_picks
