@@ -15,6 +15,7 @@ def extend_core(_core):
         TRIES_COUNT = 500
 
         def __init__(self, namespace):
+            super().__init__(namespace)
             self.not_picks = list()
             self.not_matching_regexes = list()
 
@@ -187,11 +188,15 @@ def extend_core(_core):
     class RangeConstraint(Thing):
         namespace = _core
 
+        def __init__(self, namespace):
+            super().__init__(namespace)
+            self._prepare_min_max()
+
         def _prepare_min_max(self):
             if self.has_min_range is None:
-                self.has_min_range = self.MIN_RANGE
+                self.has_min_range = MIN_RANGE
             if self.has_max_range is None:
-                self.has_max_range = self.MAX_RANGE
+                self.has_max_range = MAX_RANGE
 
         def _generate(self, __yagni):
             self._prepare_min_max()

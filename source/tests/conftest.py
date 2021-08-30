@@ -78,7 +78,7 @@ def list_constraint_under_test(prepared_core, prepared_column):
 
 @fixture()
 def min_range_constraint_under_test(prepared_core, prepared_column):
-    range_const = prepared_core.RangeConstraint("gajskdufhakdh")
+    range_const = prepared_core.RangeConstraint("sgfgegawe")
     range_const.is_constraining_column = prepared_column
     range_const.has_min_range = 40
     return range_const
@@ -90,6 +90,15 @@ def max_range_constraint_under_test(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("gajskdufhakdh")
     range_const.is_constraining_column = prepared_column
     range_const.has_max_range = 40
+    return range_const
+
+
+@fixture()
+def actual_range_constraint_under_test(prepared_core, prepared_column):
+    range_const = prepared_core.RangeConstraint("akjsdhflaishd")
+    range_const.is_constraining_column = prepared_column
+    range_const.has_max_range = 40
+    range_const.has_min_range = 10
     return range_const
 
 
