@@ -182,25 +182,6 @@ def test_negation_of_range_less_then(prepared_core, negate, max_range_constraint
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
 
 
-def test_negation_of_range_less_then_with_additional_not_picks(prepared_core, negate, max_range_constraint_under_test):
-    max_range_boundary = max_range_constraint_under_test.has_max_range
-    max_range_constraint_under_test.not_picks = [max_range_boundary, max_range_boundary + 20, max_range_boundary - 20]
-    actual_negation_group = negate(max_range_constraint_under_test)
-
-    assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
-    assert actual_negation_group.has_constraints
-    assert len(actual_negation_group.has_constraints) == 1
-    actual_negated_constraint = actual_negation_group.has_constraints[0]
-    assert actual_negated_constraint.has_min_range == max_range_constraint_under_test.has_max_range
-    assert actual_negated_constraint.has_max_range == CONSTRAINTS_MAX_RANGE
-    assert hasattr(actual_negated_constraint, 'not_picks')
-    assert len(actual_negated_constraint.not_picks) == 2
-    assert (max_range_boundary - 20) in actual_negated_constraint.not_picks
-    assert (max_range_boundary + 20) in actual_negated_constraint.not_picks
-
-
 def test_negation_of_range_greater_or_equal_then(prepared_core, negate, min_range_constraint_under_test):
     actual_negation_group = negate(min_range_constraint_under_test)
 
@@ -232,7 +213,7 @@ def test_negation_of_range_greater_then(prepared_core, negate, min_range_constra
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
 
 
-def test_negation_of_actual_range_left_open_to_or_group(prepared_core, negate, actual_range_constraint_under_test):
+def test_negation_of_actual_range_right_open_to_or_group(prepared_core, negate, actual_range_constraint_under_test):
     """ Too spice it up it is open on right side"""
     actual_range_constraint_under_test.not_picks = [actual_range_constraint_under_test.has_max_range]
     actual_negation_group = negate(actual_range_constraint_under_test)
@@ -246,7 +227,7 @@ def test_negation_of_actual_range_left_open_to_or_group(prepared_core, negate, a
     assert lower_range.has_max_range in lower_range.not_picks
     higher_range = next(c for c in actual_negation_group.has_constraints if c.has_max_range == CONSTRAINTS_MAX_RANGE)
     assert higher_range.has_min_range == actual_range_constraint_under_test.has_max_range
-    assert len(lower_range.not_picks) == 0
+    assert len(higher_range.not_picks) == 0
 
 
 def test_negation_of_range_with_not_in_list(prepared_core, negate, actual_range_constraint_under_test):
