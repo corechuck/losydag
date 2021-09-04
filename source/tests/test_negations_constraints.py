@@ -14,24 +14,6 @@
 4. open/close boundaries
 5. Range with not_picks and not_matches_regexes
 
-
-
-### GROUPS !!
-negation of group ->
-- change operator [ and > or, or > and ]
-- for each constarint negate it
-- negate all groups
-- merge
-
-1. let r = RangeConstraint; r' = negation of ( negated RangeConstraint r ); r = r'
-2. ( two constraint and_group ) x ( how variable that group should be? just all two distinct type groups ? )
-3. ( two constraint or_group  ) x ( how variable that group should be? just all two distinct type groups ? )
-
-4. negation (and_group with one or_group <- from ontology )
-5. negation (and_group with or_group which have or_group )
-
-4. negation (or_group with one and_group <- from ontology )
-5. negation (or_group with and_group which have or_group )
 """
 from datetime import datetime
 from random import random
@@ -271,9 +253,5 @@ def test_negation_of_range_with_not_in_list_removes_semantically_over_definition
     assert len(internal_to_range_picks.has_picks) == 2
     assert 13 in internal_to_range_picks.has_picks
     assert 34 in internal_to_range_picks.has_picks
-
-
-def test_negation_of_range_with_not_in_regexes(prepared_core):
-    assert False
 
 

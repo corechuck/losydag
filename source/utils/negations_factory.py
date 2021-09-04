@@ -13,7 +13,7 @@ def prepare_negation(_core):
         if isinstance(constraint_or_constraint_group, _core.Constraint):
             return _negate_basic_constraint(constraint_or_constraint_group, _core)
         if isinstance(constraint_or_constraint_group, _core.ConstraintGroup):
-            return _negate_constraint_group
+            return _negate_constraint_group(constraint_or_constraint_group, _core)
 
         return None
     return negate
@@ -98,4 +98,27 @@ def _negate_basic_constraint(constraint, _core):
 
 
 def _negate_constraint_group(constraint_group, _core):
-    pass
+    negate = prepare_negation(_core)
+    container_group = _core.ConstraintGroup(f"temp_{round(random() * 100000)}")
+    container_group.has_constraints = list()
+
+    if isinstance(constraint_group, _core.OrGroup):
+        container_group.is_a.append(_core.AndGroup)
+    else:
+        container_group.is_a.append(_core.OrGroup)
+
+    for constraint in constraint_group.has_constraints:
+        negated_constraint = negate(constraint)
+        both_or_groups = isinstance(container_group, _core.OrGroup) and isinstance(negated_constraint, _core.OrGroup)
+        both_and_groups = isinstance(container_group, _core.AndGroup) and (
+                isinstance(negated_constraint, _core.AndGroup) or not isinstance(negated_constraint, _core.OrGroup)
+        )
+        negated_group_has_single_constaraint = len(negated_constraint.has_constraints) == 1
+        if both_or_groups or both_and_groups or negated_group_has_single_constaraint:
+            container_group.has_constraints.extend(negated_constraint.has_constraints)
+        else:
+            container_group.has_constraints.append(negated_constraint)
+
+    container_group.unify_constraints()
+    return container_group
+

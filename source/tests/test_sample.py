@@ -3,13 +3,9 @@ from datetime import datetime
 import pytest
 from LosydagGenerator import LosydagGenerator
 
-
-def inc(x):
-    return x + 1
-
-
-def test_setup_work():
-    assert inc(4) == 5
+""" 
+This test suite does not explains how a realization case has been build, for that open Protege and check ontology.
+"""
 
 
 @pytest.fixture(scope="session")
@@ -76,6 +72,11 @@ def test_all_realizations_follow_its_own_internal_dependency(realized_case):
 
 def test_min_requirement_overridden_by_custom_from_realization_definition(realized_case):
     assert realized_case['Table.Test1'][0]['Col3_text'] in ["Tree", "Rock"]
+
+
+def test_generic_constraint_was_merged_with_minimum_requirement_for_given_column(realized_case):
+    """ TODO: Implement that feature """
+    assert False
 
 
 def test_all_realizations_have_been_overridden(realized_case):

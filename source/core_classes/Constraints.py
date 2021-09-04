@@ -14,8 +14,8 @@ def extend_core(_core):
         namespace = _core
         TRIES_COUNT = 500
 
-        def __init__(self, namespace):
-            super().__init__(namespace)
+        def __init__(self, name=None, namespace=None, **kargs):
+            super().__init__(name=name, namespace=namespace, **kargs)
             self.not_picks = list()
             self.not_matching_regexes = list()
 
@@ -188,8 +188,8 @@ def extend_core(_core):
     class RangeConstraint(Thing):
         namespace = _core
 
-        def __init__(self, namespace):
-            super().__init__(namespace)
+        def __init__(self, name, namespace=None, **kargs):
+            super().__init__(name=name, namespace=namespace, **kargs)
             self._prepare_min_max()
 
         def _prepare_min_max(self):
