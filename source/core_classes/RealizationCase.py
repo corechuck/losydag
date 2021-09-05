@@ -15,7 +15,7 @@ def extend_core(_core):
 
         def __init__(self, name, namespace):
             super().__init__(name, namespace)
-            self.__prepare_min_reqs_for_not_custom_constrained_but_reffered_tables(namespace)
+            self.__prepare_min_reqs_for_not_custom_constrained_but_referred_tables(namespace)
             # sync_reasoner_hermit(infer_property_values=True)
             sync_reasoner_pellet(infer_data_property_values=False, infer_property_values=True)
 
@@ -90,7 +90,7 @@ def extend_core(_core):
 
             self.mapping_dict = dict(filter(lambda el: el[1], self.mapping_dict.items()))
                 
-        def __prepare_min_reqs_for_not_custom_constrained_but_reffered_tables(self, namespace):
+        def __prepare_min_reqs_for_not_custom_constrained_but_referred_tables(self, namespace):
             case_needed_tables = set()
             for definition in self.contains_realizations:
                 case_needed_tables = case_needed_tables | definition.get_referred_tables()

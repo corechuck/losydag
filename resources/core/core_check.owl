@@ -447,6 +447,14 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#NotEqualToDependency -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#NotEqualToDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
+    </owl:Class>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#Operators -->
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Operators">

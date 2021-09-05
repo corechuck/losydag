@@ -38,8 +38,7 @@ def test_negation_of_generic_constraint_not_in(prepared_core, negate, prepared_c
 
     actual_negation_group = negate(list_const)
     assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     assert id(list_const.not_picks) != id(actual_negation_group.has_constraints[0].has_picks)
@@ -120,8 +119,7 @@ def test_negation_of_regex_constraint(prepared_core, negate, list_constraint_und
     actual_negation_group = negate(list_constraint_under_test)
 
     assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     assert id(list_constraint_under_test.has_picks) != id(actual_negation_group.has_constraints[0].not_picks)
@@ -137,8 +135,7 @@ def test_negation_of_range_less_or_equal_then(prepared_core, negate, max_range_c
     actual_negation_group = negate(max_range_constraint_under_test)
 
     assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]
@@ -154,8 +151,7 @@ def test_negation_of_range_less_then(prepared_core, negate, max_range_constraint
     actual_negation_group = negate(max_range_constraint_under_test)
 
     assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]
@@ -168,8 +164,7 @@ def test_negation_of_range_greater_or_equal_then(prepared_core, negate, min_rang
     actual_negation_group = negate(min_range_constraint_under_test)
 
     assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]
@@ -185,8 +180,7 @@ def test_negation_of_range_greater_then(prepared_core, negate, min_range_constra
     actual_negation_group = negate(min_range_constraint_under_test)
 
     assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
-           not isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]

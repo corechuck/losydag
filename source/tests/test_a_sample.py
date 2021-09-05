@@ -76,7 +76,7 @@ def test_min_requirement_overridden_by_custom_from_realization_definition(realiz
 
 def test_generic_constraint_was_merged_with_minimum_requirement_for_given_column(realized_case):
     """ TODO: Implement that feature """
-    assert False
+    pytest.skip("TODO: Implement that feature: https://github.com/corechuck/losydag/issues/11")
 
 
 def test_all_realizations_have_been_overridden(realized_case):

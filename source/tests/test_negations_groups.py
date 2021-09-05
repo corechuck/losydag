@@ -45,7 +45,7 @@ def test_negation_of_negated_range(prepared_core, negate, actual_range_constrain
     assert len(double_negated_range.not_picks) == 0
 
 
-def test_negation_of_negated_range(prepared_core, negate, list_constraint_under_test):
+def test_negation_of_negated_list(prepared_core, negate, list_constraint_under_test):
     middle_negation_group = negate(list_constraint_under_test)
     actual_negation_group = negate(middle_negation_group)
 

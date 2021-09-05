@@ -121,7 +121,7 @@ def extend_core(_core):
         def negation(self):
             return None
 
-    class ListConstraint(Thing):
+    class ListConstraint(Constraint):
         namespace = _core
 
         def _generate(self, __yagni):
@@ -144,7 +144,7 @@ def extend_core(_core):
             return self  # Keep list as type
 
 
-    class RegexConstraint(Thing):
+    class RegexConstraint(Constraint):
         namespace = _core
 
         def _generate(self, __yagni):
@@ -185,7 +185,7 @@ def extend_core(_core):
         def is_meeting_constraint(self, value):
             return re.search(self.has_regex_format, value) is not None
 
-    class RangeConstraint(Thing):
+    class RangeConstraint(Constraint):
         namespace = _core
 
         def __init__(self, name, namespace=None, **kargs):

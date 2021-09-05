@@ -21,6 +21,7 @@ def prepare_negation(_core):
 
 def _negate_range_constraint(range_constraint, _core):
     container_group = _core.ConstraintGroup(f"temp_{round(random() * 100000)}")
+    container_group.is_a.append(_core.OrGroup)
     container_group.has_constraints = list()
 
     if range_constraint.has_max_range < MAX_RANGE:
@@ -49,9 +50,6 @@ def _negate_range_constraint(range_constraint, _core):
         negated_part_constraint_internal.has_picks = contained_in_range_not_picks_list
         container_group.has_constraints.append(negated_part_constraint_internal)
 
-    if len(container_group.has_constraints) > 1:
-        container_group.is_a.append(_core.OrGroup)
-
     container_group.unify_constraints()
     # sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
     return container_group
@@ -59,6 +57,7 @@ def _negate_range_constraint(range_constraint, _core):
 
 def _negate_basic_constraint(constraint, _core):
     container_group = _core.ConstraintGroup(f"temp_{round(random()*100000)}")
+    container_group.is_a.append(_core.OrGroup)
     container_group.has_constraints = list()
 
     # has_picks -> not_picks
@@ -77,7 +76,6 @@ def _negate_basic_constraint(constraint, _core):
 
     # not_matching_regexes -> multiple(RegexConstraint.has_regex_format)
     if len(constraint.not_matching_regexes) > 0:
-        container_group.is_a.append(_core.OrGroup)
         for not_matching_regex in constraint.not_matching_regexes:
             negated_part_constraint = _core.RegexConstraint(f"temp_{round(random()*100000)}")
             negated_part_constraint.is_constraining_column = constraint.is_constraining_column
