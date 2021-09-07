@@ -14,7 +14,7 @@ def extend_core(_core):
 
         def is_ready(self, _local_dict):
             """ This should tell if refferenced data is prepared and this can be generated. """
-            if not self.is_externally_dependent:
+            if not self.is_externally_dependent():
                 return self._is_local_dependency_ready(_local_dict)
             else:
                 return self.is_depending_on_realization.has_realized_constraints
