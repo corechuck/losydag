@@ -8,7 +8,7 @@ def _merge_groups_left_prio(group1, group2):
 
     for other_constraint in group2.has_constraints:
         if other_constraint.is_constraining_column.name \
-                not in group1.names_of_constrained_columns:
+                not in group1.names_of_constrained_columns():
             new_overwritten_list.append(other_constraint)
         
     return new_overwritten_list

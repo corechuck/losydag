@@ -31,35 +31,72 @@ def prepared_core():
 
 
 @fixture()
-def prepared_table(prepared_core):
+def min_req_list_constraint_under_test(prepared_core):
+    list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
+    list_const.has_picks = ['col1_pick1', 'col1_pick2', 'col1_pick3']
+    yield list_const
+    destroy_entity(list_const)
+
+@fixture()
+def min_req_range_constraint_under_test(prepared_core):
+    range_const = prepared_core.RangeConstraint("lmgjkhawopinvzdff")
+    range_const.has_min_range = 40
+    yield range_const
+    destroy_entity(range_const)
+
+
+@fixture()
+def prepared_table(prepared_core, min_req_list_constraint_under_test, min_req_range_constraint_under_test):
     min_reqs = prepared_core.ConstraintGroup(f"min_req_{datetime.now()}")
+    min_reqs.has_constraints = [min_req_list_constraint_under_test, min_req_range_constraint_under_test]
+
     pre_table = prepared_core.Table("internal_test_table_01")
     pre_table.has_min_reqs = min_reqs
     column_1 = prepared_core.Column("Column.Internal1.column_01")
+    min_req_list_constraint_under_test.is_constraining_column = column_1
     pre_table.has_columns.append(column_1)
     column_2 = prepared_core.Column("Column.Internal1.column_02")
     pre_table.has_columns.append(column_2)
+    column_3 = prepared_core.Column("Column.Internal1.column_03")
+    min_req_range_constraint_under_test.is_constraining_column = column_3
+    pre_table.has_columns.append(column_3)
+    data_type_col_3 = prepared_core.Decimal()
+    data_type_col_3.has_precision = 8
+    data_type_col_3.has_scale = 0
+    column_3.has_data_type = data_type_col_3
     yield pre_table
     destroy_entity(column_1)
     destroy_entity(column_2)
+    destroy_entity(column_3)
     destroy_entity(min_reqs)
     destroy_entity(pre_table)
 
 
 @fixture()
 def prepared_table_2(prepared_core):
-    min_reqs = prepared_core.ConstraintGroup(f"min_req_2_{datetime.now()}")
-    pre_table = prepared_core.Table("internal_test_table_02")
-    pre_table.has_min_reqs = min_reqs
+    min_reqs_2 = prepared_core.ConstraintGroup(f"min_req_2_{datetime.now()}")
+    pre_table_2 = prepared_core.Table("internal_test_table_02")
+    pre_table_2.has_min_reqs = min_reqs_2
     column_1 = prepared_core.Column("Column.Internal2.column_01")
-    pre_table.has_columns.append(column_1)
+    pre_table_2.has_columns.append(column_1)
+    data_type_col_1 = prepared_core.Varchar()
+    column_1.has_data_type = data_type_col_1
     column_2 = prepared_core.Column("Column.Internal2.column_02")
-    pre_table.has_columns.append(column_2)
-    yield pre_table
+    pre_table_2.has_columns.append(column_2)
+    data_type_col_2 = prepared_core.Varchar()
+    column_2.has_data_type = data_type_col_2
+    column_3 = prepared_core.Column("Column.Internal2.column_03")
+    pre_table_2.has_columns.append(column_3)
+    data_type_col_3 = prepared_core.Decimal()
+    data_type_col_3.has_precision = 8
+    data_type_col_3.has_scale = 0
+    column_3.has_data_type = data_type_col_3
+    yield pre_table_2
     destroy_entity(column_1)
     destroy_entity(column_2)
-    destroy_entity(min_reqs)
-    destroy_entity(pre_table)
+    destroy_entity(column_3)
+    destroy_entity(min_reqs_2)
+    destroy_entity(pre_table_2)
 
 
 @fixture()
@@ -81,8 +118,8 @@ def min_range_constraint_under_test(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("sgfgegawe")
     range_const.is_constraining_column = prepared_column
     range_const.has_min_range = 40
-    return range_const
-    destroy_entity(range_const)
+    yield range_const
+    #destroy_entity(range_const)
 
 
 @fixture()
@@ -91,7 +128,8 @@ def max_range_constraint_under_test(prepared_core, prepared_column):
     range_const = range_const_cls("gajskdufhakdh")
     range_const.is_constraining_column = prepared_column
     range_const.has_max_range = 40
-    return range_const
+    yield range_const
+    # destroy_entity(range_const)
 
 
 @fixture()
@@ -100,7 +138,9 @@ def actual_range_constraint_under_test(prepared_core, prepared_column):
     range_const.is_constraining_column = prepared_column
     range_const.has_max_range = 40
     range_const.has_min_range = 10
-    return range_const
+    yield range_const
+    destroy_entity(range_const)
+
 
 
 @fixture()
@@ -108,4 +148,6 @@ def regex_constraint_under_test(prepared_core, prepared_column):
     regex_const = prepared_core.RegexConstraint("rekajnisokdljf")
     regex_const.is_constraining_column = prepared_column
     regex_const.has_regex_format = "[a-z]oo"
-    return regex_const
+    yield regex_const
+    #destroy_entity(regex_const)
+

@@ -198,7 +198,7 @@ def extend_core(_core):
             if self.has_max_range is None:
                 self.has_max_range = MAX_RANGE
 
-        def _generate(self, __yagni):
+        def _generate(self, __yagni=None):
             self._prepare_min_max()
 
             if type(self._get_constrained_data_type()) == _core.Date:

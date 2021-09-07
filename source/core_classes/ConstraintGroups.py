@@ -21,35 +21,32 @@ def extend_core(_core):
         def merge_with_override(self, _other_constraint_group):
             self.has_constraints = _merge_groups_left_prio(_other_constraint_group, self)
 
-        @property
         def names_of_constrained_columns(self):
             return [const.is_constraining_column.name for const in self.has_constraints]
 
-        @property
         def has_dependencies(self):
             return list(filter(lambda cons: isinstance(cons, _core.ValueDependency), self.has_constraints))
 
-        @property
         def is_having_external_dependencies(self):
-            return any(map(lambda const: const.is_externally_dependent, self.has_dependencies))
+            return any(map(lambda const: const.is_externally_dependent(), self.has_dependencies()))
 
         def _is_constraining_single_table(self):
-            if len(self.is_constraining_tables) == 1:
-                return True
+            return self.constraints_table() is not None
 
-            is_same = True
-            first_table_name = self.is_constraining_tables[0].name
-            for suspect_table in self.is_constraining_tables:
-                is_same = is_same and suspect_table.name == first_table_name
-
-            return is_same
-
-        @property
         def constraints_table(self):
-            if len(self.is_constraining_tables) == 0:
+            if len(self.is_constraining_tables) > 1:
                 return None
 
-            self._is_constraining_single_table()
+            if len(self.is_constraining_tables) == 0:
+                columns = [c.is_constraining_column for c in self.has_constraints]
+                tables = []
+                for col in columns:
+                    if col.is_part_of_table not in tables:
+                        tables.append(col.is_part_of_table)
+                if len(tables) == 1:
+                    return tables[0]
+                return None
+
             return self.is_constraining_tables[0]
 
         def unify_constraints(self):
@@ -107,34 +104,33 @@ def extend_core(_core):
         _return_dict = dict()
         has_realized_constraints = False
 
-        def __init__(self, name, namespace):
-            super().__init__(name, namespace)
+        def __init__(self, name, namespace=None):
+            super().__init__(name=name, namespace=namespace)
             self.compliment_with_min_reqs()
 
         def compliment_with_min_reqs(self):
             if len(self.has_constraints) > 0:
-                self.compliment_with(self.constraints_table.has_min_reqs)
+                self.compliment_with(self.constraints_table().has_min_reqs)
 
-        @property
         def is_ready(self):
             part_list = []
-            for const in self.has_dependencies:
-                if const.is_externally_dependent:
-                    part_list.append(const.is_external_dependency_ready)
+            for const in self.has_dependencies():
+                if const.is_externally_dependent():
+                    part_list.append(const.is_external_dependency_ready())
             return all(part_list)
 
         def get_referred_tables(self):
             li = set()
-            for c in self.has_dependencies:
-                ref_table = c.get_reffered_table()
+            for c in self.has_dependencies():
+                ref_table = c.get_referred_table()
                 if ref_table:
                     li.add(ref_table)
             return li
 
         def prepare_external_dependencies_with_single_realization_definition(self, _table_to_def_dict):
-            for dependency in self.has_dependencies:
+            for dependency in self.has_dependencies():
                 has_been_set = True
-                if dependency.is_externally_dependent and not dependency.is_depending_on_realization:
+                if dependency.is_externally_dependent() and not dependency.is_depending_on_realization:
                     has_been_set = dependency.set_missing_realization_definition(_table_to_def_dict)
                 if not has_been_set:
                     raise Exception(
@@ -171,16 +167,16 @@ def extend_core(_core):
             self._return_dict = dict()
 
         def _prepare_return_dict(self):
-            if len(self._return_dict) > 0 or self.constraints_table is None:
+            if len(self._return_dict) > 0 or self.constraints_table() is None:
                 return
             self._return_dict = dict()
-            for column in self.constraints_table.has_columns:
+            for column in self.constraints_table().has_columns:
                 self._return_dict[column.plain_name] = None
 
         def _try_generating_for_all_constraints(self, not_ready_accumulator):
             for constraint in self.has_constraints:
                 if not constraint.is_ready(self._return_dict):
-                    if constraint.is_externally_dependent:
+                    if constraint.is_externally_dependent():
                         raise Exception("ERROR: should not be here yet !! External dependencies" 
                                         "should be ready before calling this.")
                     not_ready_accumulator.append(constraint)

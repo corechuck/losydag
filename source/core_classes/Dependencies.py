@@ -1,3 +1,5 @@
+from random import random
+
 from owlready2 import Thing
 import string
 import rstr
@@ -11,13 +13,12 @@ def extend_core(_core):
         namespace = _core
 
         def is_ready(self, _local_dict):
-            "This should tell if refferenced data is prepared and this can be generated."
+            """ This should tell if refferenced data is prepared and this can be generated. """
             if not self.is_externally_dependent:
                 return self._is_local_dependency_ready(_local_dict)
             else:
                 return self.is_depending_on_realization.has_realized_constraints
 
-        @property
         def is_externally_dependent(self):
             return (
                     self.is_depending_on_column is not None and
@@ -25,27 +26,26 @@ def extend_core(_core):
                     self.is_constraining_column.is_part_of_table.name
             )
 
-        @property
         def is_external_dependency_ready(self):
-            if not self.is_externally_dependent:
+            if not self.is_externally_dependent():
                 print("WARN: You sure? checking external dependency readiness for internal dependency !")
             return self.is_depending_on_realization.has_realized_constraints
 
-        def get_reffered_table(self):
-            if not self.is_externally_dependent:
+        def get_referred_table(self):
+            if not self.is_externally_dependent():
                 return None
             else:
                 return self.is_depending_on_column.is_part_of_table
 
         def _generate(self, _local_dict):
-            if not self.is_externally_dependent:
+            if not self.is_externally_dependent():
                 if not self._is_local_dependency_ready(_local_dict):
                     raise Exception(f"ERROR: Dependency {self.name} not ready. "
                                     "That should never happen. Between isReady and generate something changed.")
 
-                return self.__generate_for_local_dependency(_local_dict)
+                return self._generate_for_local_dependency(_local_dict)
 
-            if self.is_externally_dependent:
+            if self.is_externally_dependent():
                 if not self.is_depending_on_realization.has_realized_constraints:
                     raise Exception(f"ERROR: Dependency {self.name} not ready. "
                                     "That should never happen. Between isReady and generate something changed.")
@@ -96,9 +96,21 @@ def extend_core(_core):
 
         def _generate(self, _local_dict):
             if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
-                raise Exception(f"ERROR: Generator cannot synthesise greater or equal for Strings. ")
+                print(f"WARNING: Generator is using equal ONLY constraint strings for greater and equal. ")
 
-            super()._generate(_local_dict)
+            return super()._generate(_local_dict)
+
+    class GreaterThenDependency(ValueDependency):
+        namespace = _core
+
+        # Write tests for different data types str, date, number
+
+        def _generate(self, _local_dict):
+            # Here should be warning and always take equal
+            if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
+                raise Exception(f"ERROR: Generator cannot synthesise greater value for Strings. ")
+
+            return super()._generate(_local_dict)
 
         def _generate_for_local_dependency(self, _local_dict):
             converted_range = _core.RangeConstraint()
@@ -106,12 +118,13 @@ def extend_core(_core):
             converted_range.has_min_range = _local_dict[self.is_depending_on_column.plain_name]
             return converted_range.generate()
 
-        def _generate_for_external_dependency(self, _local_dict):
+        def _generate_for_external_dependency(self):
             from_column_name = self.is_depending_on_column.plain_name
-            converted_range = _core.RangeConstraint()
+            converted_range = _core.RangeConstraint(f"range_from_{from_column_name}_{round(random()*100000)}")
             converted_range.is_constraining_column = self.is_constraining_column
             converted_range.has_min_range = self.is_depending_on_realization._return_dict[from_column_name]
-            return converted_range.generate()
+            generated_value = converted_range._generate()
+            return generated_value
 
     # NotEqualToDependency
     # EqualToDependency

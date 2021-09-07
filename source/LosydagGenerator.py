@@ -12,9 +12,11 @@ onto_path.append(f"{os.getcwd()}/resources/development/")
 
 class LosydagGenerator:
 
-    def __init__(self, schema_iri):  # , realization_case_iri):
-        self.onto = get_ontology(schema_iri)
-        self.onto.load(only_local=True)
+    def __init__(self, loaded_onto):  # , realization_case_iri):
+        # self.onto = get_ontology(schema_iri)
+        # self.onto.load(only_local=True)
+
+        self.onto = loaded_onto
 
         self.core = self.onto.imported_ontologies[0]  # <- core classes are in wrong ontology
         extend_constraints(self.core)
