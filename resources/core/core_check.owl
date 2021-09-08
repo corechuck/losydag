@@ -401,22 +401,6 @@
     
 
 
-    <!-- http://corechuck.com/modeling/core_check#LesserOrEqualThenDependency -->
-
-    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#LesserOrEqualThenDependency">
-        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
-    </owl:Class>
-    
-
-
-    <!-- http://corechuck.com/modeling/core_check#LesserThenDependency -->
-
-    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#LesserThenDependency">
-        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
-    </owl:Class>
-    
-
-
     <!-- http://corechuck.com/modeling/core_check#ListConstraint -->
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#ListConstraint">
@@ -499,6 +483,22 @@
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RegexConstraint">
         <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#SmallerOrEqualThenDependency -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#SmallerOrEqualThenDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
+    </owl:Class>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#SmallerThenDependency -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#SmallerThenDependency">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
     </owl:Class>
     
 
@@ -596,8 +596,8 @@
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#FormatDependency"/>
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#GreaterOrEqualThenDependency"/>
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#GreaterThenDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#LesserOrEqualThenDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#LesserThenDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#SmallerOrEqualThenDependency"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#SmallerThenDependency"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>

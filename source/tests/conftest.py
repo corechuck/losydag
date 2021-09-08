@@ -35,14 +35,14 @@ def min_req_list_constraint_under_test(prepared_core):
     list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
     list_const.has_picks = ['col1_pick1', 'col1_pick2', 'col1_pick3']
     yield list_const
-    destroy_entity(list_const)
+    # destroy_entity(list_const)
 
 @fixture()
 def min_req_range_constraint_under_test(prepared_core):
     range_const = prepared_core.RangeConstraint("lmgjkhawopinvzdff")
     range_const.has_min_range = 40
     yield range_const
-    destroy_entity(range_const)
+    # destroy_entity(range_const)
 
 
 @fixture()

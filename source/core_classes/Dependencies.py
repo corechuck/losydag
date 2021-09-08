@@ -126,6 +126,42 @@ def extend_core(_core):
             generated_value = converted_range._generate()
             return generated_value
 
+    class SmallerOrEqualThenDependency(ValueDependency):
+        namespace = _core
+
+        # Write tests for different data types str, date, number
+
+        def _generate(self, _local_dict):
+            if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
+                print(f"WARNING: Generator is using equal ONLY constraint strings for greater and equal. ")
+
+            return super()._generate(_local_dict)
+
+    class SmallerThenDependency(ValueDependency):
+        namespace = _core
+
+        # Write tests for different data types str, date, number
+
+        def _generate(self, _local_dict):
+            if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
+                raise Exception(f"ERROR: Generator cannot synthesise smaller value for Strings. ")
+
+            return super()._generate(_local_dict)
+
+        def _generate_for_local_dependency(self, _local_dict):
+            converted_range = _core.RangeConstraint()
+            converted_range.is_constraining_column = self.is_constraining_column
+            converted_range.has_max_range = _local_dict[self.is_depending_on_column.plain_name]
+            return converted_range.generate()
+
+        def _generate_for_external_dependency(self):
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(f"range_from_{from_column_name}_{round(random()*100000)}")
+            converted_range.is_constraining_column = self.is_constraining_column
+            converted_range.has_max_range = self.is_depending_on_realization._return_dict[from_column_name]
+            generated_value = converted_range._generate()
+            return generated_value
+
     # NotEqualToDependency
     # EqualToDependency
     # GreaterOrEqualThenDependency
