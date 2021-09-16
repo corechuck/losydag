@@ -38,6 +38,8 @@ def extend_core(_core):
                 return self.is_depending_on_column.is_part_of_table
 
         def _generate(self, _local_dict):
+            if isinstance(self, _core.Negation):
+                return None
             if not self.is_externally_dependent():
                 if not self._is_local_dependency_ready(_local_dict):
                     raise Exception(f"ERROR: Dependency {self.name} not ready. "
@@ -78,16 +80,10 @@ def extend_core(_core):
             checking_dict.format(self.has_format_definition, **_local_dict)
             return checking_dict.has_all_values_ready
 
-        def _generate(self, _local_dict):
+        def _generate_for_local_dependency(self, _local_dict):
             _generation_formatter.set_increment(self)
             resolved_format = _generation_formatter.format(self.has_format_definition, **_local_dict)
             return rstr.xeger(resolved_format)
-
-    class NotEqualToDependency(ValueDependency):
-        namespace = _core
-
-        def _generate(self, _local_dict):
-            return None
 
     class GreaterOrEqualThenDependency(ValueDependency):
         namespace = _core

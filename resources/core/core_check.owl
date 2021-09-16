@@ -431,10 +431,10 @@
     
 
 
-    <!-- http://corechuck.com/modeling/core_check#NotEqualToDependency -->
+    <!-- http://corechuck.com/modeling/core_check#Negation -->
 
-    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#NotEqualToDependency">
-        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ValueDependency"/>
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Negation">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Operators"/>
     </owl:Class>
     
 
@@ -587,17 +587,6 @@
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Constraint"/>
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
             <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#RealizationCase"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#EqualToDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#FormatDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#GreaterOrEqualThenDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#GreaterThenDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#SmallerOrEqualThenDependency"/>
-            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#SmallerThenDependency"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>

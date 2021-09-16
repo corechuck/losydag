@@ -8,6 +8,8 @@ from core_classes.Constraints import MAX_RANGE, MIN_RANGE
 
 def prepare_negation(_core):
     def negate(constraint_or_constraint_group):
+        if isinstance(constraint_or_constraint_group, _core.ValueDependency):
+            return _negate_dependency_constraint(constraint_or_constraint_group, _core)
         if isinstance(constraint_or_constraint_group, _core.RangeConstraint):
             return _negate_range_constraint(constraint_or_constraint_group, _core)
         if isinstance(constraint_or_constraint_group, _core.Constraint):
@@ -17,6 +19,35 @@ def prepare_negation(_core):
 
         return None
     return negate
+
+
+def _negate_dependency_constraint(dependency, _core):
+    container_group = _core.ConstraintGroup(f"temp_{round(random() * 100000)}")
+    container_group.is_a.append(_core.OrGroup)
+    container_group.has_constraints = [dependency]
+
+    if isinstance(dependency, _core.GreaterOrEqualThenDependency):
+        dependency.is_a.append(_core.SmallerThenDependency)
+        dependency.is_a.remove(_core.GreaterOrEqualThenDependency)
+
+    elif isinstance(dependency, _core.SmallerThenDependency):
+        dependency.is_a.append(_core.GreaterOrEqualThenDependency)
+        dependency.is_a.remove(_core.SmallerThenDependency)
+
+    elif isinstance(dependency, _core.SmallerOrEqualThenDependency):
+        dependency.is_a.append(_core.GreaterThenDependency)
+        dependency.is_a.remove(_core.SmallerOrEqualThenDependency)
+
+    elif isinstance(dependency, _core.GreaterThenDependency):
+        dependency.is_a.append(_core.SmallerOrEqualThenDependency)
+        dependency.is_a.remove(_core.GreaterThenDependency)
+
+    elif not isinstance(dependency, _core.Negation):
+        dependency.is_a.append(_core.Negation)
+    else:
+        dependency.is_a.remove(_core.Negation)
+
+    return container_group
 
 
 def _negate_range_constraint(range_constraint, _core):

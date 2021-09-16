@@ -28,7 +28,7 @@ def extend_core(_core):
                 generated_value = str(self._generate(local_dict))
                 if (
                         generated_value not in self.not_picks and
-                        not self.__is_value_matching_prohibited_regexes(generated_value)
+                        not self.__is_value_matching_prohibited_regexes(str(generated_value))
                 ):
                     return generated_value
                 else:
