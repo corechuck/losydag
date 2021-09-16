@@ -170,6 +170,7 @@ def extend_core(_core):
             if len(self._return_dict) > 0 or self.constraints_table() is None:
                 return
             self._return_dict = dict()
+            self._fulfilled_constraints = list()
             for column in self.constraints_table().has_columns:
                 self._return_dict[column.plain_name] = None
 
@@ -181,10 +182,13 @@ def extend_core(_core):
                                         "should be ready before calling this.")
                     not_ready_accumulator.append(constraint)
                     continue
-                # print(f"DEBUG: Generating {constraint.name}")
-                if self._return_dict[constraint.is_constraining_column.plain_name] is not None:
+
+                if self._return_dict[constraint.is_constraining_column.plain_name] is None:
+                    self._return_dict[constraint.is_constraining_column.plain_name] = (
+                        constraint.generate(self._return_dict)
+                    )
+                    self._fulfilled_constraints.append(constraint.name)
+
+                elif constraint.name not in self._fulfilled_constraints:
                     raise Exception(f"ERROR: Multiple constraints defined for column "
                                     f"{constraint.is_constraining_column.name}. Try unification of constraints.")
-                self._return_dict[constraint.is_constraining_column.plain_name] = (
-                    constraint.generate(self._return_dict)
-                )
