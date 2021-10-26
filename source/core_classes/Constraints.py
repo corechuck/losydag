@@ -8,6 +8,7 @@ from owlready2 import Thing, destroy_entity
 MAX_RANGE = 999999999
 MIN_RANGE = -999999999
 
+
 def extend_core(_core):
 
     class Constraint(Thing):
@@ -18,6 +19,7 @@ def extend_core(_core):
             super().__init__(name=name, namespace=namespace, **kargs)
             self.not_picks = list()
             self.not_matching_regexes = list()
+            self.partition_relevant_value_options = list()
 
         def generate(self, local_dict):
             tries = 0
@@ -25,7 +27,12 @@ def extend_core(_core):
 
             while True:
                 tries += 1
-                generated_value = str(self._generate(local_dict))
+                if self.has_more_relevant_options():
+                    random.shuffle(self.partition_relevant_value_options)
+                    generated_value = self.partition_relevant_value_options.pop()
+                else:
+                    generated_value = str(self._generate(local_dict))
+
                 if (
                         generated_value not in self.not_picks and
                         not self.__is_value_matching_prohibited_regexes(str(generated_value))
@@ -39,6 +46,15 @@ def extend_core(_core):
                         raise Exception(f"ERROR: Could not generate value that met constrained in {self}")
 
             return "#non-value-002"
+
+        def has_more_relevant_options(self):
+            return len(self.partition_relevant_value_options) > 0
+
+        # def __is_value_matching_any_not_constraint(self, value, list_of_not_constraint):
+        #     return any(constraint.does_value_match_constraint(value) for constraint in list_of_not_constraint)
+
+        def does_value_match_constraint(self, value_under_question):
+            return not value_under_question
 
         def __is_value_matching_prohibited_regexes(self, question_value):
             partial_checks = [pat for pat in self.not_matching_regexes if re.search(pat, question_value)]
@@ -118,8 +134,8 @@ def extend_core(_core):
 
             return left_constraint._merge_with(right_constraint)
 
-        def negation(self):
-            return None
+        def prepare_relevant_partition_values(self):
+            self.partition_relevant_value_options = []
 
     class ListConstraint(Constraint):
         namespace = _core
@@ -143,6 +159,11 @@ def extend_core(_core):
             destroy_entity(right_constraint)
             return self  # Keep list as type
 
+        def prepare_relevant_partition_values(self):
+            self.partition_relevant_value_options = self.has_picks.copy()
+
+        def does_value_match_constraint(self, value_under_question):
+            return value_under_question in self.has_picks
 
     class RegexConstraint(Constraint):
         namespace = _core
@@ -185,6 +206,14 @@ def extend_core(_core):
         def is_meeting_constraint(self, value):
             return re.search(self.has_regex_format, value) is not None
 
+        def prepare_relevant_partition_values(self):
+            print("INFO: Cannot prepare partition relevant data for regex constraint.")
+            self.partition_relevant_value_options = self._generate(None)
+
+        def does_value_match_constraint(self, value_under_question):
+            return re.search(self.has_regex_format, value_under_question)
+
+
     class RangeConstraint(Constraint):
         namespace = _core
 
@@ -199,6 +228,9 @@ def extend_core(_core):
                 self.has_max_range = MAX_RANGE
 
         def _generate(self, __yagni=None):
+            if self.has_min_range > self.has_max_range:
+                raise Exception(f"ERROR: {self.name} has min greater then higher.")
+
             self._prepare_min_max()
 
             if type(self._get_constrained_data_type()) == _core.Date:
@@ -224,7 +256,7 @@ def extend_core(_core):
             if right_constraint.is_range:
                 self.has_min_range = max(self.has_min_range, right_constraint.has_min_range)
                 self.has_max_range = min(self.has_max_range, right_constraint.has_max_range)
-                if self.has_min_range> self.has_max_range:
+                if self.has_min_range > self.has_max_range:
                     raise Exception(f"ERROR: Ranges {self.name} and {right_constraint.name} are not intersecting.")
 
             super()._merge_with(right_constraint)
@@ -238,3 +270,29 @@ def extend_core(_core):
             except:
                 return False
             return self.has_min_range <= number_value <= self.has_max_range
+
+        def prepare_relevant_partition_values(self):
+            if self.has_min_range > self.has_max_range:
+                raise Exception(f"ERROR: {self.name} has min greater then higher.")
+
+            if self.has_min_range == self.has_max_range:
+                raise Exception(f"ERROR: {self.name} min and max equal, cannot prepare partitions.")
+
+            self.partition_relevant_value_options = [self.__generate_not_boundary_value()]
+            if self.has_min_range != MIN_RANGE:
+                self.partition_relevant_value_options.append(MIN_RANGE)
+            if self.has_max_range != MAX_RANGE:
+                self.partition_relevant_value_options.append(MAX_RANGE)
+
+        def __generate_not_boundary_value(self):
+            loop = 0
+            while loop < 100:
+                loop +=1
+                chosen_number = random.randint(int(self.has_min_range), int(self.has_max_range))
+                if chosen_number != self.has_min_range and chosen_number != self.has_max_range:
+                    return chosen_number
+
+            raise Exception(f"ERROR: {self.name} could not generate non boundary value.")
+
+        def does_value_match_constraint(self, value_under_question):
+            return self.has_min_range <= value_under_question <= self.has_max_range

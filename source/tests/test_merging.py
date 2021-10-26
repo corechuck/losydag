@@ -15,6 +15,19 @@ def test_not_unified_constraint_group_throws_exception(
         obj = constraint_group.fulfill_constraints_renew()
 
 
+def test_not_unified_constraint_or_group_merges(
+        prepared_core, list_constraint_under_test, min_range_constraint_under_test):
+    constraint_group = prepared_core.ConstraintGroup("TestGroup.Internal_01")
+    constraint_group.has_constraints.append(list_constraint_under_test)
+    constraint_group.has_constraints.append(min_range_constraint_under_test)
+    sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+
+    constraint_group.is_a.append(prepared_core.RealizationDefinition)
+    constraint_group.compliment_with_min_reqs()
+    obj = constraint_group.fulfill_constraints_renew()
+    assert obj is not None
+
+
 def test_min_range_merge_with_list(
         prepared_core, list_constraint_under_test, min_range_constraint_under_test):
     constraint_group = prepared_core.ConstraintGroup()

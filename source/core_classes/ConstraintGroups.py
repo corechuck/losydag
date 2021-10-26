@@ -3,6 +3,8 @@ from collections import defaultdict
 import rstr
 import random
 from owlready2 import Thing, sync_reasoner_pellet
+
+from utils.negations_factory import prepare_negation
 from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
 
 
@@ -10,6 +12,11 @@ def extend_core(_core):
 
     class ConstraintGroup(Thing):
         namespace = _core
+
+        def __init__(self, name=None, namespace=None):
+            super().__init__(name=name, namespace=namespace)
+            if not isinstance(self, _core.OrGroup):
+                self.is_a.append(_core.AndGroup)
         
         def fulfill_constraints(self):
             list_of_constraints = self.has_constraints
@@ -85,31 +92,96 @@ def extend_core(_core):
             realization_case.contains_realizations = list(table_to_group_cache.values())
             return realization_case
 
-        def convert_to_positive_cases(self):
-            # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
-            # 2. Merge groups
-            # 3. Convert to Realization cases
-            # 4. Return
-            pass
+        def prepare_relevant_partition_values(self):
+            for constraint in self.has_constraints:
+                constraint.prepare_relevant_partition_values()
 
-        def convert_to_positive_cases(self):
-            # 1. for each constraint negate it and make new group out of it recursively
-            # 2. Merge groups
-            # 3. Convert to Realization cases
-            # 4. Return
-            pass
+        def make_realizable_list_of_constraints_random(self):
+            if isinstance(self, _core.OrGroup):
+                main_constraint = random.choice(self.has_constraints)
+                returned_list, meta = self.make_realizable_list_of_constraints_for(main_constraint)
+                return returned_list, f"{main_constraint.name}, meta"
+            else:
+                return self.make_realizable_list_of_constraints_for(None)
+
+        # Do I need it ?
+        def make_realizable_list_of_constraints_for(self, main_constraint_or_constraint_group):
+            """ Well if this is an Or group then main constraint can be a constraint but also a group, so applying or to
+            the whole group is not that easy then, some pieces of below coe then can be used. """
+            self.checking_logical_operators()
+
+            if isinstance(self, _core.AndGroup):
+                return self._make_realizable_from_and_group(None)
+            elif isinstance(self, _core.OrGroup):
+                return self._make_realizable_from_or_group(main_constraint_or_constraint_group)
+            else:
+                raise Exception(
+                    "ERROR: Well someone added new operator to groups. You have to decide what happens here.")
+
+        def _make_realizable_from_or_group(self, main_constraint_or_constraint_group):
+            if not isinstance(self, _core.OrGroup):
+                raise Exception("ERROR: Calling a function only for OR groups.")
+
+            aggregated_meta_info = ""
+            anded_constraint_list = list()
+            negate = prepare_negation(_core)
+
+            for constraint in self.has_constraints:
+                if constraint == main_constraint_or_constraint_group:
+                    anded_constraint_list.append(main_constraint_or_constraint_group)
+                else:
+                    negation_result_group = negate(constraint)
+                    if isinstance(negation_result_group, _core.OrGroup):
+                        self.contains_constraint_groups.append(negation_result_group)
+                    else:
+                        anded_constraint_list.extend(negation_result_group.has_constraints)
+
+            for child_constraint_group in self.contains_constraint_groups:
+                if child_constraint_group != main_constraint_or_constraint_group:
+                    processing_group = negate(child_constraint_group)
+                else:
+                    processing_group = child_constraint_group
+
+                random_main_constraint = random.choice(processing_group.has_constraints)
+                aggregated_meta_info = f"{aggregated_meta_info}, chosen {random_main_constraint.name}"
+                child_result, meta_info = \
+                    processing_group.make_realizable_list_of_constraints_for(random_main_constraint)
+                if meta_info:
+                    aggregated_meta_info = f"{aggregated_meta_info}, {meta_info}"
+                anded_constraint_list.extend(child_result)
+
+            return anded_constraint_list, aggregated_meta_info
+
+        def _make_realizable_from_and_group(self, not_needed_constraint_for_and_group):
+            if not isinstance(self, _core.AndGroup):
+                raise Exception("ERROR: Calling a function only for AND groups.")
+            anded_constraint_list = self.has_constraints.copy()
+            aggregated_meta_info = ""
+            for child_constraint_group in self.contains_constraint_groups:
+                random_main_constraint = random.choice(child_constraint_group.has_constraints)
+                aggregated_meta_info = f"{aggregated_meta_info}, chosen {random_main_constraint.name}"
+                child_result, meta_info = \
+                    child_constraint_group.make_realizable_list_of_constraints_for(random_main_constraint)
+                anded_constraint_list.extend(child_result)
+            return anded_constraint_list, aggregated_meta_info
 
     class RealizationDefinition(Thing):
         namespace = _core
         _return_dict = dict()
         has_realized_constraints = False
+        original_constraints = None
 
-        def __init__(self, name, namespace=None):
+        def __init__(self, name=None, namespace=None):
             super().__init__(name=name, namespace=namespace)
+
+        def prepare_for_realization(self):
+            self._prepare_return_dict()
             self.compliment_with_min_reqs()
 
         def compliment_with_min_reqs(self):
             if len(self.has_constraints) > 0:
+                self.original_constraints = self.has_constraints.copy()  # this should NOT be here
+                # that should use something like has_work_constraints
                 self.compliment_with(self.constraints_table().has_min_reqs)
 
         def is_ready(self):
@@ -151,7 +223,7 @@ def extend_core(_core):
                 print("ERROR: Realization def should be defined for one table." 
                       "TODO: serious exception!")
 
-            self._prepare_return_dict()
+            self.prepare_for_realization()
 
             # Heavy lifting
             self.has_realized_constraints = (
@@ -192,3 +264,25 @@ def extend_core(_core):
                 elif constraint.name not in self._fulfilled_constraints:
                     raise Exception(f"ERROR: Multiple constraints defined for column "
                                     f"{constraint.is_constraining_column.name}. Try unification of constraints.")
+
+        def prepare_relevant_partition_values(self):
+            for constraint in self.original_constraints:
+                constraint.prepare_relevant_partition_values()
+
+        def has_more_relevant_options(self):
+            return any([constraint.has_more_relevant_options() for constraint in self.has_constraints])
+
+        def convert_to_positive_cases(self):
+            # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
+            # 2. Merge groups
+            # 3. Convert to Realization cases
+            # 4. Return
+            # prepare_relevant_partition_values
+            pass
+
+        def convert_to_negative_cases(self):
+            # 1. for each constraint negate it and make new group out of it recursively
+            # 2. Merge groups
+            # 3. Convert to Realization cases
+            # 4. Return
+            pass

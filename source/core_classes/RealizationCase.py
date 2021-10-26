@@ -28,8 +28,23 @@ def extend_core(_core):
 
              Consider to mark constraints that should give all potential variances of test data and treat that as
              relevant. That one for positive all are relevant, but for negative take only negated ones."""
-            pass
-        
+
+            all_data_sets = []
+            for definition in self.contains_realizations:
+                definition.prepare_relevant_partition_values()
+
+            loop_count = 0
+            loop_max = 1000
+            while self._has_more_relevant_datasets_for_generation() and loop_count < loop_max:
+                loop_count += 1
+                all_data_sets.append(self.realize_anew())
+
+            return all_data_sets
+
+        def _has_more_relevant_datasets_for_generation(self):
+            return any([realization_definition.has_more_relevant_options()
+                        for realization_definition in self.contains_realizations])
+
         def realize_anew(self):
             self._prepare_for_realization()
             [rd.clear_results() for rd in self.contains_realizations]
@@ -40,10 +55,15 @@ def extend_core(_core):
             if self.is_prepared_for_realization:
                 return
 
+            # No test starting with OR GROUP operator as main Constraint Group you try to realize
+            # break contains_constraint_groups from pick one and
+            self.__prepare_constraint_groups_to_realizable()
+
             self.__prepare_min_reqs_for_not_custom_constrained_but_referred_tables()
             sync_reasoner_pellet(infer_data_property_values=False, infer_property_values=True)
             self.__prepare_table_name_to_singular_realization_def_dict()
             self.__setup_external_dependencies_with_single_realizations_definitions()
+
 
             self.is_prepared_for_realization = True
 
@@ -77,6 +97,18 @@ def extend_core(_core):
                 aggregate[definition.constraints_table().name].append(definition._return_dict)
             
             return aggregate
+
+        def __prepare_constraint_groups_to_realizable(self):
+            for realization_definition in self.contains_realizations:
+                realization_definition.prepare_for_realization()
+                # flat_list, meta = realization_definition.make_realizable_list_of_constraints_random()
+                # print(f"META groups: {meta}")
+                # if isinstance(realization_definition, _core.OrGroup):
+                #     realization_definition.is_a.remove(_core.OrGroup)
+                #     realization_definition.is_a.append(_core.AndGroup)
+                # realization_definition.has_constraints = flat_list  #TODO: this is good place to assign to work_constraints
+                # realization_definition.is_constraining_tables = list()
+                # realization_definition.unify_constraints()
 
         def __setup_external_dependencies_with_single_realizations_definitions(self):
             for definition in self.contains_realizations:

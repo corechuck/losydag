@@ -28,7 +28,7 @@ def realized_case():
 def test_generated_data_have_all_needed_tables(realized_case):
     assert len(realized_case) == 4
 
-    
+
 def test_that_equal_external_dependency_are_equal(realized_case):
     assert realized_case['Table.Ref_01'][0]['Col0_id'] == (
         realized_case['Table.Test3'][0]['Col2_property1_number']

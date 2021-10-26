@@ -4,6 +4,7 @@ from core_classes.ConstraintGroups import extend_core as extend_constraint_group
 from core_classes.SimpleExtensions import extend_core as extend_simple_types
 from core_classes.Dependencies import extend_core as extend_dependencies
 from core_classes.RealizationCase import extend_core as extend_realization_case
+from core_classes.LogicalOperators import extend_core as extend_logical_operators
 
 
 onto_path.append(f"{os.getcwd()}/resources/core/")
@@ -24,6 +25,7 @@ class LosydagGenerator:
         extend_constraint_groups(self.core)
         extend_simple_types(self.core)
         extend_realization_case(self.core)
+        extend_logical_operators(self.core)
         # sync_reasoner_hermit(infer_property_values=True)
         sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -40,8 +42,8 @@ class LosydagGenerator:
 
     def generate_all_positive_datasets_from_generic_group(self, group_iri):
         generic_group = self.onto.search_one(iri=f"*{group_iri}")
-        list_of_realization_cases = generic_group.convert_to_positive_cases()
-        return self._realize_all_cases(list_of_realization_cases)
+        generic_group._verbal = True  # for now
+        return generic_group.realize_all_test_case_relevant_datasets()
 
     def generate_all_negative_datasets_from_generic_group(self, group_iri):
         generic_group = self.onto.search_one(iri=f"*{group_iri}")
