@@ -3,10 +3,12 @@ import random
 import datetime
 import math
 from owlready2 import Thing, sync_reasoner_pellet, sync_reasoner, sync_reasoner_hermit
-from utils.utils import _supervise_constraint_generation
+
+from utils.utils import _supervise_constraint_generation, ExtensionContext
 
 
-def extend_core(_core):
+def extend_core(context: ExtensionContext):
+    _core = context.core
     
     class RealizationCase(Thing):
         namespace = _core
@@ -71,6 +73,7 @@ def extend_core(_core):
             for definition in self.contains_realizations:
                 if self._verbal:
                     print(f"INFO: Evaluating {definition.name}:")
+                # TODO: rename has_realized_constraints to is_realized
                 if definition.has_realized_constraints:
                     if self._verbal:
                         print(f"INFO: Already realized : {definition.name}")

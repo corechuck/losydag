@@ -5,11 +5,14 @@ import pytest
 from _pytest.fixtures import fixture
 
 from owlready2 import get_ontology, sync_reasoner_pellet, onto_path, destroy_entity
+
 from core_classes.Constraints import extend_core as extend_constraints
 from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
 from core_classes.SimpleExtensions import extend_core as extend_simple_types
 from core_classes.Dependencies import extend_core as extend_dependencies
 from core_classes.RealizationCase import extend_core as extend_realization_case
+from utils.utils import ExtensionContext
+from utils.value_generator_supervisor import ValueGenerationSupervisor
 
 
 @fixture(scope="session")
@@ -20,11 +23,15 @@ def prepared_core():
     schema_iri = "http://corechuck.com/modeling/core_check"
     core = get_ontology(schema_iri)
     core.load(only_local=True)
-    extend_constraints(core)
-    extend_dependencies(core)
-    extend_constraint_groups(core)
-    extend_simple_types(core)
-    extend_realization_case(core)
+    context = ExtensionContext()
+    context.core = core
+    context.value_generation_supervisor = ValueGenerationSupervisor()
+
+    extend_constraints(context)
+    extend_dependencies(context)
+    extend_constraint_groups(context)
+    extend_simple_types(context)
+    extend_realization_case(context)
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
     return core

@@ -5,11 +5,14 @@ import datetime
 import math
 from owlready2 import Thing, destroy_entity
 
+from utils.utils import ExtensionContext
+
 MAX_RANGE = 999999999
 MIN_RANGE = -999999999
 
 
-def extend_core(_core):
+def extend_core(context: ExtensionContext):
+    _core = context.core
 
     class Constraint(Thing):
         namespace = _core
@@ -22,30 +25,33 @@ def extend_core(_core):
             self.partition_relevant_value_options = list()
 
         def generate(self, local_dict):
-            tries = 0
-            tried_values = list()
+            return str(self._generate(local_dict))
 
-            while True:
-                tries += 1
-                if self.has_more_relevant_options():
-                    random.shuffle(self.partition_relevant_value_options)
-                    generated_value = self.partition_relevant_value_options.pop()
-                else:
-                    generated_value = str(self._generate(local_dict))
-
-                if (
-                        generated_value not in self.not_picks and
-                        not self.__is_value_matching_prohibited_regexes(str(generated_value))
-                ):
-                    return generated_value
-                else:
-                    tried_values.append(generated_value)
-
-                    if tries >= self.TRIES_COUNT:
-                        print(f"INFO: Tried values {tried_values}")
-                        raise Exception(f"ERROR: Could not generate value that met constrained in {self}")
-
-            return "#non-value-002"
+        # def generate(self, local_dict):
+        #     tries = 0
+        #     tried_values = list()
+        #
+        #     while True:
+        #         tries += 1
+        #         if self.has_more_relevant_options():
+        #             random.shuffle(self.partition_relevant_value_options)
+        #             generated_value = self.partition_relevant_value_options.pop()
+        #         else:
+        #             generated_value = str(self._generate(local_dict))
+        #
+        #         if (
+        #                 generated_value not in self.not_picks and
+        #                 not self.__is_value_matching_prohibited_regexes(str(generated_value))
+        #         ):
+        #             return generated_value
+        #         else:
+        #             tried_values.append(generated_value)
+        #
+        #             if tries >= self.TRIES_COUNT:
+        #                 print(f"INFO: Tried values {tried_values}")
+        #                 raise Exception(f"ERROR: Could not generate value that met constrained in {self}")
+        #
+        #     return "#non-value-002"
 
         def has_more_relevant_options(self):
             return len(self.partition_relevant_value_options) > 0

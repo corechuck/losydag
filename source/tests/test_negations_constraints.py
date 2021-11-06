@@ -49,7 +49,11 @@ def test_negation_of_generic_constraint_not_in(prepared_core, negate, prepared_c
 def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, negate, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_a_{round(random()*100000)}")
     list_const.is_constraining_column = prepared_column
-    list_const.not_matching_regexes = ['boo.*']
+
+    not_list_const = prepared_core.ListConstraint(f"list_not_req_a_{round(random()*100000)}")
+    not_list_const.not_matching_regexes = ['boo.*']
+
+
 
     actual_negation_group = negate(list_const)
     assert actual_negation_group

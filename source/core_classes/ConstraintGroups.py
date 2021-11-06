@@ -4,14 +4,17 @@ import rstr
 import random
 from owlready2 import Thing, sync_reasoner_pellet
 
+
 from utils.negations_factory import prepare_negation
-from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, ExtensionContext
 
 
-def extend_core(_core):
+def extend_core(context: ExtensionContext):
+    _core = context.core
+    _value_generation_supervisor = context.value_generation_supervisor
 
     class ConstraintGroup(Thing):
-        namespace = _core
+        namespace = context.core
 
         def __init__(self, name=None, namespace=None):
             super().__init__(name=name, namespace=namespace)
@@ -256,14 +259,26 @@ def extend_core(_core):
                     continue
 
                 if self._return_dict[constraint.is_constraining_column.plain_name] is None:
+                    # self._return_dict[constraint.is_constraining_column.plain_name] = (
+                    #     constraint.generate(self._return_dict)
+                    # )
                     self._return_dict[constraint.is_constraining_column.plain_name] = (
-                        constraint.generate(self._return_dict)
+                        _value_generation_supervisor.generate(
+                            constraint, self.get_sibling_restrictive_constraints(constraint), self._return_dict)
                     )
                     self._fulfilled_constraints.append(constraint.name)
 
                 elif constraint.name not in self._fulfilled_constraints:
                     raise Exception(f"ERROR: Multiple constraints defined for column "
                                     f"{constraint.is_constraining_column.name}. Try unification of constraints.")
+
+        def get_sibling_restrictive_constraints(self, constraint):
+            return [
+                restrictive_constraint
+                for restrictive_constraint in self.has_restricting_constraints
+                if restrictive_constraint.is_constraining_column.plain_name ==
+                constraint.is_constraining_column.plain_name
+            ]
 
         def prepare_relevant_partition_values(self):
             for constraint in self.original_constraints:

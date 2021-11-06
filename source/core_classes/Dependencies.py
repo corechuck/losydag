@@ -4,8 +4,11 @@ from owlready2 import Thing
 import string
 import rstr
 
+from utils.utils import ExtensionContext
 
-def extend_core(_core):
+
+def extend_core(context: ExtensionContext):
+    _core = context.core
     _compound_keys_tracker = dict()
     _generation_formatter = GenerationTrackingFormatter(_compound_keys_tracker)
 

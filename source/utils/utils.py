@@ -1,3 +1,7 @@
+from enum import Enum
+
+from utils.value_generator_supervisor import ValueGenerationSupervisor
+
 _verbal = False
 
 
@@ -35,3 +39,8 @@ def _supervise_constraint_generation(__internal_generation_function_with_leftove
         if _verbal: print(f"DEBUG: Supervised generation. Not resolved dependencies {not_ready_constraints}")
 
     return True
+
+
+class ExtensionContext:
+    core = None
+    value_generation_supervisor: ValueGenerationSupervisor = None

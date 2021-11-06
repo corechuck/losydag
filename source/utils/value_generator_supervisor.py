@@ -1,6 +1,10 @@
 import random
 
 
+def is_value_matching_any_constraint(value, matching_list):
+    return any(constraint.does_value_match_constraint(value) for constraint in matching_list)
+
+
 class ValueGenerationSupervisor:
     TRIES_COUNT = 500
 
@@ -12,11 +16,11 @@ class ValueGenerationSupervisor:
             tries += 1
             if constraint.has_more_relevant_options():
                 random.shuffle(constraint.partition_relevant_value_options)
-                generated_value = constraint.partition_relevant_value_options.pop()
+                generated_value = str(constraint.partition_relevant_value_options.pop())
             else:
-                generated_value = str(constraint._generate(local_dict))
+                generated_value = str(constraint.generate(local_dict))
 
-            if not self._is_value_matching_any_constraint(generated_value, not_matching_constraint_list):
+            if not is_value_matching_any_constraint(generated_value, not_matching_constraint_list):
                 return generated_value
             else:
                 tried_values.append(generated_value)
@@ -27,5 +31,3 @@ class ValueGenerationSupervisor:
 
         return "#non-value-002"
 
-    def _is_value_matching_any_constraint(self, value, matching_list):
-        return any(constraint.does_value_match_constraint(value) for constraint in matching_list)
