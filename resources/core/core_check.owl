@@ -478,6 +478,14 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#RestrictiveConstraint -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RestrictiveConstraint">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
+    </owl:Class>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#SmallerOrEqualThenDependency -->
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#SmallerOrEqualThenDependency">

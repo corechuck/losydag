@@ -3,9 +3,6 @@ from collections import defaultdict
 import rstr
 import random
 from owlready2 import Thing, sync_reasoner_pellet
-
-
-from utils.negations_factory import prepare_negation
 from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, ExtensionContext
 
 
@@ -20,14 +17,14 @@ def extend_core(context: ExtensionContext):
             super().__init__(name=name, namespace=namespace)
             if not isinstance(self, _core.OrGroup):
                 self.is_a.append(_core.AndGroup)
-        
+
         def fulfill_constraints(self):
             list_of_constraints = self.has_constraints
             return f"{self.name} has {len(list_of_constraints)} constraints."
 
         def compliment_with(self, _other_constraint_group):
             self.has_constraints = _merge_groups_left_prio(self, _other_constraint_group)
-            
+
         def merge_with_override(self, _other_constraint_group):
             self.has_constraints = _merge_groups_left_prio(_other_constraint_group, self)
 
@@ -86,6 +83,10 @@ def extend_core(context: ExtensionContext):
                 tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
                 table_to_group_cache[tbl_name].has_constraints.append(constraint_under)
 
+            # for r_constraint_under in self.has_restricting_constraints:
+            #     tbl_name = r_constraint_under.is_constraining_column.is_part_of_table.name
+            #     table_to_group_cache[tbl_name].has_restricting_constraints.append(r_constraint_under)
+
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
             for future_realization_def in table_to_group_cache.values():
@@ -99,80 +100,109 @@ def extend_core(context: ExtensionContext):
             for constraint in self.has_constraints:
                 constraint.prepare_relevant_partition_values()
 
-        def make_realizable_list_of_constraints_random(self):
+        def pick_branches_from_or_groups(self):
+            flatted_list_of_branch_constraints = list()
+            meta_info_list = list()
+
+            # TODO: Write TESTS !
             if isinstance(self, _core.OrGroup):
-                main_constraint = random.choice(self.has_constraints)
-                returned_list, meta = self.make_realizable_list_of_constraints_for(main_constraint)
-                return returned_list, f"{main_constraint.name}, meta"
-            else:
-                return self.make_realizable_list_of_constraints_for(None)
+                random_main_constraint = random.choice(self.has_constraints)
+                self.has_constraints.clear()
+                self.has_constraints.append(random_main_constraint)
+                meta_info_list.append(random_main_constraint.name)
 
-        # Do I need it ?
-        def make_realizable_list_of_constraints_for(self, main_constraint_or_constraint_group):
-            """ Well if this is an Or group then main constraint can be a constraint but also a group, so applying or to
-            the whole group is not that easy then, some pieces of below coe then can be used. """
-            self.checking_logical_operators()
-
-            if isinstance(self, _core.AndGroup):
-                return self._make_realizable_from_and_group(None)
-            elif isinstance(self, _core.OrGroup):
-                return self._make_realizable_from_or_group(main_constraint_or_constraint_group)
-            else:
-                raise Exception(
-                    "ERROR: Well someone added new operator to groups. You have to decide what happens here.")
-
-        def _make_realizable_from_or_group(self, main_constraint_or_constraint_group):
-            if not isinstance(self, _core.OrGroup):
-                raise Exception("ERROR: Calling a function only for OR groups.")
-
-            aggregated_meta_info = ""
-            anded_constraint_list = list()
-            negate = prepare_negation(_core)
-
-            for constraint in self.has_constraints:
-                if constraint == main_constraint_or_constraint_group:
-                    anded_constraint_list.append(main_constraint_or_constraint_group)
+            for group in self.contains_constraint_groups:
+                if isinstance(group, _core.OrGroup):
+                    random_subgroup_constraint = random.choice(group.has_constraints)
+                    flatted_list_of_branch_constraints.append(random_subgroup_constraint)
+                    meta_info_list.append(random_subgroup_constraint.name)
                 else:
-                    negation_result_group = negate(constraint)
-                    if isinstance(negation_result_group, _core.OrGroup):
-                        self.contains_constraint_groups.append(negation_result_group)
-                    else:
-                        anded_constraint_list.extend(negation_result_group.has_constraints)
+                    flatted_list_of_branch_constraints.extend(group.has_constraints)
 
-            for child_constraint_group in self.contains_constraint_groups:
-                if child_constraint_group != main_constraint_or_constraint_group:
-                    processing_group = negate(child_constraint_group)
-                else:
-                    processing_group = child_constraint_group
+                child_meta = group.pick_branches_from_or_groups()
+                # flatted_list_of_branch_constraints.extend(chosen_sub_branch)
+                meta_info_list.extend(child_meta)
 
-                random_main_constraint = random.choice(processing_group.has_constraints)
-                aggregated_meta_info = f"{aggregated_meta_info}, chosen {random_main_constraint.name}"
-                child_result, meta_info = \
-                    processing_group.make_realizable_list_of_constraints_for(random_main_constraint)
-                if meta_info:
-                    aggregated_meta_info = f"{aggregated_meta_info}, {meta_info}"
-                anded_constraint_list.extend(child_result)
+            if len(meta_info_list) > 0:
+                self.has_constraints.extend(flatted_list_of_branch_constraints)
+                self.unify_constraints()
+            return meta_info_list
 
-            return anded_constraint_list, aggregated_meta_info
-
-        def _make_realizable_from_and_group(self, not_needed_constraint_for_and_group):
-            if not isinstance(self, _core.AndGroup):
-                raise Exception("ERROR: Calling a function only for AND groups.")
-            anded_constraint_list = self.has_constraints.copy()
-            aggregated_meta_info = ""
-            for child_constraint_group in self.contains_constraint_groups:
-                random_main_constraint = random.choice(child_constraint_group.has_constraints)
-                aggregated_meta_info = f"{aggregated_meta_info}, chosen {random_main_constraint.name}"
-                child_result, meta_info = \
-                    child_constraint_group.make_realizable_list_of_constraints_for(random_main_constraint)
-                anded_constraint_list.extend(child_result)
-            return anded_constraint_list, aggregated_meta_info
+        # def make_realizable_list_of_constraints_random(self):
+        #     if isinstance(self, _core.OrGroup):
+        #         main_constraint = random.choice(self.has_constraints)
+        #         returned_list, meta = self.make_realizable_list_of_constraints_for(main_constraint)
+        #         return returned_list, f"{main_constraint.name}, meta"
+        #     else:
+        #         return self.make_realizable_list_of_constraints_for(None)
+        #
+        # # Do I need it ?
+        # def make_realizable_list_of_constraints_for(self, main_constraint_or_constraint_group):
+        #     """ Well if this is an Or group then main constraint can be a constraint but also a group, so applying or to
+        #     the whole group is not that easy then, some pieces of below coe then can be used. """
+        #     self.checking_logical_operators()
+        #
+        #     if isinstance(self, _core.AndGroup):
+        #         return self._make_realizable_from_and_group(None)
+        #     elif isinstance(self, _core.OrGroup):
+        #         return self._make_realizable_from_or_group(main_constraint_or_constraint_group)
+        #     else:
+        #         raise Exception(
+        #             "ERROR: Well someone added new operator to groups. You have to decide what happens here.")
+        #
+        # def _make_realizable_from_or_group(self, main_constraint_or_constraint_group):
+        #     if not isinstance(self, _core.OrGroup):
+        #         raise Exception("ERROR: Calling a function only for OR groups.")
+        #
+        #     aggregated_meta_info = ""
+        #     anded_constraint_list = list()
+        #     negate = prepare_negation(_core)
+        #
+        #     for constraint in self.has_constraints:
+        #         if constraint == main_constraint_or_constraint_group:
+        #             anded_constraint_list.append(main_constraint_or_constraint_group)
+        #         else:
+        #             negation_result_group = negate(constraint)
+        #             if isinstance(negation_result_group, _core.OrGroup):
+        #                 self.contains_constraint_groups.append(negation_result_group)
+        #             else:
+        #                 anded_constraint_list.extend(negation_result_group.has_constraints)
+        #
+        #     for child_constraint_group in self.contains_constraint_groups:
+        #         if child_constraint_group != main_constraint_or_constraint_group:
+        #             processing_group = negate(child_constraint_group)
+        #         else:
+        #             processing_group = child_constraint_group
+        #
+        #         random_main_constraint = random.choice(processing_group.has_constraints)
+        #         aggregated_meta_info = f"{aggregated_meta_info}, chosen {random_main_constraint.name}"
+        #         child_result, meta_info = \
+        #             processing_group.make_realizable_list_of_constraints_for(random_main_constraint)
+        #         if meta_info:
+        #             aggregated_meta_info = f"{aggregated_meta_info}, {meta_info}"
+        #         anded_constraint_list.extend(child_result)
+        #
+        #     return anded_constraint_list, aggregated_meta_info
+        #
+        # def _make_realizable_from_and_group(self, not_needed_constraint_for_and_group):
+        #     if not isinstance(self, _core.AndGroup):
+        #         raise Exception("ERROR: Calling a function only for AND groups.")
+        #     anded_constraint_list = self.has_constraints.copy()
+        #     aggregated_meta_info = ""
+        #     for child_constraint_group in self.contains_constraint_groups:
+        #         random_main_constraint = random.choice(child_constraint_group.has_constraints)
+        #         aggregated_meta_info = f"{aggregated_meta_info}, chosen {random_main_constraint.name}"
+        #         child_result, meta_info = \
+        #             child_constraint_group.make_realizable_list_of_constraints_for(random_main_constraint)
+        #         anded_constraint_list.extend(child_result)
+        #     return anded_constraint_list, aggregated_meta_info
 
     class RealizationDefinition(Thing):
         namespace = _core
         _return_dict = dict()
         has_realized_constraints = False
         original_constraints = None
+        is_complimented_with_min_reqs = False
 
         def __init__(self, name=None, namespace=None):
             super().__init__(name=name, namespace=namespace)
@@ -182,10 +212,11 @@ def extend_core(context: ExtensionContext):
             self.compliment_with_min_reqs()
 
         def compliment_with_min_reqs(self):
-            if len(self.has_constraints) > 0:
+            if len(self.has_constraints) > 0 and not self.is_complimented_with_min_reqs:
                 self.original_constraints = self.has_constraints.copy()  # this should NOT be here
                 # that should use something like has_work_constraints
                 self.compliment_with(self.constraints_table().has_min_reqs)
+                self.is_complimented_with_min_reqs = True
 
         def is_ready(self):
             part_list = []
@@ -212,18 +243,18 @@ def extend_core(context: ExtensionContext):
                         f"ERROR: Constraint {dependency.name} have external dependency "
                         f"and no realization definition could be chosen from {_table_to_def_dict}. "
                         "Verify setup of this constraint.")
-        
+
         def fulfill_constraints_renew(self):
             self._return_dict = dict()
             self.has_realized_constraints = False
             return self.fulfill_constraints()
-        
+
         def fulfill_constraints(self):
             if self.has_realized_constraints:
                 return self._return_dict
 
             if not self._is_constraining_single_table():
-                print("ERROR: Realization def should be defined for one table." 
+                print("ERROR: Realization def should be defined for one table."
                       "TODO: serious exception!")
 
             self.prepare_for_realization()
@@ -231,9 +262,9 @@ def extend_core(context: ExtensionContext):
             # Heavy lifting
             self.has_realized_constraints = (
                 _supervise_constraint_generation(
-                    self._try_generating_for_all_constraints, 
+                    self._try_generating_for_all_constraints,
                     f"RD {self.name}"
-                    )
+                )
             )
             return self._return_dict
 
@@ -250,10 +281,11 @@ def extend_core(context: ExtensionContext):
                 self._return_dict[column.plain_name] = None
 
         def _try_generating_for_all_constraints(self, not_ready_accumulator):
-            for constraint in self.has_constraints:
+            generator_constraints = [c for c in self.has_constraints if not isinstance(c, _core.RestrictiveConstraint)]
+            for constraint in generator_constraints:
                 if not constraint.is_ready(self._return_dict):
                     if constraint.is_externally_dependent():
-                        raise Exception("ERROR: should not be here yet !! External dependencies" 
+                        raise Exception("ERROR: should not be here yet !! External dependencies"
                                         "should be ready before calling this.")
                     not_ready_accumulator.append(constraint)
                     continue
@@ -274,11 +306,21 @@ def extend_core(context: ExtensionContext):
 
         def get_sibling_restrictive_constraints(self, constraint):
             return [
-                restrictive_constraint
-                for restrictive_constraint in self.has_restricting_constraints
-                if restrictive_constraint.is_constraining_column.plain_name ==
-                constraint.is_constraining_column.plain_name
+                potentially_restrictive_constraint
+                for potentially_restrictive_constraint in self.has_constraints
+                if isinstance(potentially_restrictive_constraint, _core.RestrictiveConstraint) and (
+                    potentially_restrictive_constraint.is_constraining_column.plain_name ==
+                    constraint.is_constraining_column.plain_name
+                )
             ]
+
+        # def get_sibling_restrictive_constraints(self, constraint):
+        #     return [
+        #         restrictive_constraint
+        #         for restrictive_constraint in self.has_restricting_constraints
+        #         if restrictive_constraint.is_constraining_column.plain_name ==
+        #         constraint.is_constraining_column.plain_name
+        #     ]
 
         def prepare_relevant_partition_values(self):
             for constraint in self.original_constraints:

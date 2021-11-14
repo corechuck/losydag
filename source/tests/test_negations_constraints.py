@@ -21,22 +21,23 @@ from random import random
 import pytest
 
 from core_classes.Constraints import MAX_RANGE as CONSTRAINTS_MAX_RANGE, MIN_RANGE as CONSTRAINTS_MIN_RANGE
-from utils.negations_factory import prepare_negation
+from utils.invertion_factory import ConstraintInverter
 
 """ TODO: Empty generic negation what will give you? """
 
 
 @pytest.fixture()
-def negate(prepared_core):
-    return prepare_negation(prepared_core)
+def invert(prepared_core):
+    inverter = ConstraintInverter(prepared_core)
+    return inverter.invert
 
 
-def test_negation_of_generic_constraint_not_in(prepared_core, negate, prepared_column):
+def test_negation_of_generic_constraint_not_in(prepared_core, invert, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_{round(random()*100000)}")
     list_const.is_constraining_column = prepared_column
     list_const.not_picks = ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
 
-    actual_negation_group = negate(list_const)
+    actual_negation_group = invert(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
@@ -46,7 +47,7 @@ def test_negation_of_generic_constraint_not_in(prepared_core, negate, prepared_c
         assert vv in actual_negation_group.has_constraints[0].has_picks
 
 
-def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, negate, prepared_column):
+def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, invert, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_a_{round(random()*100000)}")
     list_const.is_constraining_column = prepared_column
 
@@ -55,7 +56,7 @@ def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, negat
 
 
 
-    actual_negation_group = negate(list_const)
+    actual_negation_group = invert(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
@@ -64,14 +65,14 @@ def test_negation_of_generic_constraint_single_not_in_regex(prepared_core, negat
     assert actual_negation_group.has_constraints[0].has_regex_format == 'boo.*'
 
 
-def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, negate, prepared_column):
+def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, invert, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_b_{round(random()*100000)}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*', '.*foo.*']
 
     expected_list_of_regexes = ['boo.*', '.*foo.*']
 
-    actual_negation_group = negate(list_const)
+    actual_negation_group = invert(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
@@ -87,7 +88,7 @@ def test_negation_of_generic_constraint_multiple_not_in_regex(prepared_core, neg
     assert len(expected_list_of_regexes) == 0
 
 
-def test_negation_of_generic_constraint_multiple_types(prepared_core, negate, prepared_column):
+def test_negation_of_generic_constraint_multiple_types(prepared_core, invert, prepared_column):
     list_const = prepared_core.ListConstraint(f"list_req_{round(random()*100000)}")
     list_const.is_constraining_column = prepared_column
     list_const.not_matching_regexes = ['boo.*']
@@ -95,7 +96,7 @@ def test_negation_of_generic_constraint_multiple_types(prepared_core, negate, pr
     is_there_list_constraint = False
     is_there_regex_constraint = False
 
-    actual_negation_group = negate(list_const)
+    actual_negation_group = invert(list_const)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
 
@@ -109,8 +110,8 @@ def test_negation_of_generic_constraint_multiple_types(prepared_core, negate, pr
     assert is_there_list_constraint
 
 
-def test_negation_of_regex_constraint(prepared_core, negate, regex_constraint_under_test):
-    actual_negation_group = negate(regex_constraint_under_test)
+def test_negation_of_regex_constraint(prepared_core, invert, regex_constraint_under_test):
+    actual_negation_group = invert(regex_constraint_under_test)
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup) or \
            not isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -119,8 +120,8 @@ def test_negation_of_regex_constraint(prepared_core, negate, regex_constraint_un
     assert "[a-z]oo" in actual_negation_group.has_constraints[0].not_matching_regexes
 
 
-def test_negation_of_regex_constraint(prepared_core, negate, list_constraint_under_test):
-    actual_negation_group = negate(list_constraint_under_test)
+def test_negation_of_regex_constraint(prepared_core, invert, list_constraint_under_test):
+    actual_negation_group = invert(list_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -135,8 +136,8 @@ def test_negation_of_regex_constraint(prepared_core, negate, list_constraint_und
 # def max_range_constraint_under_test(prepared_core, prepared_column):
 
 
-def test_negation_of_range_less_or_equal_then(prepared_core, negate, max_range_constraint_under_test):
-    actual_negation_group = negate(max_range_constraint_under_test)
+def test_negation_of_range_less_or_equal_then(prepared_core, invert, max_range_constraint_under_test):
+    actual_negation_group = invert(max_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -150,9 +151,9 @@ def test_negation_of_range_less_or_equal_then(prepared_core, negate, max_range_c
     assert actual_negated_constraint.not_picks[0] == max_range_constraint_under_test.has_max_range
 
 
-def test_negation_of_range_less_then(prepared_core, negate, max_range_constraint_under_test):
+def test_negation_of_range_less_then(prepared_core, invert, max_range_constraint_under_test):
     max_range_constraint_under_test.not_picks = [max_range_constraint_under_test.has_max_range]
-    actual_negation_group = negate(max_range_constraint_under_test)
+    actual_negation_group = invert(max_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -164,8 +165,8 @@ def test_negation_of_range_less_then(prepared_core, negate, max_range_constraint
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
 
 
-def test_negation_of_range_greater_or_equal_then(prepared_core, negate, min_range_constraint_under_test):
-    actual_negation_group = negate(min_range_constraint_under_test)
+def test_negation_of_range_greater_or_equal_then(prepared_core, invert, min_range_constraint_under_test):
+    actual_negation_group = invert(min_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -179,9 +180,9 @@ def test_negation_of_range_greater_or_equal_then(prepared_core, negate, min_rang
     assert actual_negated_constraint.not_picks[0] == min_range_constraint_under_test.has_min_range
 
 
-def test_negation_of_range_greater_then(prepared_core, negate, min_range_constraint_under_test):
+def test_negation_of_range_greater_then(prepared_core, invert, min_range_constraint_under_test):
     min_range_constraint_under_test.not_picks = [min_range_constraint_under_test.has_min_range]
-    actual_negation_group = negate(min_range_constraint_under_test)
+    actual_negation_group = invert(min_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -193,10 +194,10 @@ def test_negation_of_range_greater_then(prepared_core, negate, min_range_constra
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
 
 
-def test_negation_of_actual_range_right_open_to_or_group(prepared_core, negate, actual_range_constraint_under_test):
+def test_negation_of_actual_range_right_open_to_or_group(prepared_core, invert, actual_range_constraint_under_test):
     """ Too spice it up it is open on right side"""
     actual_range_constraint_under_test.not_picks = [actual_range_constraint_under_test.has_max_range]
-    actual_negation_group = negate(actual_range_constraint_under_test)
+    actual_negation_group = invert(actual_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -210,12 +211,12 @@ def test_negation_of_actual_range_right_open_to_or_group(prepared_core, negate, 
     assert len(higher_range.not_picks) == 0
 
 
-def test_negation_of_range_with_not_in_list(prepared_core, negate, actual_range_constraint_under_test):
+def test_negation_of_range_with_not_in_list(prepared_core, invert, actual_range_constraint_under_test):
     """ not_picks that are inside range and outside range - how broken down,
     -20 and 101 will be lost on double negation as originally semantically a range (10,40> excludes
     """
     actual_range_constraint_under_test.not_picks = [actual_range_constraint_under_test.has_min_range, 13, 34]
-    actual_negation_group = negate(actual_range_constraint_under_test)
+    actual_negation_group = invert(actual_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -234,12 +235,12 @@ def test_negation_of_range_with_not_in_list(prepared_core, negate, actual_range_
 
 
 def test_negation_of_range_with_not_in_list_removes_semantically_over_definitions(
-        prepared_core, negate, actual_range_constraint_under_test):
+        prepared_core, invert, actual_range_constraint_under_test):
     """ not_picks that are inside range and outside range - how broken down,
     -20 and 101 will be lost on double negation as originally semantically a range (10,40> excludes
     """
     actual_range_constraint_under_test.not_picks = [actual_range_constraint_under_test.has_min_range, 13, 34, -20, 101]
-    actual_negation_group = negate(actual_range_constraint_under_test)
+    actual_negation_group = invert(actual_range_constraint_under_test)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)

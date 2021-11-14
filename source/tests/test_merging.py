@@ -34,6 +34,7 @@ def test_not_unified_constraint_or_group_merges(
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
     constraint_group.is_a.append(prepared_core.RealizationDefinition)
+    constraint_group.is_a.append(prepared_core.OrGroup)
     constraint_group.compliment_with_min_reqs()
     obj = constraint_group.fulfill_constraints_renew()
     assert obj is not None
@@ -426,7 +427,7 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
     """ or multiple_realization_definitions_"""
     list_constraint_under_test.is_constraining_column = prepared_table_2.has_columns[0]
 
-    range_const = prepared_core.RangeConstraint("jhlkndsd")
+    range_const = prepared_core.RangeConstraint("lkjasdnfkadfj")
     range_const.is_constraining_column = prepared_table.has_columns[0]
     range_const.has_min_range = 40
     range_const.has_max_range = 60

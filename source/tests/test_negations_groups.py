@@ -22,19 +22,19 @@ from random import random
 import pytest
 
 from core_classes.Constraints import MAX_RANGE as CONSTRAINTS_MAX_RANGE, MIN_RANGE as CONSTRAINTS_MIN_RANGE
-from utils.negations_factory import prepare_negation
-
+from utils.invertion_factory import ConstraintInverter
 """ TODO: Empty generic negation what will give you? """
 
 
 @pytest.fixture()
-def negate(prepared_core):
-    return prepare_negation(prepared_core)
+def invert(prepared_core):
+    inverter = ConstraintInverter(prepared_core)
+    return inverter.invert
 
 
-def test_negation_of_negated_range(prepared_core, negate, actual_range_constraint_under_test):
-    middle_negation_group = negate(actual_range_constraint_under_test)
-    actual_negation_group = negate(middle_negation_group)
+def test_negation_of_negated_range(prepared_core, invert, actual_range_constraint_under_test):
+    middle_negation_group = invert(actual_range_constraint_under_test)
+    actual_negation_group = invert(middle_negation_group)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
@@ -45,9 +45,9 @@ def test_negation_of_negated_range(prepared_core, negate, actual_range_constrain
     assert len(double_negated_range.not_picks) == 0
 
 
-def test_negation_of_negated_list(prepared_core, negate, list_constraint_under_test):
-    middle_negation_group = negate(list_constraint_under_test)
-    actual_negation_group = negate(middle_negation_group)
+def test_negation_of_negated_list(prepared_core, invert, list_constraint_under_test):
+    middle_negation_group = invert(list_constraint_under_test)
+    actual_negation_group = invert(middle_negation_group)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
@@ -57,10 +57,10 @@ def test_negation_of_negated_list(prepared_core, negate, list_constraint_under_t
     assert len(double_negated_range.not_picks) == 0
 
 
-def test_negation_of_negated_range_with_excluded_value(prepared_core, negate, actual_range_constraint_under_test):
+def test_negation_of_negated_range_with_excluded_value(prepared_core, invert, actual_range_constraint_under_test):
     actual_range_constraint_under_test.not_picks = [33]
-    middle_negation_group = negate(actual_range_constraint_under_test)
-    actual_negation_group = negate(middle_negation_group)
+    middle_negation_group = invert(actual_range_constraint_under_test)
+    actual_negation_group = invert(middle_negation_group)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
@@ -73,12 +73,12 @@ def test_negation_of_negated_range_with_excluded_value(prepared_core, negate, ac
 
 
 def test_negation_of_group_with_range_and_list(
-        prepared_core, negate, actual_range_constraint_under_test, list_constraint_under_test):
+        prepared_core, invert, actual_range_constraint_under_test, list_constraint_under_test):
     """ This test checks if a result of negation is a group with single constraint is unpacked from its group."""
     container_group = prepared_core.ConstraintGroup()
     container_group.has_constraints = [actual_range_constraint_under_test, list_constraint_under_test]
 
-    actual_negation_group = negate(container_group)
+    actual_negation_group = invert(container_group)
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
@@ -86,13 +86,13 @@ def test_negation_of_group_with_range_and_list(
 
 
 def test_negation_of_an_and_group_with_regex_and_list(
-        prepared_core, negate, list_constraint_under_test, regex_constraint_under_test):
-    negated_regex = negate(regex_constraint_under_test)
+        prepared_core, invert, list_constraint_under_test, regex_constraint_under_test):
+    negated_regex = invert(regex_constraint_under_test)
     container_group = prepared_core.ConstraintGroup()
     container_group.has_constraints = [negated_regex, list_constraint_under_test]
     container_group.is_a.append(prepared_core.OrGroup)
 
-    actual_negation_group = negate(container_group)
+    actual_negation_group = invert(container_group)
 
     assert actual_negation_group
     assert len(actual_negation_group.has_constraints) == 1

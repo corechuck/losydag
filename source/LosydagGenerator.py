@@ -46,7 +46,7 @@ class LosydagGenerator:
             return None
 
         print(f"INFO: Realizing: {real_case.name}")
-        return real_case.realize_anew()
+        return real_case.realize_random_fresh()
 
     def generate_all_positive_datasets_from_generic_group(self, group_iri):
         generic_group = self.onto.search_one(iri=f"*{group_iri}")
