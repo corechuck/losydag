@@ -1,8 +1,12 @@
+from datetime import datetime
 from collections import defaultdict
+from typing import List
 
 import rstr
 import random
 from owlready2 import Thing, sync_reasoner_pellet
+
+from utils.sentence_processing import MultiplicationSupervisor
 from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, ExtensionContext
 
 
@@ -12,11 +16,15 @@ def extend_core(context: ExtensionContext):
 
     class ConstraintGroup(Thing):
         namespace = context.core
+        multiplicator = None
+        meta = ""
+        my_restriction_variations = None
 
         def __init__(self, name=None, namespace=None):
             super().__init__(name=name, namespace=namespace)
             if not isinstance(self, _core.OrGroup):
                 self.is_a.append(_core.AndGroup)
+            self.multiplicator = MultiplicationSupervisor(_core)
 
         def fulfill_constraints(self):
             list_of_constraints = self.has_constraints
@@ -127,6 +135,144 @@ def extend_core(context: ExtensionContext):
                 self.has_constraints.extend(flatted_list_of_branch_constraints)
                 self.unify_constraints()
             return meta_info_list
+
+
+
+        # def breakdown_mutually_exclusive_or_branches(self):
+        #     if not isinstance(constraint_group, self.core.RestrictiveConstraint):
+        #         return constraint_group
+
+        # def prepare_positive_cases(self):
+
+        def make_all_restricting_variations(self):
+            if self.my_restriction_variations:
+                self.my_restriction_variations
+
+            self.my_restriction_variations = list()
+            if isinstance(self, _core.OrGroup):
+                new_and_group = _core.ConstraintGroup()
+                self.my_restriction_variations.append(new_and_group)
+                new_and_group.has_constraints.extend([
+                    constr.toggle_restriction() for constr in self.has_constraints
+                ])
+            elif isinstance(self, _core.AndGroup):
+                for to_be_breaking_constraint in self.has_constraints:
+                    new_variation_group = _core.ConstraintGroup()
+                    new_variation_group.meta = \
+                        f"Value in {to_be_breaking_constraint.is_constraining_column.name} " \
+                        f"breaking constraint sentence {self.name}"
+                    for under_process in self.has_constraints:
+                        if under_process == to_be_breaking_constraint:
+                            new_variation_group.has_constraints.append(under_process.toggle_restriction())
+                        else:
+                            new_variation_group.has_constraints.append(under_process)
+                    self.my_restriction_variations.append(new_variation_group)
+
+            if len(self.my_restriction_variations) == 0:
+                raise Exception("ERROR: 2o8340ijfos8dy")
+            return self.my_restriction_variations
+
+        def merge_my_copy_with_group(self, group_b):
+            my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name} {datetime.now()}")
+            my_copy.has_constraints = list()
+            my_copy.has_constraints.extend(self.has_constraints)
+            my_copy.has_constraints.extend(group_b.has_constraints)
+            my_copy.meta = ";".join([my_copy.meta, group_b.meta])
+            return my_copy
+
+        def prepare_positive_cases(self):
+            positive_cases = list()
+            if isinstance(self, _core.OrGroup):
+                list_of_elements_for_breakdown = self.has_constraints.copy()
+                list_of_elements_for_breakdown.extend(self.contains_constraint_groups)
+                for constraint_or_group_too_keep in list_of_elements_for_breakdown:
+                    positive_case_under_process = _core.ConstraintGroup()
+                    for constraint in self.has_constraints:
+                        if constraint_or_group_too_keep == constraint:
+                            positive_case_under_process.has_constraints.append(constraint)
+                            positive_case_under_process.meta = \
+                                f"Value for column {constraint.is_constraining_column.name} kept for case generation"
+                            continue
+                        # not too keep constraint
+                        positive_case_under_process.has_constraints.append(constraint.toggle_restriction())
+
+                    partially_processed_variances = [positive_case_under_process]
+                    for const_group in self.contains_constraint_groups:
+                        if constraint_or_group_too_keep == const_group:
+                            child_group_list_of_positive_cases = const_group.prepare_positive_cases()
+                            new_further_processed_variances = list()
+                            for left_partial in partially_processed_variances:
+                                for child_variant in child_group_list_of_positive_cases:
+                                    new_further_processed_variances.append(
+                                        left_partial.merge_my_copy_with_group(child_variant)
+                                    )
+                            partially_processed_variances = new_further_processed_variances
+                            continue
+                        child_group_list_of_restriction_variances = const_group.make_all_restricting_variations()
+                        new_further_processed_variances = list()
+                        for left_partial in partially_processed_variances:
+                            for child_restriction_variant in child_group_list_of_restriction_variances:
+                                new_further_processed_variances.append(
+                                    left_partial.merge_my_copy_with_group(child_restriction_variant)
+                                )
+                        partially_processed_variances = new_further_processed_variances
+                    positive_cases.extend(partially_processed_variances)
+
+            elif isinstance(self, _core.AndGroup):
+                if len(self.contains_constraint_groups) == 0:
+                    positive_cases.append(self)
+                else:
+                    for child_group in self.contains_constraint_groups:
+                        child_group_list_of_positive_cases = child_group.prepare_positive_cases()
+                        for child_case in child_group_list_of_positive_cases:
+                            positive_cases.append(self.merge_my_copy_with_group(child_case))
+
+            if len(positive_cases) == 0:
+                raise Exception("ERROR: aljsdnfoiwpeidfmm3n49r7fy")
+            return positive_cases
+
+
+        def prepare_positive_cases_as_list(self):
+            """ TODO: Remove that function !!!"""
+            list_of_logic_sentence = list()
+            if isinstance(self, _core.OrGroup):
+                for constraint_for_keeps in self.has_constraints:
+                    positive_case_logic_sentence = list()
+                    for constraint_under_process in self.has_constraints:
+                        if constraint_for_keeps == constraint_under_process:
+                            positive_case_logic_sentence.append(constraint_under_process)
+                        else:
+                            positive_case_logic_sentence.append(constraint_under_process.toggle_restriction())
+                    list_of_logic_sentence.append(positive_case_logic_sentence)
+            else:
+                list_of_logic_sentence.append(self.has_constraints.copy())
+
+            # recursive of groups - for broken down or group or and group
+            for child_group in self.contains_constraint_groups:
+                child_group_list_of_positive_cases = child_group.prepare_positive_cases_as_list()
+                multiplied_lists = \
+                    self.multiplicator.multiply(list_of_logic_sentence, child_group_list_of_positive_cases)
+                list_of_logic_sentence = multiplied_lists
+
+            return list_of_logic_sentence
+
+
+        def convert_to_positive_cases(self):
+            # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
+            # 2. Merge groups
+            # 3. Convert to Realization cases
+            # 4. Return
+            # prepare_relevant_partition_values
+            pass
+
+        def convert_to_negative_cases(self):
+            # 1. for each constraint negate it and make new group out of it recursively
+            # 2. Merge groups
+            # 3. Convert to Realization cases
+            # 4. Return
+            pass
+
+        # def prepare_all_positive_
 
         # def make_realizable_list_of_constraints_random(self):
         #     if isinstance(self, _core.OrGroup):
@@ -328,18 +474,3 @@ def extend_core(context: ExtensionContext):
 
         def has_more_relevant_options(self):
             return any([constraint.has_more_relevant_options() for constraint in self.has_constraints])
-
-        def convert_to_positive_cases(self):
-            # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
-            # 2. Merge groups
-            # 3. Convert to Realization cases
-            # 4. Return
-            # prepare_relevant_partition_values
-            pass
-
-        def convert_to_negative_cases(self):
-            # 1. for each constraint negate it and make new group out of it recursively
-            # 2. Merge groups
-            # 3. Convert to Realization cases
-            # 4. Return
-            pass

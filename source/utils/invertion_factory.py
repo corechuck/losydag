@@ -9,7 +9,16 @@ from core_classes.Constraints import MAX_RANGE, MIN_RANGE
 # Invert negation to compliment set
 # negate != invert that class is actually invertion factory
 
-class ConstraintInverter():
+class ConstraintRestrictor:
+    core = None
+
+    def __init__(self, _core):
+        self.core = _core
+
+
+
+
+class ConstraintInverter:
     core = None
     
     def __init__(self, _core):

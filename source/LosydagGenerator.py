@@ -48,15 +48,15 @@ class LosydagGenerator:
         print(f"INFO: Realizing: {real_case.name}")
         return real_case.realize_random_fresh()
 
-    def generate_all_positive_datasets_from_generic_group(self, group_iri):
-        generic_group = self.onto.search_one(iri=f"*{group_iri}")
-        generic_group._verbal = True  # for now
-        return generic_group.realize_all_test_case_relevant_datasets()
+    def generate_all_test_case_datasets_from_realization_case(self, group_iri):
+        realization_case = self.onto.search_one(iri=f"*{group_iri}")
+        realization_case._verbal = True  # for now
+        return realization_case.realize_all_test_case_relevant_datasets()
 
-    def generate_all_negative_datasets_from_generic_group(self, group_iri):
-        generic_group = self.onto.search_one(iri=f"*{group_iri}")
-        list_of_realization_cases = generic_group.convert_to_negative_cases()
-        return self._realize_all_cases(list_of_realization_cases)
+    # def generate_all_negative_cases_from_realization_case(self, group_iri):
+    #     realization_case = self.onto.search_one(iri=f"*{group_iri}")
+    #     list_of_realization_cases = realization_case.convert_to_negative_cases()
+    #     return self._realize_all_cases(list_of_realization_cases)
 
     @staticmethod
     def _realize_all_cases(_list_of_realization_cases):
@@ -65,11 +65,17 @@ class LosydagGenerator:
             realized_datasets[realization_case.name] = realization_case.realize_all_test_case_relevant_datasets()
         return realized_datasets
 
+    def generate_data_for_all_positive_cases_from_iri(self, group_iri):
+        """This method breaks down ConstraintGroup to all and precise POSITIVE cases of
+        modelled custom constraints. This uses pairwaise approach of defining positive cases."""
 
-    # def positive_case_breakdown(self):
-    #     """This method breaks down this Realization Case to all and precise POSITIVE cases of
-    #     modelled custom constraints. This uses pairwaise approach of defining positive cases."""
-    #     pass
+        generic_group = self.onto.search_one(iri=f"*{group_iri}")
+        list_of_realization_cases = generic_group.convert_to_negative_cases()
+        return self._realize_all_cases(list_of_realization_cases)
+
+    def _breakdown_and_generate_data_for_all_positive_cases(self, constraint_group):
+        constraint_group.convert_to_positive_cases()
+
     #
     # def negative_case_breakdown(self):
     #     """This method breaks down this Realization Case to all and precise NEGATIVE cases of

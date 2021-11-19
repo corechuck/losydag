@@ -46,31 +46,3 @@ class ExtensionContext:
     value_generation_supervisor: ValueGenerationSupervisor = None
 
 
-class MultiplicationSupervisor():
-    core = None
-
-    def __init__(self, core):
-        self.core = core
-
-    def multiply_groups(self, left_group, right_group):
-        left_list = list()
-        if isinstance(left_group, self.core.OrGroup):
-            left_list.extend(map(lambda e: [e], left_group.has_constraints))
-        else:
-            left_list.append(left_group.has_constraints)
-
-        right_list = list()
-        if isinstance(right_group, self.core.OrGroup):
-            right_list.extend(map(lambda e: [e], right_group.has_constraints))
-        else:
-            right_list.append(right_group.has_constraints)
-
-        multiplied_sets = list()
-        for left_element_list in left_list:
-            for right_element_list in right_list:
-                new_list = list()
-                new_list.extend(left_element_list)
-                new_list.extend(right_element_list)
-                multiplied_sets.append(new_list)
-
-        return multiplied_sets

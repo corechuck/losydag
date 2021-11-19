@@ -18,15 +18,117 @@ def realized_case_positive():
     print("INFO: Generating RealizationCase.Check1 in fixture:")
     loaded_onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
     loaded_onto.load(only_local=True)
-    generator = LosydagGenerator(loaded_onto)
+    generator: LosydagGenerator = LosydagGenerator(loaded_onto)
     realized_cases = generator.generate_all_positive_datasets_from_generic_group("RealizationCase.Check1")
     return realized_cases
 
 
-def test_generated_data_have_all_needed_tables(realized_case_positive):
-    assert realized_case_positive is not None
+# def test_generated_data_have_all_needed_tables(realized_case_positive):
+#     assert realized_case_positive is not None
 
-    
+
+def test_positive_breadown_3_levels_deep(prepared_core, list_constraint_under_test, min_range_constraint_under_test,
+                                         max_range_constraint_under_test, regex_constraint_under_test,
+                                         actual_range_constraint_under_test):
+    group_1 = prepared_core.ConstraintGroup("group_root")
+    group_2 = prepared_core.ConstraintGroup("group_child")
+    group_2.is_a.append(prepared_core.OrGroup)
+    group_2.is_a.remove(prepared_core.AndGroup)
+    group_3 = prepared_core.ConstraintGroup("group_grandchild")
+
+    group_1.has_constraints = [list_constraint_under_test]
+    group_2.has_constraints = [min_range_constraint_under_test, regex_constraint_under_test]
+    group_3.has_constraints = [max_range_constraint_under_test, actual_range_constraint_under_test]
+
+    group_1.contains_constraint_groups = [group_2]
+    group_2.contains_constraint_groups = [group_3]
+
+    result = group_1.prepare_positive_cases()
+    assert result is not None
+    # 4 and 5th is not broken down - I think
+
+
+def test_positive_breadown_2_levels_deep(prepared_core, list_constraint_under_test, min_range_constraint_under_test,
+                                         max_range_constraint_under_test, regex_constraint_under_test,
+                                         actual_range_constraint_under_test):
+    group_1 = prepared_core.ConstraintGroup("group_root_2")
+    group_2 = prepared_core.ConstraintGroup("group_child_2")
+    group_2.is_a.append(prepared_core.OrGroup)
+    group_2.is_a.remove(prepared_core.AndGroup)
+
+    group_1.has_constraints = [list_constraint_under_test]
+    group_2.has_constraints = \
+        [min_range_constraint_under_test, max_range_constraint_under_test, regex_constraint_under_test]
+
+    group_1.contains_constraint_groups = [group_2]
+
+    result = group_1.prepare_positive_cases()
+    assert result is not None
+
+
+def test_positive_breadown_2_levels_deep_v2(prepared_core, list_constraint_under_test, min_range_constraint_under_test,
+                                         max_range_constraint_under_test, regex_constraint_under_test,
+                                         actual_range_constraint_under_test):
+    addition = "_3"
+    group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
+    group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
+    group_2.is_a.append(prepared_core.OrGroup)
+    group_2.is_a.remove(prepared_core.AndGroup)
+
+    group_1.has_constraints = [list_constraint_under_test]
+    group_2.has_constraints = \
+        [min_range_constraint_under_test, max_range_constraint_under_test, regex_constraint_under_test]
+
+    group_2.contains_constraint_groups = [group_1]
+
+    result = group_2.prepare_positive_cases()
+    assert result is not None
+
+
+def test_positive_breadown_2_levels_deep_v4(
+        prepared_core, list_constraint_under_test, min_range_constraint_under_test,
+        max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
+    addition = "_4"
+    group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
+    group_1.is_a.append(prepared_core.OrGroup)
+    group_1.is_a.remove(prepared_core.AndGroup)
+    group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
+    group_2.is_a.append(prepared_core.OrGroup)
+    group_2.is_a.remove(prepared_core.AndGroup)
+
+    group_1.has_constraints = [list_constraint_under_test, actual_range_constraint_under_test]
+    group_2.has_constraints = \
+        [min_range_constraint_under_test, max_range_constraint_under_test, regex_constraint_under_test]
+
+    group_1.contains_constraint_groups = [group_2]
+
+    result = group_1.prepare_positive_cases()
+    assert result is not None
+    assert len(result) == 5
+
+def test_positive_breadown_2_levels_deep_v5(
+        prepared_core, list_constraint_under_test, min_range_constraint_under_test,
+        max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
+    addition = "_5"
+    group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
+    group_1.is_a.append(prepared_core.OrGroup)
+    group_1.is_a.remove(prepared_core.AndGroup)
+    group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
+    group_2.is_a.append(prepared_core.OrGroup)
+    group_2.is_a.remove(prepared_core.AndGroup)
+    group_3 = prepared_core.ConstraintGroup("group_grandchild{addition}")
+
+    group_1.has_constraints = [list_constraint_under_test]
+    group_2.has_constraints = [min_range_constraint_under_test, max_range_constraint_under_test]
+    group_3.has_constraints = [actual_range_constraint_under_test, regex_constraint_under_test]
+
+    group_1.contains_constraint_groups = [group_2, group_3]
+
+    result = group_1.prepare_positive_cases()
+    assert result is not None
+    assert len(result) == 7
+
+
 # def test_that_equal_external_dependency_are_equal(realized_case):
 #     assert realized_case['Table.Ref_01'][0]['Col0_id'] == (
 #         realized_case['Table.Test3'][0]['Col2_property1_number']
@@ -89,7 +191,6 @@ def test_generated_data_have_all_needed_tables(realized_case_positive):
 # def test_all_realizations_have_been_overridden(realized_case):
 #     assert realized_case['Table.Test2'][0]['Col3_text'] not in ["London", "Tokio", "Paris"]
 #     assert realized_case['Table.Test2'][1]['Col3_text'] not in ["London", "Tokio", "Paris"]
-
 
 
 """

@@ -17,9 +17,10 @@ def extend_core(context: ExtensionContext):
     class Constraint(Thing):
         namespace = _core
         TRIES_COUNT = 500
+        my_restrictor = None
 
-        def __init__(self, name=None, namespace=None, **kargs):
-            super().__init__(name=name, namespace=namespace, **kargs)
+        def __init__(self, name=None, namespace=None, **kwargs):
+            super().__init__(name=name, namespace=namespace, **kwargs)
             self.not_picks = list()
             self.not_matching_regexes = list()
             self.partition_relevant_value_options = list()
@@ -60,7 +61,7 @@ def extend_core(context: ExtensionContext):
         #     return any(constraint.does_value_match_constraint(value) for constraint in list_of_not_constraint)
 
         def does_value_match_constraint(self, value_under_question):
-            return not value_under_question
+            return False
 
         def __is_value_matching_prohibited_regexes(self, question_value):
             partial_checks = [pat for pat in self.not_matching_regexes if re.search(pat, question_value)]
@@ -142,6 +143,23 @@ def extend_core(context: ExtensionContext):
 
         def prepare_relevant_partition_values(self):
             self.partition_relevant_value_options = []
+
+        def toggle_restriction(self):
+            if not self.my_restrictor:
+                self.my_restrictor = _core.RestrictiveConstraint(restricting_constraint=self)
+            return self.my_restrictor
+
+    class RestrictiveConstraint(Constraint):
+
+        def __init__(self, name=None, namespace=None, restricting_constraint=None,  **kwargs):
+            super().__init__(name=name, namespace=namespace, **kwargs)
+            self.restricting_constraint = restricting_constraint
+
+        def does_value_match_constraint(self, value_under_question):
+            return self.restricting_constraint.does_value_match_constraint(value_under_question)
+
+        def toggle_restriction(self):
+            return self.restricting_constraint
 
     class ListConstraint(Constraint):
         namespace = _core
