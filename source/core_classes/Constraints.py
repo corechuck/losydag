@@ -145,6 +145,7 @@ def extend_core(context: ExtensionContext):
             self.partition_relevant_value_options = []
 
         def toggle_restriction(self):
+            """ This is a wierd name. This method will make restriction or return internal constraint."""
             if not self.my_restrictor:
                 self.my_restrictor = _core.RestrictiveConstraint(restricting_constraint=self)
             return self.my_restrictor
@@ -153,13 +154,17 @@ def extend_core(context: ExtensionContext):
 
         def __init__(self, name=None, namespace=None, restricting_constraint=None,  **kwargs):
             super().__init__(name=name, namespace=namespace, **kwargs)
-            self.restricting_constraint = restricting_constraint
+            self.restriction_definition = restricting_constraint
 
         def does_value_match_constraint(self, value_under_question):
-            return self.restricting_constraint.does_value_match_constraint(value_under_question)
+            return self.restriction_definition.does_value_match_constraint(value_under_question)
 
         def toggle_restriction(self):
-            return self.restricting_constraint
+            return self.restriction_definition
+
+        @property
+        def restricting_column(self):
+            return self.restricting_columns[0]
 
     class ListConstraint(Constraint):
         namespace = _core

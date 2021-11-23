@@ -1,6 +1,6 @@
 import unittest
 
-from utils.utils import MultiplicationSupervisor
+from utils.sentence_processing import MultiplicationSupervisor
 
 
 def test_multiplication_with_and_to_and(

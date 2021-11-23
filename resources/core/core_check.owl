@@ -195,6 +195,27 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#restricting_columns -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#restricting_columns">
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RestrictiveConstraint"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#restriction_definition"/>
+            <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column"/>
+        </owl:propertyChainAxiom>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#restriction_definition -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#restriction_definition">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -481,7 +502,7 @@
     <!-- http://corechuck.com/modeling/core_check#RestrictiveConstraint -->
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RestrictiveConstraint">
-        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
     </owl:Class>
     
 

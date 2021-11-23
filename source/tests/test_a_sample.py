@@ -44,7 +44,9 @@ def test_that_id_column_format_is_valid(realized_case):
 
 
 def test_column_follows_list_constraint(realized_case):
-    assert realized_case['Table.Test1'][0]['Col1_n'] in ["32", "14"]
+    working_or_group_value = int(realized_case['Table.Test1'][0]['Col1_n'])
+    assert realized_case['Table.Test1'][0]['Col1_n'] not in ["32", "14"]
+    assert -1000 <= working_or_group_value <= 1000 or 10000 <= working_or_group_value <= 20000
 
 
 def test_that_column_has_date_simple(realized_case):

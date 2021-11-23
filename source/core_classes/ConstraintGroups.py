@@ -37,7 +37,8 @@ def extend_core(context: ExtensionContext):
             self.has_constraints = _merge_groups_left_prio(_other_constraint_group, self)
 
         def names_of_constrained_columns(self):
-            return [const.is_constraining_column.name for const in self.has_constraints]
+            return [const.is_constraining_column.name
+                    for const in self.has_constraints if not isinstance(const, _core.RestrictiveConstraint)]
 
         def has_dependencies(self):
             return list(filter(lambda cons: isinstance(cons, _core.ValueDependency), self.has_constraints))
@@ -69,7 +70,11 @@ def extend_core(context: ExtensionContext):
                 return
 
             column_to_merged_constraint = dict()
+            restrictive_constraints = list()
             for constraint in self.has_constraints:
+                if isinstance(constraint, _core.RestrictiveConstraint):
+                    restrictive_constraints.append(constraint)
+                    continue
                 column_name = constraint.is_constraining_column.name
                 if column_name not in column_to_merged_constraint:
                     column_to_merged_constraint[column_name] = constraint
@@ -77,6 +82,7 @@ def extend_core(context: ExtensionContext):
                     left_constraint = column_to_merged_constraint[column_name]
                     column_to_merged_constraint[column_name] = left_constraint.merge_with(constraint)
             self.has_constraints = list(column_to_merged_constraint.values())
+            self.has_constraints.extend(restrictive_constraints)
 
         def convert_to_realization_definition(self):
             if not self._is_constraining_single_table():
@@ -88,7 +94,10 @@ def extend_core(context: ExtensionContext):
         def build_realization_case(self):
             table_to_group_cache = defaultdict(_core.ConstraintGroup)
             for constraint_under in self.has_constraints:
-                tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
+                if isinstance(constraint_under, _core.RestrictiveConstraint):
+                    tbl_name = constraint_under.restricting_column.is_part_of_table.name
+                else:
+                    tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
                 table_to_group_cache[tbl_name].has_constraints.append(constraint_under)
 
             # for r_constraint_under in self.has_restricting_constraints:
@@ -135,14 +144,6 @@ def extend_core(context: ExtensionContext):
                 self.has_constraints.extend(flatted_list_of_branch_constraints)
                 self.unify_constraints()
             return meta_info_list
-
-
-
-        # def breakdown_mutually_exclusive_or_branches(self):
-        #     if not isinstance(constraint_group, self.core.RestrictiveConstraint):
-        #         return constraint_group
-
-        # def prepare_positive_cases(self):
 
         def make_all_restricting_variations(self):
             if self.my_restriction_variations:
@@ -230,31 +231,6 @@ def extend_core(context: ExtensionContext):
             if len(positive_cases) == 0:
                 raise Exception("ERROR: aljsdnfoiwpeidfmm3n49r7fy")
             return positive_cases
-
-
-        def prepare_positive_cases_as_list(self):
-            """ TODO: Remove that function !!!"""
-            list_of_logic_sentence = list()
-            if isinstance(self, _core.OrGroup):
-                for constraint_for_keeps in self.has_constraints:
-                    positive_case_logic_sentence = list()
-                    for constraint_under_process in self.has_constraints:
-                        if constraint_for_keeps == constraint_under_process:
-                            positive_case_logic_sentence.append(constraint_under_process)
-                        else:
-                            positive_case_logic_sentence.append(constraint_under_process.toggle_restriction())
-                    list_of_logic_sentence.append(positive_case_logic_sentence)
-            else:
-                list_of_logic_sentence.append(self.has_constraints.copy())
-
-            # recursive of groups - for broken down or group or and group
-            for child_group in self.contains_constraint_groups:
-                child_group_list_of_positive_cases = child_group.prepare_positive_cases_as_list()
-                multiplied_lists = \
-                    self.multiplicator.multiply(list_of_logic_sentence, child_group_list_of_positive_cases)
-                list_of_logic_sentence = multiplied_lists
-
-            return list_of_logic_sentence
 
 
         def convert_to_positive_cases(self):
@@ -455,7 +431,7 @@ def extend_core(context: ExtensionContext):
                 potentially_restrictive_constraint
                 for potentially_restrictive_constraint in self.has_constraints
                 if isinstance(potentially_restrictive_constraint, _core.RestrictiveConstraint) and (
-                    potentially_restrictive_constraint.is_constraining_column.plain_name ==
+                    potentially_restrictive_constraint.restricting_column.plain_name ==
                     constraint.is_constraining_column.plain_name
                 )
             ]

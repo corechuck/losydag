@@ -6,7 +6,7 @@ _verbal = False
 
 
 def _merge_groups_left_prio(group1, group2):
-    """ Left prio means that if group1 and group2 has contraint for same column, 
+    """ Left prio means that if group1 and group2 has constraint for same column,
     left-group1 will be taken and group2 not"""
 
     new_overwritten_list = group1.has_constraints.copy()

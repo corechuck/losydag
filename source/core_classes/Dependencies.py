@@ -121,7 +121,7 @@ def extend_core(context: ExtensionContext):
             from_column_name = self.is_depending_on_column.plain_name
             converted_range = _core.RangeConstraint(f"range_from_{from_column_name}_{round(random()*100000)}")
             converted_range.is_constraining_column = self.is_constraining_column
-            converted_range.has_min_range = self.is_depending_on_realization._return_dict[from_column_name]
+            converted_range.has_min_range = int(self.is_depending_on_realization._return_dict[from_column_name])
             generated_value = converted_range._generate()
             return generated_value
 
@@ -157,7 +157,7 @@ def extend_core(context: ExtensionContext):
             from_column_name = self.is_depending_on_column.plain_name
             converted_range = _core.RangeConstraint(f"range_from_{from_column_name}_{round(random()*100000)}")
             converted_range.is_constraining_column = self.is_constraining_column
-            converted_range.has_max_range = self.is_depending_on_realization._return_dict[from_column_name]
+            converted_range.has_max_range = int(self.is_depending_on_realization._return_dict[from_column_name])
             generated_value = converted_range._generate()
             return generated_value
 
