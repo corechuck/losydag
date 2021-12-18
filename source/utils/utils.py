@@ -1,7 +1,3 @@
-from enum import Enum
-
-from utils.value_generator_supervisor import ValueGenerationSupervisor
-
 _verbal = False
 
 
@@ -41,8 +37,9 @@ def _supervise_constraint_generation(__internal_generation_function_with_leftove
     return True
 
 
-class ExtensionContext:
-    core = None
-    value_generation_supervisor: ValueGenerationSupervisor = None
+class MergingException(Exception):
+    pass
 
 
+class ValueGenerationException(Exception):
+    pass

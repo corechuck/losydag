@@ -40,8 +40,8 @@ def test_negation_of_negated_range(prepared_core, invert, actual_range_constrain
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
     assert len(actual_negation_group.has_constraints) == 1
     double_negated_range = actual_negation_group.has_constraints[0]
-    assert double_negated_range.has_min_range == actual_range_constraint_under_test.has_min_range
-    assert double_negated_range.has_max_range == actual_range_constraint_under_test.has_max_range
+    assert double_negated_range.left_boundary == actual_range_constraint_under_test.left_boundary
+    assert double_negated_range.right_boundary == actual_range_constraint_under_test.right_boundary
     assert len(double_negated_range.not_picks) == 0
 
 
@@ -56,7 +56,7 @@ def test_negation_of_negated_list(prepared_core, invert, list_constraint_under_t
     assert double_negated_range.has_picks == list_constraint_under_test.has_picks
     assert len(double_negated_range.not_picks) == 0
 
-#
+
 def test_negation_of_negated_range_with_excluded_value(prepared_core, invert, actual_range_constraint_under_test):
     actual_range_constraint_under_test.not_picks = [33]
     middle_negation_group = invert(actual_range_constraint_under_test)
@@ -66,8 +66,8 @@ def test_negation_of_negated_range_with_excluded_value(prepared_core, invert, ac
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
     assert len(actual_negation_group.has_constraints) == 1
     double_negated_range = actual_negation_group.has_constraints[0]
-    assert double_negated_range.has_min_range == actual_range_constraint_under_test.has_min_range
-    assert double_negated_range.has_max_range == actual_range_constraint_under_test.has_max_range
+    assert double_negated_range.left_boundary == actual_range_constraint_under_test.left_boundary
+    assert double_negated_range.right_boundary == actual_range_constraint_under_test.right_boundary
     assert len(double_negated_range.not_picks) == 1
     assert 33 in double_negated_range.not_picks
 

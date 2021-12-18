@@ -11,7 +11,7 @@ from core_classes.ConstraintGroups import extend_core as extend_constraint_group
 from core_classes.SimpleExtensions import extend_core as extend_simple_types
 from core_classes.Dependencies import extend_core as extend_dependencies
 from core_classes.RealizationCase import extend_core as extend_realization_case
-from utils.utils import ExtensionContext
+from utils.context import ExtensionContext
 from utils.value_generator_supervisor import ValueGenerationSupervisor
 
 
@@ -47,7 +47,7 @@ def min_req_list_constraint_under_test(prepared_core):
 @fixture()
 def min_req_range_constraint_under_test(prepared_core):
     range_const = prepared_core.RangeConstraint("lmgjkhawopinvzdff")
-    range_const.has_min_range = 40
+    range_const.set_left_boundary(40)
     yield range_const
     # destroy_entity(range_const)
 
@@ -124,7 +124,7 @@ def list_constraint_under_test(prepared_core, prepared_column):
 def min_range_constraint_under_test(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("sgfgegawe")
     range_const.is_constraining_column = prepared_column
-    range_const.has_min_range = 40
+    range_const.set_left_boundary(40)
     yield range_const
     #destroy_entity(range_const)
 
@@ -134,7 +134,7 @@ def max_range_constraint_under_test(prepared_core, prepared_column):
     range_const_cls = prepared_core.RangeConstraint
     range_const = range_const_cls("gajskdufhakdh")
     range_const.is_constraining_column = prepared_column
-    range_const.has_max_range = 40
+    range_const.set_right_boundary(40)
     yield range_const
     # destroy_entity(range_const)
 
@@ -143,8 +143,8 @@ def max_range_constraint_under_test(prepared_core, prepared_column):
 def actual_range_constraint_under_test(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("akjsdhflaishd")
     range_const.is_constraining_column = prepared_column
-    range_const.has_max_range = 40
-    range_const.has_min_range = 10
+    range_const.set_right_boundary(40)
+    range_const.set_left_boundary(10)
     yield range_const
     destroy_entity(range_const)
 

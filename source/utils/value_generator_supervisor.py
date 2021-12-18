@@ -1,5 +1,7 @@
 import random
 
+from utils.utils import ValueGenerationException
+
 
 def is_value_matching_any_constraint(value, matching_list):
     return any(constraint.does_value_match_constraint(value) for constraint in matching_list)
@@ -27,7 +29,7 @@ class ValueGenerationSupervisor:
 
                 if tries >= self.TRIES_COUNT:
                     print(f"INFO: Tried values {tried_values}")
-                    raise Exception(f"ERROR: Could not generate value that met constrained in {self}")
+                    raise ValueGenerationException(f"ERROR: Could not generate value that met constrained in {self}")
 
         return "#non-value-002"
 

@@ -7,7 +7,8 @@ import random
 from owlready2 import Thing, sync_reasoner_pellet
 
 from utils.sentence_processing import MultiplicationSupervisor
-from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, ExtensionContext
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
+from utils.context import ExtensionContext
 
 
 def extend_core(context: ExtensionContext):

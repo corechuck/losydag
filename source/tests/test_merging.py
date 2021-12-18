@@ -257,8 +257,8 @@ def test_regex_merged_with_multiple_not_matches(prepared_core, prepared_column, 
 def test_range_merged_with_not_in_list(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("jhlkndsd")
     range_const.is_constraining_column = prepared_column
-    range_const.has_min_range = 40
-    range_const.has_max_range = 60
+    range_const.set_left_boundary(40)
+    range_const.set_right_boundary(60)
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
@@ -287,8 +287,8 @@ def test_range_merged_with_not_in_list(prepared_core, prepared_column):
 def test_range_merged_with_not_match(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("jhlkndsd")
     range_const.is_constraining_column = prepared_column
-    range_const.has_min_range = 40
-    range_const.has_max_range = 60
+    range_const.set_left_boundary(40)
+    range_const.set_right_boundary(60)
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
@@ -316,8 +316,8 @@ def test_range_merged_with_not_match(prepared_core, prepared_column):
 def test_range_merged_with_multiple_not_matches(prepared_core, prepared_column):
     range_const = prepared_core.RangeConstraint("jhlkndsd")
     range_const.is_constraining_column = prepared_column
-    range_const.has_min_range = 40
-    range_const.has_max_range = 60
+    range_const.set_left_boundary(40)
+    range_const.set_right_boundary(60)
 
     generic_constraint = prepared_core.Constraint()
     generic_constraint.is_constraining_column = prepared_column
@@ -364,8 +364,8 @@ def test_unification_of_constraint_works_with_dependencies(prepared_core, prepar
 
     range_const = prepared_core.RangeConstraint("jhlkndsd")
     range_const.is_constraining_column = prepared_column
-    range_const.has_min_range = 40
-    range_const.has_max_range = 60
+    range_const.set_left_boundary(40)
+    range_const.set_right_boundary(60)
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
@@ -413,8 +413,8 @@ def test_constraints_for_multiple_tables_in_constraints_group_bad_convertion_to_
 
     range_const = prepared_core.RangeConstraint("jhlkndsd")
     range_const.is_constraining_column = prepared_table.has_columns[0]
-    range_const.has_min_range = 40
-    range_const.has_max_range = 60
+    range_const.set_left_boundary(40)
+    range_const.set_right_boundary(60)
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
@@ -437,8 +437,10 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
 
     range_const = prepared_core.RangeConstraint("lkjasdnfkadfj")
     range_const.is_constraining_column = prepared_table.has_columns[0]
-    range_const.has_min_range = 40
-    range_const.has_max_range = 60
+    # range_const.has_min_range = 40
+    # range_const.has_max_range = 60
+    range_const.set_left_boundary(40)
+    range_const.set_right_boundary(60)
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)

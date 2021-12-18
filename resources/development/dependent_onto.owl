@@ -360,6 +360,8 @@
     <!-- http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number">
+        <core_check:has_left_boundary rdf:resource="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number.left_b"/>
+        <core_check:has_right_boundary rdf:resource="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number.right_b"/>
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test3.Col2_property1_number"/>
         <core_check:has_max_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">99999</core_check:has_max_range>
         <core_check:has_min_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-50000</core_check:has_min_range>
@@ -367,9 +369,27 @@
     
 
 
+    <!-- http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number.left_b -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number.left_b">
+        <core_check:has_boundary_value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-50000</core_check:has_boundary_value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number.right_b -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test3.Col3__random_number.right_b">
+        <core_check:has_boundary_value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">99999</core_check:has_boundary_value>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1 -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1">
+        <core_check:has_left_boundary rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1.left_boundary"/>
+        <core_check:has_right_boundary rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1.right_boundary"/>
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col1_n"/>
         <core_check:has_max_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</core_check:has_max_range>
         <core_check:has_min_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-1000</core_check:has_min_range>
@@ -377,12 +397,50 @@
     
 
 
+    <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1.left_boundary -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1.left_boundary">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OpenRangeBoundary"/>
+        <core_check:has_boundary_value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-1000</core_check:has_boundary_value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1.right_boundary -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range1.right_boundary">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#ClosedRangeBoundary"/>
+        <core_check:has_boundary_value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</core_check:has_boundary_value>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2 -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2">
+        <core_check:has_left_boundary rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2.left_boundary"/>
+        <core_check:has_right_boundary rdf:resource="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2.right_boundary"/>
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col1_n"/>
         <core_check:has_max_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20000</core_check:has_max_range>
         <core_check:has_min_range rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10000</core_check:has_min_range>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2.left_boundary -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2.left_boundary">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OpenRangeBoundary"/>
+        <core_check:has_boundary_value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10000</core_check:has_boundary_value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2.right_boundary -->
+
+    <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#CustConst.Test1.Col1_range2.right_boundary">
+        <rdf:type rdf:resource="http://corechuck.com/modeling/core_check#OpenRangeBoundary"/>
+        <core_check:has_boundary_value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20000</core_check:has_boundary_value>
     </owl:NamedIndividual>
     
 
@@ -448,8 +506,8 @@
     <!-- http://corechuck.com/modeling/dependent_onto#Decimal_10_3 -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Decimal_10_3">
-        <core_check:has_precision rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</core_check:has_precision>
-        <core_check:has_scale rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</core_check:has_scale>
+        <core_check:has_precision rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</core_check:has_precision>
+        <core_check:has_scale rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</core_check:has_scale>
     </owl:NamedIndividual>
     
 

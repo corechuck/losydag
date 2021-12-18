@@ -91,6 +91,16 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#has_left_boundary -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_left_boundary">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeConstraint"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#has_min_reqs -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_min_reqs">
@@ -104,6 +114,16 @@
     <!-- http://corechuck.com/modeling/core_check#has_restricting_constraints -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_restricting_constraints"/>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#has_right_boundary -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_right_boundary">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeConstraint"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
+    </owl:ObjectProperty>
     
 
 
@@ -227,6 +247,16 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#has_boundary_value -->
+
+    <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_boundary_value">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#has_format_definition -->
 
     <owl:DatatypeProperty rdf:about="http://corechuck.com/modeling/core_check#has_format_definition">
@@ -323,6 +353,14 @@
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Boolean">
         <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#DataType"/>
+    </owl:Class>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#ClosedRangeBoundary -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#ClosedRangeBoundary">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
     </owl:Class>
     
 
@@ -451,6 +489,14 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#OpenRangeBoundary -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#OpenRangeBoundary">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
+    </owl:Class>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#Operators -->
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#Operators">
@@ -463,6 +509,14 @@
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#OrGroup">
         <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Operators"/>
+    </owl:Class>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#RangeBoundary -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#RangeBoundary">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Modeling"/>
     </owl:Class>
     
 

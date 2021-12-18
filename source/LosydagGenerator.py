@@ -7,7 +7,7 @@ from core_classes.SimpleExtensions import extend_core as extend_simple_types
 from core_classes.Dependencies import extend_core as extend_dependencies
 from core_classes.RealizationCase import extend_core as extend_realization_case
 from core_classes.LogicalOperators import extend_core as extend_logical_operators
-from utils.utils import ExtensionContext
+from utils.context import ExtensionContext
 from utils.value_generator_supervisor import ValueGenerationSupervisor
 
 onto_path.append(f"{os.getcwd()}/resources/core/")

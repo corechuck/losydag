@@ -4,7 +4,7 @@ from owlready2 import Thing
 import string
 import rstr
 
-from utils.utils import ExtensionContext
+from utils.context import ExtensionContext
 
 
 def extend_core(context: ExtensionContext):
@@ -99,6 +99,23 @@ def extend_core(context: ExtensionContext):
 
             return super()._generate(_local_dict)
 
+        def _generate_for_local_dependency(self, _local_dict):
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(
+                f"range_from_local_dependency_{from_column_name}_{round(random()*100000)}",
+                left_boundary=_local_dict[self.is_depending_on_column.plain_name])
+            converted_range.is_constraining_column = self.is_constraining_column
+            return converted_range.generate()
+
+        def _generate_for_external_dependency(self):
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(
+                f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
+                left_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]))
+            converted_range.is_constraining_column = self.is_constraining_column
+            generated_value = converted_range._generate()
+            return generated_value
+
     class GreaterThenDependency(ValueDependency):
         namespace = _core
 
@@ -112,16 +129,21 @@ def extend_core(context: ExtensionContext):
             return super()._generate(_local_dict)
 
         def _generate_for_local_dependency(self, _local_dict):
-            converted_range = _core.RangeConstraint()
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(
+                f"range_from_local_dependency_{from_column_name}_{round(random()*100000)}",
+                left_boundary=_local_dict[self.is_depending_on_column.plain_name],
+                is_left_open=True)
             converted_range.is_constraining_column = self.is_constraining_column
-            converted_range.has_min_range = _local_dict[self.is_depending_on_column.plain_name]
             return converted_range.generate()
 
         def _generate_for_external_dependency(self):
             from_column_name = self.is_depending_on_column.plain_name
-            converted_range = _core.RangeConstraint(f"range_from_{from_column_name}_{round(random()*100000)}")
+            converted_range = _core.RangeConstraint(
+                f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
+                left_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]),
+                is_left_open=True)
             converted_range.is_constraining_column = self.is_constraining_column
-            converted_range.has_min_range = int(self.is_depending_on_realization._return_dict[from_column_name])
             generated_value = converted_range._generate()
             return generated_value
 
@@ -136,6 +158,23 @@ def extend_core(context: ExtensionContext):
 
             return super()._generate(_local_dict)
 
+        def _generate_for_local_dependency(self, _local_dict):
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(
+                f"range_from_local_dependency_{from_column_name}_{round(random()*100000)}",
+                right_boundary=_local_dict[self.is_depending_on_column.plain_name])
+            converted_range.is_constraining_column = self.is_constraining_column
+            return converted_range.generate()
+
+        def _generate_for_external_dependency(self):
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(
+                f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
+                right_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]))
+            converted_range.is_constraining_column = self.is_constraining_column
+            generated_value = converted_range._generate()
+            return generated_value
+
     class SmallerThenDependency(ValueDependency):
         namespace = _core
 
@@ -148,16 +187,21 @@ def extend_core(context: ExtensionContext):
             return super()._generate(_local_dict)
 
         def _generate_for_local_dependency(self, _local_dict):
-            converted_range = _core.RangeConstraint()
+            from_column_name = self.is_depending_on_column.plain_name
+            converted_range = _core.RangeConstraint(
+                f"range_from_local_dependency_{from_column_name}_{round(random()*100000)}",
+                right_boundary=_local_dict[self.is_depending_on_column.plain_name],
+                is_right_open=True)
             converted_range.is_constraining_column = self.is_constraining_column
-            converted_range.has_max_range = _local_dict[self.is_depending_on_column.plain_name]
             return converted_range.generate()
 
         def _generate_for_external_dependency(self):
             from_column_name = self.is_depending_on_column.plain_name
-            converted_range = _core.RangeConstraint(f"range_from_{from_column_name}_{round(random()*100000)}")
+            converted_range = _core.RangeConstraint(
+                f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
+                right_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]),
+                is_right_open=True)
             converted_range.is_constraining_column = self.is_constraining_column
-            converted_range.has_max_range = int(self.is_depending_on_realization._return_dict[from_column_name])
             generated_value = converted_range._generate()
             return generated_value
 

@@ -1,5 +1,5 @@
 from owlready2 import Thing
-from utils.utils import ExtensionContext
+from utils.context import ExtensionContext
 
 
 def extend_core(context: ExtensionContext):
