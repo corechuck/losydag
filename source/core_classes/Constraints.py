@@ -72,6 +72,8 @@ def extend_core(context: ExtensionContext):
             return True
 
         def _get_constrained_data_type(self):
+            if self.is_constraining_column is None:
+                return None
             return self.is_constraining_column.has_data_type
 
         def _generate(self, _local_dict):
@@ -316,7 +318,7 @@ def extend_core(context: ExtensionContext):
             return max_viable
 
         def _generate(self, __yagni=None):
-            self.__assert_range_boundaries_are_valid()
+            self._assert_range_boundaries_are_valid()
             self._prepare_min_max()
 
             if type(self._get_constrained_data_type()) == _core.Date:
@@ -338,8 +340,8 @@ def extend_core(context: ExtensionContext):
                 raise Exception(f"ERROR: Chosen right value outside of decimal precision "
                                 f"for column {self.is_constraining_column.name}")
 
-            scaleless_min_viable_value = self.__get_minimum_viable_value() * math.pow(10, self.scale)
-            scaleless_max_viable_value = self.__get_maximum_viable_value() * math.pow(10, self.scale)
+            scaleless_min_viable_value = int(self._get_minimum_viable_value() * math.pow(10, self.scale))
+            scaleless_max_viable_value = int(self._get_maximum_viable_value() * math.pow(10, self.scale))
 
             chosen_number = random.randint(scaleless_min_viable_value, scaleless_max_viable_value)
             return chosen_number / math.pow(10, self.scale)
@@ -381,12 +383,12 @@ def extend_core(context: ExtensionContext):
                isinstance(right_constraint.has_right_boundary, _core.ClosedRangeBoundary):
                 self.has_right_boundary = right_constraint.has_right_boundary
 
-            self.__assert_range_boundaries_are_valid()
+            self._assert_range_boundaries_are_valid()
 
             super()._merge_with(right_constraint)
             return self
 
-        def __assert_range_boundaries_are_valid(self):
+        def _assert_range_boundaries_are_valid(self):
             if self.has_left_boundary.has_boundary_value > self.has_right_boundary.has_boundary_value:
                 raise Exception(f"ERROR: Left boundary is greater then right for Range {self.name}.")
 
@@ -398,12 +400,12 @@ def extend_core(context: ExtensionContext):
                 raise Exception(f"ERROR: Left boundary is equal to right for Range {self.name}.")
 
         def prepare_relevant_partition_values(self):
-            self.__assert_range_boundaries_are_valid()
+            self._assert_range_boundaries_are_valid()
 
             self.partition_relevant_value_options = [
-                self.__get_minimum_viable_value(),
+                self._get_minimum_viable_value(),
                 self.__generate_not_boundary_value(),
-                self.__get_maximum_viable_value()
+                self._get_maximum_viable_value()
             ]
             if self.self.has_left_boundary.has_boundary_value != MIN_RANGE:
                 self.partition_relevant_value_options.append(MIN_RANGE)
