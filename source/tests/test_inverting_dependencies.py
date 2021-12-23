@@ -6,7 +6,6 @@ from random import random
 import pytest
 from owlready2 import get_ontology, sync_reasoner_pellet
 from LosydagGenerator import LosydagGenerator
-from core_classes.Constraints import MAX_RANGE as CONSTRAINTS_MAX_RANGE, MIN_RANGE as CONSTRAINTS_MIN_RANGE
 from utils.invertion_factory import ConstraintInverter
 
 
@@ -131,5 +130,3 @@ def test_negation_equal_dependency(prepared_core, invert, prepared_table, prepar
     assert isinstance(negated_dependency, prepared_core.EqualToDependency)
     assert isinstance(negated_dependency, prepared_core.Negation)
 
-
-# equals

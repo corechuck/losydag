@@ -16,14 +16,8 @@ negation of group ->
 4. negation (or_group with one and_group <- from ontology )
 5. negation (or_group with and_group which have or_group )
 """
-from datetime import datetime
-from random import random
-
 import pytest
-
-from core_classes.Constraints import MAX_RANGE as CONSTRAINTS_MAX_RANGE, MIN_RANGE as CONSTRAINTS_MIN_RANGE
 from utils.invertion_factory import ConstraintInverter
-""" TODO: Empty generic negation what will give you? """
 
 
 @pytest.fixture()
@@ -40,8 +34,8 @@ def test_negation_of_negated_range(prepared_core, invert, actual_range_constrain
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
     assert len(actual_negation_group.has_constraints) == 1
     double_negated_range = actual_negation_group.has_constraints[0]
-    assert double_negated_range.left_boundary == actual_range_constraint_under_test.left_boundary
-    assert double_negated_range.right_boundary == actual_range_constraint_under_test.right_boundary
+    assert double_negated_range.left_limit == actual_range_constraint_under_test.left_limit
+    assert double_negated_range.right_limit == actual_range_constraint_under_test.right_limit
     assert len(double_negated_range.not_picks) == 0
 
 
@@ -66,8 +60,8 @@ def test_negation_of_negated_range_with_excluded_value(prepared_core, invert, ac
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
     assert len(actual_negation_group.has_constraints) == 1
     double_negated_range = actual_negation_group.has_constraints[0]
-    assert double_negated_range.left_boundary == actual_range_constraint_under_test.left_boundary
-    assert double_negated_range.right_boundary == actual_range_constraint_under_test.right_boundary
+    assert double_negated_range.left_limit == actual_range_constraint_under_test.left_limit
+    assert double_negated_range.right_limit == actual_range_constraint_under_test.right_limit
     assert len(double_negated_range.not_picks) == 1
     assert 33 in double_negated_range.not_picks
 

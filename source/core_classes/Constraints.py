@@ -8,9 +8,6 @@ from owlready2 import Thing, destroy_entity
 from utils.utils import MergingException
 from utils.context import ExtensionContext
 
-MAX_RANGE = 999999999
-MIN_RANGE = -999999999
-
 
 def extend_core(context: ExtensionContext):
     _core = context.core
@@ -198,8 +195,27 @@ def extend_core(context: ExtensionContext):
         def prepare_relevant_partition_values(self):
             self.partition_relevant_value_options = self.has_picks.copy()
 
+        def _parse_has_pick_to_floats(self):
+            parsed_list = []
+            for pick in self.has_picks:
+                try:
+                    parsed_list.append(float(pick))
+                except ValueError:
+                    pass
+            return parsed_list
+
         def does_value_match_constraint(self, value_under_question):
-            return value_under_question in self.has_picks
+            plain_compare = value_under_question in self.has_picks
+            if plain_compare:
+                return True
+            try:
+                float_value_under_question = float(value_under_question)
+            except ValueError:
+                return plain_compare
+            floated_picks = self._parse_has_pick_to_floats()
+            if len(floated_picks) == 0:
+                return plain_compare
+            return float_value_under_question in floated_picks
 
     class RegexConstraint(Constraint):
         namespace = _core
@@ -260,9 +276,9 @@ def extend_core(context: ExtensionContext):
                 self.scale = self._get_constrained_data_type().has_scale
 
             if self.has_left_boundary is None and left_boundary is None:
-                self.set_left_boundary(self._get_minimum_left_boundary_for_type(), is_left_open)
+                self.set_left_boundary(self.get_minimum_value_for_data_type(), is_left_open)
             if self.has_right_boundary is None and right_boundary is None:
-                self.set_right_boundary(self._get_maximum_right_boundary_for_type(), is_right_open)
+                self.set_right_boundary(self.get_maximum_value_for_data_type(), is_right_open)
 
         def set_left_boundary(self, value, is_open=False):
             if is_open:
@@ -298,11 +314,11 @@ def extend_core(context: ExtensionContext):
             # if self.has_right_boundary is None:
             #     self.set_right_boundary(self._get_maximum_right_boundary_for_type())
 
-        def _get_minimum_left_boundary_for_type(self):
-            return sum(math.pow(10, d)*9 for d in range(1, self.precision))*-1 / math.pow(10, self.scale)
+        def get_minimum_value_for_data_type(self):
+            return sum(math.pow(10, d)*9 for d in range(0, self.precision))*-1 / math.pow(10, self.scale)
 
-        def _get_maximum_right_boundary_for_type(self):
-            return sum(math.pow(10, d)*9 for d in range(1, self.precision)) / math.pow(10, self.scale)
+        def get_maximum_value_for_data_type(self):
+            return sum(math.pow(10, d)*9 for d in range(0, self.precision)) / math.pow(10, self.scale)
 
         def _get_minimum_viable_value(self):
             min_viable = self.has_left_boundary.has_boundary_value
@@ -332,12 +348,12 @@ def extend_core(context: ExtensionContext):
                 self.scale = self._get_constrained_data_type().has_scale
                 # for decimal we can do some check if max range is greater then scale - precision for decimals.
 
-            if self._get_minimum_viable_value() <= self._get_minimum_left_boundary_for_type():
-                raise Exception(f"ERROR: Chosen left value outside of decimal precision "
+            if self._get_minimum_viable_value() < self.get_minimum_value_for_data_type():
+                raise Exception(f"ERROR: Set left limit outside of precision "
                                 f"for column {self.is_constraining_column.name}")
 
-            if self._get_maximum_viable_value() >= self._get_maximum_right_boundary_for_type():
-                raise Exception(f"ERROR: Chosen right value outside of decimal precision "
+            if self._get_maximum_viable_value() > self.get_maximum_value_for_data_type():
+                raise Exception(f"ERROR: Set right limit outside of decimal precision "
                                 f"for column {self.is_constraining_column.name}")
 
             scaleless_min_viable_value = int(self._get_minimum_viable_value() * math.pow(10, self.scale))
@@ -347,11 +363,11 @@ def extend_core(context: ExtensionContext):
             return chosen_number / math.pow(10, self.scale)
 
         @property
-        def left_boundary(self):
+        def left_limit(self):
             return self.has_left_boundary.has_boundary_value
 
         @property
-        def right_boundary(self):
+        def right_limit(self):
             return self.has_right_boundary.has_boundary_value
 
         def _merge_with(self, right_constraint):
@@ -407,10 +423,10 @@ def extend_core(context: ExtensionContext):
                 self.__generate_not_boundary_value(),
                 self._get_maximum_viable_value()
             ]
-            if self.self.has_left_boundary.has_boundary_value != MIN_RANGE:
-                self.partition_relevant_value_options.append(MIN_RANGE)
-            if self.self.has_right_boundary.has_boundary_value != MAX_RANGE:
-                self.partition_relevant_value_options.append(MAX_RANGE)
+            # if self.has_left_boundary.has_boundary_value != MIN_RANGE:
+            #     self.partition_relevant_value_options.append(MIN_RANGE)
+            # if self.has_right_boundary.has_boundary_value != MAX_RANGE:
+            #     self.partition_relevant_value_options.append(MAX_RANGE)
 
         def __generate_not_boundary_value(self):
             loop = 0

@@ -126,17 +126,16 @@ def min_range_constraint_under_test(prepared_core, prepared_column):
     range_const.is_constraining_column = prepared_column
     range_const.set_left_boundary(40)
     yield range_const
-    #destroy_entity(range_const)
+    destroy_entity(range_const)
 
 
 @fixture()
 def max_range_constraint_under_test(prepared_core, prepared_column):
-    range_const_cls = prepared_core.RangeConstraint
-    range_const = range_const_cls("gajskdufhakdh")
+    range_const = prepared_core.RangeConstraint("gajskdufhakdh")
     range_const.is_constraining_column = prepared_column
     range_const.set_right_boundary(40)
     yield range_const
-    # destroy_entity(range_const)
+    destroy_entity(range_const)
 
 
 @fixture()
@@ -156,5 +155,5 @@ def regex_constraint_under_test(prepared_core, prepared_column):
     regex_const.is_constraining_column = prepared_column
     regex_const.has_regex_format = "[a-z]oo"
     yield regex_const
-    #destroy_entity(regex_const)
+    destroy_entity(regex_const)
 

@@ -10,7 +10,7 @@ def is_value_matching_any_constraint(value, matching_list):
 class ValueGenerationSupervisor:
     TRIES_COUNT = 500
 
-    def generate(self, constraint, not_matching_constraint_list, local_dict):
+    def generate(self, constraint, restrictions_list, local_dict):
         tries = 0
         tried_values = list()
 
@@ -22,7 +22,7 @@ class ValueGenerationSupervisor:
             else:
                 generated_value = str(constraint.generate(local_dict))
 
-            if not is_value_matching_any_constraint(generated_value, not_matching_constraint_list):
+            if not is_value_matching_any_constraint(generated_value, restrictions_list):
                 return generated_value
             else:
                 tried_values.append(generated_value)

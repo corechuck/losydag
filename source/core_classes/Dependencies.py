@@ -109,9 +109,13 @@ def extend_core(context: ExtensionContext):
 
         def _generate_for_external_dependency(self):
             from_column_name = self.is_depending_on_column.plain_name
+            dependent_value = self.is_depending_on_realization._return_dict[from_column_name]
+            if isinstance(dependent_value, str) and not dependent_value.isnumeric():
+                return dependent_value
+
             converted_range = _core.RangeConstraint(
                 f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
-                left_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]))
+                left_boundary=float(dependent_value))
             converted_range.is_constraining_column = self.is_constraining_column
             generated_value = converted_range._generate()
             return generated_value
@@ -141,7 +145,7 @@ def extend_core(context: ExtensionContext):
             from_column_name = self.is_depending_on_column.plain_name
             converted_range = _core.RangeConstraint(
                 f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
-                left_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]),
+                left_boundary=float(self.is_depending_on_realization._return_dict[from_column_name]),
                 is_left_open=True)
             converted_range.is_constraining_column = self.is_constraining_column
             generated_value = converted_range._generate()
@@ -168,9 +172,13 @@ def extend_core(context: ExtensionContext):
 
         def _generate_for_external_dependency(self):
             from_column_name = self.is_depending_on_column.plain_name
+            dependent_value = self.is_depending_on_realization._return_dict[from_column_name]
+            if isinstance(dependent_value, str) and not dependent_value.isnumeric():
+                return dependent_value
+
             converted_range = _core.RangeConstraint(
                 f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
-                right_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]))
+                right_boundary=float(dependent_value))
             converted_range.is_constraining_column = self.is_constraining_column
             generated_value = converted_range._generate()
             return generated_value
@@ -199,7 +207,7 @@ def extend_core(context: ExtensionContext):
             from_column_name = self.is_depending_on_column.plain_name
             converted_range = _core.RangeConstraint(
                 f"range_from_external_dependency_of_{from_column_name}_{round(random()*100000)}",
-                right_boundary=int(self.is_depending_on_realization._return_dict[from_column_name]),
+                right_boundary=float(self.is_depending_on_realization._return_dict[from_column_name]),
                 is_right_open=True)
             converted_range.is_constraining_column = self.is_constraining_column
             generated_value = converted_range._generate()

@@ -69,7 +69,7 @@ def test_list_merge_with_range_max(
 
     for number in range(100):
         generated_result = realization_definition.fulfill_constraints_renew()
-        assert generated_result['column_01'] == '1'
+        assert generated_result['column_01'] in ['1', '-3.14']
 
 
 def test_regex_merge_with_list(prepared_core, list_constraint_under_test, regex_constraint_under_test):
@@ -114,16 +114,12 @@ def test_regex_with_range(prepared_core, min_range_constraint_under_test, regex_
 
 
 def test_list_merged_with_not_in_list(prepared_core, prepared_column, list_constraint_under_test):
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     list_constraint = prepared_core.ListConstraint()
     list_constraint.is_constraining_column = prepared_column
     list_constraint.has_picks = ['foo', 'moo', '1', 'baa', '54']
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(list_constraint_under_test)
-    constraint_group.has_constraints.append(generic_constraint)
     constraint_group.has_constraints.append(list_constraint.toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
@@ -137,15 +133,11 @@ def test_list_merged_with_not_in_list(prepared_core, prepared_column, list_const
 
 
 def test_not_in_list_merged_with_list(prepared_core, prepared_column, list_constraint_under_test):
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     list_constraint = prepared_core.ListConstraint()
     list_constraint.is_constraining_column = prepared_column
     list_constraint.has_picks = ['foo', '-3.14', 'xD', 'baa', '54']
 
     constraint_group = prepared_core.ConstraintGroup()
-    constraint_group.has_constraints.append(generic_constraint)
     constraint_group.has_constraints.append(list_constraint_under_test)
     constraint_group.has_constraints.append(list_constraint.toggle_restriction())
 
@@ -160,12 +152,8 @@ def test_not_in_list_merged_with_list(prepared_core, prepared_column, list_const
 
 
 def test_list_merged_with_not_match(prepared_core, prepared_column, list_constraint_under_test):
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(list_constraint_under_test)
-    constraint_group.has_constraints.append(generic_constraint)
 
     rgx = rgxcstr(prepared_core, prepared_column)
     constraint_group.has_constraints.append(rgx('.oo').toggle_restriction())
@@ -183,11 +171,7 @@ def test_list_merged_with_not_match(prepared_core, prepared_column, list_constra
 
 
 def test_list_merged_with_multiple_not_matches(prepared_core, prepared_column, list_constraint_under_test):
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     constraint_group = prepared_core.ConstraintGroup()
-    constraint_group.has_constraints.append(generic_constraint)
     constraint_group.has_constraints.append(list_constraint_under_test)
 
     rgx = rgxcstr(prepared_core, prepared_column)
@@ -207,16 +191,12 @@ def test_list_merged_with_multiple_not_matches(prepared_core, prepared_column, l
 
 
 def test_not_in_list_merged_with_regex(prepared_core, prepared_column, regex_constraint_under_test):
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     list_constraint = prepared_core.ListConstraint()
     list_constraint.is_constraining_column = prepared_column
     list_constraint.has_picks = \
         ["aoo", "boo", "coo", "doo", "eoo", "foo", "goo", "hoo", "ioo", "joo", "koo", "loo", "moo", "noo"]
 
     constraint_group = prepared_core.ConstraintGroup()
-    constraint_group.has_constraints.append(generic_constraint)
     constraint_group.has_constraints.append(regex_constraint_under_test)
     constraint_group.has_constraints.append(list_constraint.toggle_restriction())
 
@@ -232,12 +212,8 @@ def test_not_in_list_merged_with_regex(prepared_core, prepared_column, regex_con
 
 
 def test_regex_merged_with_multiple_not_matches(prepared_core, prepared_column, regex_constraint_under_test):
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(regex_constraint_under_test)
-    constraint_group.has_constraints.append(generic_constraint)
 
     rgx = rgxcstr(prepared_core, prepared_column)
     constraint_group.has_constraints.append(rgx('^[t-z]oo$').toggle_restriction())
@@ -255,13 +231,15 @@ def test_regex_merged_with_multiple_not_matches(prepared_core, prepared_column, 
 
 
 def test_range_merged_with_not_in_list(prepared_core, prepared_column):
+    limited_data_type = prepared_core.Decimal()
+    limited_data_type.has_precision = 3
+    limited_data_type.has_scale = 0
+    prepared_column.has_data_type = limited_data_type
+
     range_const = prepared_core.RangeConstraint("jhlkndsd")
     range_const.is_constraining_column = prepared_column
     range_const.set_left_boundary(40)
     range_const.set_right_boundary(60)
-
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
 
     list_constraint = prepared_core.ListConstraint()
     list_constraint.is_constraining_column = prepared_column
@@ -270,7 +248,6 @@ def test_range_merged_with_not_in_list(prepared_core, prepared_column):
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
-    constraint_group.has_constraints.append(generic_constraint)
     constraint_group.has_constraints.append(list_constraint.toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
@@ -280,7 +257,8 @@ def test_range_merged_with_not_in_list(prepared_core, prepared_column):
 
     for number in range(100):
         generated_result = realization_definition.fulfill_constraints_renew()
-        assert generated_result['column_01'] in \
+        print(generated_result['column_01'])
+        assert generated_result['column_01'][:2] in \
                ["48", "49", "50", "51", "52", "53", "54", "55", "56", "57"]
 
 
@@ -290,16 +268,12 @@ def test_range_merged_with_not_match(prepared_core, prepared_column):
     range_const.set_left_boundary(40)
     range_const.set_right_boundary(60)
 
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     regex_constraint = prepared_core.RegexConstraint()
     regex_constraint.is_constraining_column = prepared_column
-    regex_constraint.has_regex_format = '^4.$'
+    regex_constraint.has_regex_format = '^4.*'
 
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
-    constraint_group.has_constraints.append(generic_constraint)
     constraint_group.has_constraints.append(regex_constraint.toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
@@ -309,7 +283,7 @@ def test_range_merged_with_not_match(prepared_core, prepared_column):
 
     for number in range(100):
         generated_result = realization_definition.fulfill_constraints_renew()
-        assert generated_result['column_01'] in \
+        assert generated_result['column_01'][:2] in \
                ["50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"]
 
 
@@ -319,17 +293,13 @@ def test_range_merged_with_multiple_not_matches(prepared_core, prepared_column):
     range_const.set_left_boundary(40)
     range_const.set_right_boundary(60)
 
-    generic_constraint = prepared_core.Constraint()
-    generic_constraint.is_constraining_column = prepared_column
-
     constraint_group = prepared_core.ConstraintGroup()
     constraint_group.has_constraints.append(range_const)
-    constraint_group.has_constraints.append(generic_constraint)
 
     rgx = rgxcstr(prepared_core, prepared_column)
-    constraint_group.has_restricting_constraints = [rgx('^4.$'), rgx('^.[5-9]$')]
-    constraint_group.has_constraints.append(rgx('^4.$').toggle_restriction())
-    constraint_group.has_constraints.append(rgx('^.[5-9]$').toggle_restriction())
+    constraint_group.has_restricting_constraints = [rgx('^4.*'), rgx('^.[5-9].*$')]
+    constraint_group.has_constraints.append(rgx('^4.*').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^.[5-9].*$').toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -338,7 +308,7 @@ def test_range_merged_with_multiple_not_matches(prepared_core, prepared_column):
 
     for number in range(100):
         generated_result = realization_definition.fulfill_constraints_renew()
-        assert generated_result['column_01'] in \
+        assert generated_result['column_01'][:2] in \
                ["50", "51", "52", "53", "54", "60"]
 
 
@@ -372,8 +342,8 @@ def test_unification_of_constraint_works_with_dependencies(prepared_core, prepar
     constraint_group.has_constraints.append(list_constraint_under_test)
 
     rgx = rgxcstr(prepared_core, prepared_column)
-    constraint_group.has_constraints.append(rgx('^4.$').toggle_restriction())
-    constraint_group.has_constraints.append(rgx('^.[5-9]$').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^4.*$').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^.[5-9].*$').toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -382,7 +352,7 @@ def test_unification_of_constraint_works_with_dependencies(prepared_core, prepar
 
     for number in range(100):
         generated_result = realization_definition.fulfill_constraints_renew()
-        assert generated_result['column_01'] in \
+        assert generated_result['column_01'][:2] in \
                ["50", "51", "52", "53", "54", "60"]
         assert generated_result['column_02'] in \
                ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
@@ -421,8 +391,8 @@ def test_constraints_for_multiple_tables_in_constraints_group_bad_convertion_to_
     constraint_group.has_constraints.append(list_constraint_under_test)
 
     rgx = rgxcstr(prepared_core, prepared_table.has_columns[0])
-    constraint_group.has_constraints.append(rgx('^4.$').toggle_restriction())
-    constraint_group.has_constraints.append(rgx('^.[5-9]$').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^4.*$').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^.[5-9].*$').toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -434,6 +404,11 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
         prepared_core, prepared_table, prepared_table_2, list_constraint_under_test):
     """ or multiple_realization_definitions_"""
     list_constraint_under_test.is_constraining_column = prepared_table_2.has_columns[0]
+
+    limited_data_type = prepared_core.Decimal()
+    limited_data_type.has_precision = 3
+    limited_data_type.has_scale = 0
+    prepared_table.has_columns[0].has_data_type = limited_data_type
 
     range_const = prepared_core.RangeConstraint("lkjasdnfkadfj")
     range_const.is_constraining_column = prepared_table.has_columns[0]
@@ -447,8 +422,8 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
     constraint_group.has_constraints.append(list_constraint_under_test)
 
     rgx = rgxcstr(prepared_core, prepared_table.has_columns[0])
-    constraint_group.has_constraints.append(rgx('^4.$').toggle_restriction())
-    constraint_group.has_constraints.append(rgx('^.[5-9]$').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^4.*$').toggle_restriction())
+    constraint_group.has_constraints.append(rgx('^.[5-9].*$').toggle_restriction())
 
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -462,7 +437,7 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
     #    }
 
     assert len(generated_result.keys()) == 2, "Generated results should be for two different tables."
-    assert generated_result['internal_test_table_01'][0]['column_01'] in \
+    assert generated_result['internal_test_table_01'][0]['column_01'][:2] in \
                ["50", "51", "52", "53", "54", "60"]
     assert generated_result['internal_test_table_01'][0]['column_02'] is None
 
