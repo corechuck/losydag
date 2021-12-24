@@ -7,7 +7,7 @@ import random
 from owlready2 import Thing, sync_reasoner_pellet
 
 from utils.sentence_processing import MultiplicationSupervisor
-from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, NotUnifiedConstraintsException
 from utils.context import ExtensionContext
 
 
@@ -424,7 +424,7 @@ def extend_core(context: ExtensionContext):
                     self._fulfilled_constraints.append(constraint.name)
 
                 elif constraint.name not in self._fulfilled_constraints:
-                    raise Exception(f"ERROR: Multiple constraints defined for column "
+                    raise NotUnifiedConstraintsException(f"ERROR: Multiple constraints defined for column "
                                     f"{constraint.is_constraining_column.name}. Try unification of constraints.")
 
         def get_sibling_restrictive_constraints(self, constraint):

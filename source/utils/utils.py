@@ -43,3 +43,7 @@ class MergingException(Exception):
 
 class ValueGenerationException(Exception):
     pass
+
+
+class NotUnifiedConstraintsException(Exception):
+    pass

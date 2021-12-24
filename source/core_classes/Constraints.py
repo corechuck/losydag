@@ -275,10 +275,12 @@ def extend_core(context: ExtensionContext):
                 self.precision = self._get_constrained_data_type().has_precision
                 self.scale = self._get_constrained_data_type().has_scale
 
-            if self.has_left_boundary is None and left_boundary is None:
-                self.set_left_boundary(self.get_minimum_value_for_data_type(), is_left_open)
-            if self.has_right_boundary is None and right_boundary is None:
-                self.set_right_boundary(self.get_maximum_value_for_data_type(), is_right_open)
+            if self.has_left_boundary is None and left_boundary is not None:
+                self.set_left_boundary(left_boundary, is_left_open)
+            if self.has_right_boundary is None and right_boundary is not None:
+                self.set_right_boundary(right_boundary, is_right_open)
+
+            self._prepare_min_max()
 
         def set_left_boundary(self, value, is_open=False):
             if is_open:
@@ -297,22 +299,14 @@ def extend_core(context: ExtensionContext):
             self.has_right_boundary.has_boundary_value = value
 
         def _prepare_min_max(self):
-            pass
-            # if self.has_left_boundary is None:
-            #     self.set_left_boundary(MIN_RANGE)
-            # if self.has_right_boundary is None:
-            #     self.set_right_boundary(MAX_RANGE)
+            if self._get_constrained_data_type() is not None:
+                self.precision = self._get_constrained_data_type().has_precision
+                self.scale = self._get_constrained_data_type().has_scale
 
-            # if self._get_constrained_data_type() is None:
-            #     return
-            #
-            # self.precision = self._get_constrained_data_type().has_precision
-            # self.scale = self._get_constrained_data_type().has_scale
-            #
-            # if self.has_left_boundary is None:
-            #     self.set_left_boundary(self._get_minimum_left_boundary_for_type())
-            # if self.has_right_boundary is None:
-            #     self.set_right_boundary(self._get_maximum_right_boundary_for_type())
+            if self.has_left_boundary is None:
+                self.set_left_boundary(self.get_minimum_value_for_data_type())
+            if self.has_right_boundary is None:
+                self.set_right_boundary(self.get_maximum_value_for_data_type())
 
         def get_minimum_value_for_data_type(self):
             return sum(math.pow(10, d)*9 for d in range(0, self.precision))*-1 / math.pow(10, self.scale)
@@ -405,6 +399,9 @@ def extend_core(context: ExtensionContext):
             return self
 
         def _assert_range_boundaries_are_valid(self):
+            if self.has_left_boundary is None or self.has_right_boundary is None:
+                return
+
             if self.has_left_boundary.has_boundary_value > self.has_right_boundary.has_boundary_value:
                 raise Exception(f"ERROR: Left boundary is greater then right for Range {self.name}.")
 

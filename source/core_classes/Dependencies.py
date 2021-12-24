@@ -86,7 +86,8 @@ def extend_core(context: ExtensionContext):
         def _generate_for_local_dependency(self, _local_dict):
             _generation_formatter.set_increment(self)
             resolved_format = _generation_formatter.format(self.has_format_definition, **_local_dict)
-            return rstr.xeger(resolved_format)
+            # return rstr.xeger(resolved_format)
+            return resolved_format
 
     class GreaterOrEqualThenDependency(ValueDependency):
         namespace = _core

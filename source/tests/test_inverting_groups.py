@@ -51,21 +51,6 @@ def test_negation_of_negated_list(prepared_core, invert, list_constraint_under_t
     assert len(double_negated_range.not_picks) == 0
 
 
-def test_negation_of_negated_range_with_excluded_value(prepared_core, invert, actual_range_constraint_under_test):
-    actual_range_constraint_under_test.not_picks = [33]
-    middle_negation_group = invert(actual_range_constraint_under_test)
-    actual_negation_group = invert(middle_negation_group)
-
-    assert actual_negation_group
-    assert isinstance(actual_negation_group, prepared_core.AndGroup)
-    assert len(actual_negation_group.has_constraints) == 1
-    double_negated_range = actual_negation_group.has_constraints[0]
-    assert double_negated_range.left_limit == actual_range_constraint_under_test.left_limit
-    assert double_negated_range.right_limit == actual_range_constraint_under_test.right_limit
-    assert len(double_negated_range.not_picks) == 1
-    assert 33 in double_negated_range.not_picks
-
-
 def test_negation_of_group_with_range_and_list(
         prepared_core, invert, actual_range_constraint_under_test, list_constraint_under_test):
     """ This test checks if a result of negation is a group with single constraint is unpacked from its group."""

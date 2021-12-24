@@ -54,8 +54,8 @@ def test_greater_then_dependency(prepared_core, prepared_table, prepared_table_2
     realized_case = generator.realize_fresh("test_realization_case_2")
 
     assert realized_case
-    assert int(realized_case["internal_test_table_02"][0]['column_03']) > \
-           int(realized_case["internal_test_table_01"][0]['column_03'])
+    assert float(realized_case["internal_test_table_02"][0]['column_03']) > \
+           float(realized_case["internal_test_table_01"][0]['column_03'])
 
 
 def test_greater_then_dependency_for_string(prepared_core, prepared_table, prepared_table_2):
@@ -132,8 +132,8 @@ def test_smaller_then_dependency(prepared_core, prepared_table, prepared_table_2
     realized_case = generator.realize_fresh("test_realization_case_4")
 
     assert realized_case
-    assert int(realized_case["internal_test_table_02"][0]['column_03']) < \
-           int(realized_case["internal_test_table_01"][0]['column_03'])
+    assert float(realized_case["internal_test_table_02"][0]['column_03']) < \
+           float(realized_case["internal_test_table_01"][0]['column_03'])
 
 
 def test_smaller_then_dependency_for_string(prepared_core, prepared_table, prepared_table_2):
