@@ -75,7 +75,6 @@ def extend_core(context: ExtensionContext):
             for definition in self.contains_realizations:
                 if self._verbal:
                     print(f"INFO: Evaluating {definition.name}:")
-                # TODO: rename has_realized_constraints to is_realized
                 if definition.has_realized_constraints:
                     if self._verbal:
                         print(f"INFO: Already realized : {definition.name}")

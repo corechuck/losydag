@@ -6,6 +6,7 @@ import rstr
 import random
 from owlready2 import Thing, sync_reasoner_pellet
 
+from utils.invertion_factory import ConstraintInverter
 from utils.sentence_processing import MultiplicationSupervisor
 from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, NotUnifiedConstraintsException
 from utils.context import ExtensionContext
@@ -20,12 +21,14 @@ def extend_core(context: ExtensionContext):
         multiplicator = None
         meta = ""
         my_restriction_variations = None
+        inverter = None
 
         def __init__(self, name=None, namespace=None):
             super().__init__(name=name, namespace=namespace)
             if not isinstance(self, _core.OrGroup):
                 self.is_a.append(_core.AndGroup)
             self.multiplicator = MultiplicationSupervisor(_core)
+            self.inverter = ConstraintInverter(_core)
 
         def fulfill_constraints(self):
             list_of_constraints = self.has_constraints
@@ -101,10 +104,6 @@ def extend_core(context: ExtensionContext):
                     tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
                 table_to_group_cache[tbl_name].has_constraints.append(constraint_under)
 
-            # for r_constraint_under in self.has_restricting_constraints:
-            #     tbl_name = r_constraint_under.is_constraining_column.is_part_of_table.name
-            #     table_to_group_cache[tbl_name].has_restricting_constraints.append(r_constraint_under)
-
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
             for future_realization_def in table_to_group_cache.values():
@@ -138,7 +137,6 @@ def extend_core(context: ExtensionContext):
                     flatted_list_of_branch_constraints.extend(group.has_constraints)
 
                 child_meta = group.pick_branches_from_or_groups()
-                # flatted_list_of_branch_constraints.extend(chosen_sub_branch)
                 meta_info_list.extend(child_meta)
 
             if len(meta_info_list) > 0:
@@ -148,7 +146,7 @@ def extend_core(context: ExtensionContext):
 
         def make_all_restricting_variations(self):
             if self.my_restriction_variations:
-                self.my_restriction_variations
+                return self.my_restriction_variations
 
             self.my_restriction_variations = list()
             if isinstance(self, _core.OrGroup):
@@ -194,9 +192,8 @@ def extend_core(context: ExtensionContext):
                             positive_case_under_process.has_constraints.append(constraint)
                             positive_case_under_process.meta = \
                                 f"Value for column {constraint.is_constraining_column.name} kept for case generation"
-                            continue
-                        # not too keep constraint
-                        positive_case_under_process.has_constraints.append(constraint.toggle_restriction())
+                        else:  # not too keep constraint
+                            positive_case_under_process.has_constraints.append(constraint.toggle_restriction())
 
                     partially_processed_variances = [positive_case_under_process]
                     for const_group in self.contains_constraint_groups:
@@ -233,6 +230,58 @@ def extend_core(context: ExtensionContext):
                 raise Exception("ERROR: aljsdnfoiwpeidfmm3n49r7fy")
             return positive_cases
 
+        def prepare_negative_cases(self):
+            negative_cases = list()
+            if isinstance(self, _core.OrGroup):
+                # if OR group then negative only if all are negated + groups
+                negative_case_under_process = _core.ConstraintGroup()
+                for constraint in self.has_constraints:
+                    negative_case_under_process.has_constraints.append(self.inverter.invert(constraint))
+
+                if len(self.contains_constraint_groups) > 0:
+                    for child_group in self.contains_constraint_groups:
+                        child_group_list_of_negative_cases = child_group.prepare_negative_cases()
+                        for child_case in child_group_list_of_negative_cases:
+                            negative_cases.append(self.merge_my_copy_with_group(child_case))
+
+            elif isinstance(self, _core.AndGroup):
+                list_of_elements_for_breakdown = self.has_constraints.copy()
+                list_of_elements_for_breakdown.extend(self.contains_constraint_groups)
+                for constraint_or_group_too_invert in list_of_elements_for_breakdown:
+                    negative_case_under_process = _core.ConstraintGroup()
+                    for constraint in self.has_constraints:
+                        if constraint_or_group_too_invert == constraint:
+                            negative_case_under_process.has_constraints.append(self.inverter.invert(constraint))
+                            negative_case_under_process.meta = \
+                                f"Constraint for column {constraint.is_constraining_column.name} inverted"
+                        else:  # not invert constraint
+                            negative_case_under_process.has_constraints.append(constraint)
+
+                    my_negative_cases = [negative_case_under_process]
+                    for const_group in self.contains_constraint_groups:
+                        if constraint_or_group_too_invert == const_group:
+                            child_group_list_of_negative_cases = const_group.prepare_negative_cases()
+                            with_child_negative_cases = list()
+
+                            for my_negative_case in my_negative_cases:
+                                for child_negative_case in child_group_list_of_negative_cases:
+                                    with_child_negative_cases.append(
+                                        my_negative_case.merge_my_copy_with_group(child_negative_case)
+                                    )
+                            my_negative_cases = with_child_negative_cases
+                            continue
+                        # just add groups
+                        # TODO: Test with (c1 ^ c2 ^ (c3 v c4 v (c5 ^ c6)) ^ (c7 ^ c8))
+                        # size, color, producer, fabric, creation date, layers amount, amount, category, descr as format
+                        my_negative_cases_times_plain_child_group = list()
+                        for my_negative_case in my_negative_cases:
+                            my_negative_cases_times_plain_child_group.append(
+                                my_negative_case.merge_my_copy_with_group(const_group)
+                            )
+                        my_negative_cases = my_negative_cases_times_plain_child_group
+                    negative_cases.extend(my_negative_cases)
+
+            return negative_cases
 
         def convert_to_positive_cases(self):
             # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
@@ -336,8 +385,7 @@ def extend_core(context: ExtensionContext):
 
         def compliment_with_min_reqs(self):
             if len(self.has_constraints) > 0 and not self.is_complimented_with_min_reqs:
-                self.original_constraints = self.has_constraints.copy()  # this should NOT be here
-                # that should use something like has_work_constraints
+                self.original_constraints = self.has_constraints.copy()
                 self.compliment_with(self.constraints_table().has_min_reqs)
                 self.is_complimented_with_min_reqs = True
 
@@ -414,9 +462,6 @@ def extend_core(context: ExtensionContext):
                     continue
 
                 if self._return_dict[constraint.is_constraining_column.plain_name] is None:
-                    # self._return_dict[constraint.is_constraining_column.plain_name] = (
-                    #     constraint.generate(self._return_dict)
-                    # )
                     self._return_dict[constraint.is_constraining_column.plain_name] = (
                         _value_generation_supervisor.generate(
                             constraint, self.get_sibling_restrictive_constraints(constraint), self._return_dict)
@@ -436,14 +481,6 @@ def extend_core(context: ExtensionContext):
                     constraint.is_constraining_column.plain_name
                 )
             ]
-
-        # def get_sibling_restrictive_constraints(self, constraint):
-        #     return [
-        #         restrictive_constraint
-        #         for restrictive_constraint in self.has_restricting_constraints
-        #         if restrictive_constraint.is_constraining_column.plain_name ==
-        #         constraint.is_constraining_column.plain_name
-        #     ]
 
         def prepare_relevant_partition_values(self):
             for constraint in self.original_constraints:

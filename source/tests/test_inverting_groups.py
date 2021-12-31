@@ -26,7 +26,7 @@ def invert(prepared_core):
     return inverter.invert
 
 
-def test_negation_of_negated_range(prepared_core, invert, actual_range_constraint_under_test):
+def test_inverting_inverted_range_constraint(prepared_core, invert, actual_range_constraint_under_test):
     middle_negation_group = invert(actual_range_constraint_under_test)
     actual_negation_group = invert(middle_negation_group)
 
@@ -39,7 +39,7 @@ def test_negation_of_negated_range(prepared_core, invert, actual_range_constrain
     assert len(double_negated_range.not_picks) == 0
 
 
-def test_negation_of_negated_list(prepared_core, invert, list_constraint_under_test):
+def test_inverting_inverted_list_constraint(prepared_core, invert, list_constraint_under_test):
     middle_negation_group = invert(list_constraint_under_test)
     actual_negation_group = invert(middle_negation_group)
 
@@ -51,7 +51,7 @@ def test_negation_of_negated_list(prepared_core, invert, list_constraint_under_t
     assert len(double_negated_range.not_picks) == 0
 
 
-def test_negation_of_group_with_range_and_list(
+def test_inverting_group_with_range_and_list_with_and_operator(
         prepared_core, invert, actual_range_constraint_under_test, list_constraint_under_test):
     """ This test checks if a result of negation is a group with single constraint is unpacked from its group."""
     container_group = prepared_core.ConstraintGroup()
@@ -61,6 +61,21 @@ def test_negation_of_group_with_range_and_list(
 
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
+    assert all((isinstance(c, prepared_core.Constraint) for c in actual_negation_group.has_constraints))
+
+
+def test_inverting_group_with_range_and_list_with_or_operator(
+        prepared_core, invert, actual_range_constraint_under_test, list_constraint_under_test):
+    """ This test checks if a result of negation is a group with single constraint is unpacked from its group."""
+    container_group = prepared_core.ConstraintGroup()
+    container_group.is_a.append(prepared_core.OrGroup)
+    container_group.is_a.remove(prepared_core.AndGroup)
+    container_group.has_constraints = [actual_range_constraint_under_test, list_constraint_under_test]
+
+    actual_negation_group = invert(container_group)
+
+    assert actual_negation_group
+    assert isinstance(actual_negation_group, prepared_core.AndGroup)
     assert all((isinstance(c, prepared_core.Constraint) for c in actual_negation_group.has_constraints))
 
 

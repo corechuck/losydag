@@ -26,37 +26,8 @@ def extend_core(context: ExtensionContext):
         def generate(self, local_dict):
             return str(self._generate(local_dict))
 
-        # def generate(self, local_dict):
-        #     tries = 0
-        #     tried_values = list()
-        #
-        #     while True:
-        #         tries += 1
-        #         if self.has_more_relevant_options():
-        #             random.shuffle(self.partition_relevant_value_options)
-        #             generated_value = self.partition_relevant_value_options.pop()
-        #         else:
-        #             generated_value = str(self._generate(local_dict))
-        #
-        #         if (
-        #                 generated_value not in self.not_picks and
-        #                 not self.__is_value_matching_prohibited_regexes(str(generated_value))
-        #         ):
-        #             return generated_value
-        #         else:
-        #             tried_values.append(generated_value)
-        #
-        #             if tries >= self.TRIES_COUNT:
-        #                 print(f"INFO: Tried values {tried_values}")
-        #                 raise Exception(f"ERROR: Could not generate value that met constrained in {self}")
-        #
-        #     return "#non-value-002"
-
         def has_more_relevant_options(self):
             return len(self.partition_relevant_value_options) > 0
-
-        # def __is_value_matching_any_not_constraint(self, value, list_of_not_constraint):
-        #     return any(constraint.does_value_match_constraint(value) for constraint in list_of_not_constraint)
 
         def does_value_match_constraint(self, value_under_question):
             return False
@@ -110,13 +81,8 @@ def extend_core(context: ExtensionContext):
         @property
         def is_generic_constraint(self):
             return type(self) == _core.Constraint
-            # # I hate it ... is there any better way to know if you are this class in inheritence but child class?
-            # return isinstance(self, _core.Constraint) and not isinstance(self, _core.ListConstraint) and \
-            #        not isinstance(self, _core.RangeConstraint) and not isinstance(self, _core.RegexConstraint) and \
-            #        not isinstance(self, _core.ValueDependency)
 
         def _merge_with(self, right_constraint):
-            # print(f"WARNING: Requested merging {self.name} with {right_constraint.name} without reasoning types.")
             self.not_picks.extend(right_constraint.not_picks)
             self.not_matching_regexes.extend(right_constraint.not_matching_regexes)
             return self
@@ -189,7 +155,6 @@ def extend_core(context: ExtensionContext):
                     f"ERROR: Merging {self.name} with {right_constraint.name} resulted in empty pick list.")
 
             super()._merge_with(right_constraint)
-            # destroy_entity(right_constraint)
             return self  # Keep list as type
 
         def prepare_relevant_partition_values(self):
@@ -252,7 +217,6 @@ def extend_core(context: ExtensionContext):
                 raise MergingException("ERROR: Not implemented")
 
             super()._merge_with(right_constraint)
-            #destroy_entity(right_constraint)
             return self
 
         def prepare_relevant_partition_values(self):

@@ -93,7 +93,6 @@ def extend_core(context: ExtensionContext):
         namespace = _core
 
         # Write tests for different data types str, date, number
-
         def _generate(self, _local_dict):
             if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
                 print(f"WARNING: Generator is using equal ONLY constraint strings for greater and equal. ")
@@ -125,7 +124,6 @@ def extend_core(context: ExtensionContext):
         namespace = _core
 
         # Write tests for different data types str, date, number
-
         def _generate(self, _local_dict):
             # Here should be warning and always take equal
             if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
@@ -156,7 +154,6 @@ def extend_core(context: ExtensionContext):
         namespace = _core
 
         # Write tests for different data types str, date, number
-
         def _generate(self, _local_dict):
             if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
                 print(f"WARNING: Generator is using equal ONLY constraint strings for greater and equal. ")
@@ -188,7 +185,6 @@ def extend_core(context: ExtensionContext):
         namespace = _core
 
         # Write tests for different data types str, date, number
-
         def _generate(self, _local_dict):
             if isinstance(self.is_constraining_column.has_data_type, _core.Varchar):
                 raise Exception(f"ERROR: Generator cannot synthesise smaller value for Strings. ")
@@ -213,13 +209,6 @@ def extend_core(context: ExtensionContext):
             converted_range.is_constraining_column = self.is_constraining_column
             generated_value = converted_range._generate()
             return generated_value
-
-    # NotEqualToDependency
-    # EqualToDependency
-    # GreaterOrEqualThenDependency
-    # GreaterThenDependency
-    # LesserOrEqualThenDependency
-    # LesserThenDependency
 
 
 class GenerationTrackingFormatter(string.Formatter):
