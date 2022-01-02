@@ -67,10 +67,16 @@ def prepared_table(prepared_core, min_req_list_constraint_under_test, min_req_ra
     column_3 = prepared_core.Column("Column.Internal1.column_03")
     min_req_range_constraint_under_test.is_constraining_column = column_3
     pre_table.has_columns.append(column_3)
+    column_4 = prepared_core.Column("Column.Internal1.column_04")
+    pre_table.has_columns.append(column_4)
+    column_5 = prepared_core.Column("Column.Internal1.column_05")
+    pre_table.has_columns.append(column_5)
     data_type_col_3 = prepared_core.Decimal()
     data_type_col_3.has_precision = 8
     data_type_col_3.has_scale = 0
     column_3.has_data_type = data_type_col_3
+    column_4.has_data_type = data_type_col_3
+    column_5.has_data_type = data_type_col_3
     yield pre_table
     destroy_entity(column_1)
     destroy_entity(column_2)
@@ -113,7 +119,7 @@ def prepared_column(prepared_core, prepared_table):
 
 @fixture()
 def list_constraint_under_test(prepared_core, prepared_column):
-    list_const = prepared_core.ListConstraint(f"list_req_{datetime.now()}")
+    list_const = prepared_core.ListConstraint(f"list_req_l")
     list_const.is_constraining_column = prepared_column
     list_const.has_picks = ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
     yield list_const
@@ -122,7 +128,7 @@ def list_constraint_under_test(prepared_core, prepared_column):
 
 @fixture()
 def min_range_constraint_under_test(prepared_core, prepared_column):
-    range_const = prepared_core.RangeConstraint("sgfgegawe")
+    range_const = prepared_core.RangeConstraint(f"min_range_mm")
     range_const.is_constraining_column = prepared_column
     range_const.set_left_boundary(40)
     yield range_const
@@ -131,7 +137,7 @@ def min_range_constraint_under_test(prepared_core, prepared_column):
 
 @fixture()
 def max_range_constraint_under_test(prepared_core, prepared_column):
-    range_const = prepared_core.RangeConstraint("gajskdufhakdh")
+    range_const = prepared_core.RangeConstraint(f"max_range_xx")
     range_const.is_constraining_column = prepared_column
     range_const.set_right_boundary(40)
     yield range_const
@@ -140,7 +146,7 @@ def max_range_constraint_under_test(prepared_core, prepared_column):
 
 @fixture()
 def actual_range_constraint_under_test(prepared_core, prepared_column):
-    range_const = prepared_core.RangeConstraint("akjsdhflaishd")
+    range_const = prepared_core.RangeConstraint(f"actual_range_r")
     range_const.is_constraining_column = prepared_column
     range_const.set_right_boundary(40)
     range_const.set_left_boundary(10)
@@ -151,7 +157,7 @@ def actual_range_constraint_under_test(prepared_core, prepared_column):
 
 @fixture()
 def regex_constraint_under_test(prepared_core, prepared_column):
-    regex_const = prepared_core.RegexConstraint("rekajnisokdljf")
+    regex_const = prepared_core.RegexConstraint(f"rgx_cnstr")
     regex_const.is_constraining_column = prepared_column
     regex_const.has_regex_format = "[a-z]oo"
     yield regex_const

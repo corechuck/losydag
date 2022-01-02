@@ -177,8 +177,27 @@ def extend_core(context: ExtensionContext):
             my_copy.has_constraints = list()
             my_copy.has_constraints.extend(self.has_constraints)
             my_copy.has_constraints.extend(group_b.has_constraints)
-            my_copy.meta = ";".join([my_copy.meta, group_b.meta])
+            my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
             return my_copy
+
+        def merge_my_copy_with_constraint(self, group_b):
+            my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name} {datetime.now()}")
+            my_copy.has_constraints = list()
+            my_copy.has_constraints.extend(self.has_constraints)
+            my_copy.has_constraints.extend(group_b.has_constraints)
+            my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
+            return my_copy
+
+        def multiply_list_of_cases_times_group(self, list_of_cases, group):
+            multiplied_list = list()
+            for case in list_of_cases:
+                new_cases = self.multiplicator.multiply_groups(case, group)
+                for new_case_constraints in new_cases:
+                    gr = _core.ConstraintGroup()
+                    gr.has_constraints = new_case_constraints
+                    multiplied_list.append(gr)
+            return multiplied_list
+
 
         def prepare_positive_cases(self):
             positive_cases = list()
@@ -235,11 +254,24 @@ def extend_core(context: ExtensionContext):
             if isinstance(self, _core.OrGroup):
                 # if OR group then negative only if all are negated + groups
                 negative_case_under_process = _core.ConstraintGroup()
+                negative_cases.append(negative_case_under_process)
                 for constraint in self.has_constraints:
-                    negative_case_under_process.has_constraints.append(self.inverter.invert(constraint))
+                    inverted_constraint_to_group = self.inverter.invert(constraint)
+                    if len(inverted_constraint_to_group.has_constraints) == 1:
+                        negative_case_under_process.has_constraints.append(
+                            inverted_constraint_to_group.has_constraints[0])
+                    else:
+                        negative_case_under_process.contains_constraint_groups.append(
+                            inverted_constraint_to_group)
 
                 if len(self.contains_constraint_groups) > 0:
                     for child_group in self.contains_constraint_groups:
+                        child_group_list_of_negative_cases = child_group.prepare_negative_cases()
+                        for child_case in child_group_list_of_negative_cases:
+                            negative_cases.append(self.merge_my_copy_with_group(child_case))
+
+                if len(negative_case_under_process.contains_constraint_groups) > 0:
+                    for child_group in negative_case_under_process.contains_constraint_groups:
                         child_group_list_of_negative_cases = child_group.prepare_negative_cases()
                         for child_case in child_group_list_of_negative_cases:
                             negative_cases.append(self.merge_my_copy_with_group(child_case))
@@ -248,38 +280,46 @@ def extend_core(context: ExtensionContext):
                 list_of_elements_for_breakdown = self.has_constraints.copy()
                 list_of_elements_for_breakdown.extend(self.contains_constraint_groups)
                 for constraint_or_group_too_invert in list_of_elements_for_breakdown:
+                    groups_for_processing = list()
                     negative_case_under_process = _core.ConstraintGroup()
+                    negative_cases_for_chosen_constraint = [negative_case_under_process]
                     for constraint in self.has_constraints:
                         if constraint_or_group_too_invert == constraint:
-                            negative_case_under_process.has_constraints.append(self.inverter.invert(constraint))
+                            inverted_constraint_to_group = self.inverter.invert(constraint)
                             negative_case_under_process.meta = \
                                 f"Constraint for column {constraint.is_constraining_column.name} inverted"
+                            if len(inverted_constraint_to_group.has_constraints) == 1:
+                                negative_case_under_process.has_constraints.append(
+                                    inverted_constraint_to_group.has_constraints[0])
+                            else:
+                                negative_cases_for_chosen_constraint = self.multiply_list_of_cases_times_group(
+                                    negative_cases_for_chosen_constraint, inverted_constraint_to_group)
                         else:  # not invert constraint
-                            negative_case_under_process.has_constraints.append(constraint)
+                            for case in negative_cases_for_chosen_constraint:
+                                case.has_constraints.append(constraint)
 
-                    my_negative_cases = [negative_case_under_process]
                     for const_group in self.contains_constraint_groups:
                         if constraint_or_group_too_invert == const_group:
                             child_group_list_of_negative_cases = const_group.prepare_negative_cases()
                             with_child_negative_cases = list()
-
-                            for my_negative_case in my_negative_cases:
+                            for specific_negative_case in negative_cases_for_chosen_constraint:
                                 for child_negative_case in child_group_list_of_negative_cases:
                                     with_child_negative_cases.append(
-                                        my_negative_case.merge_my_copy_with_group(child_negative_case)
+                                        specific_negative_case.merge_my_copy_with_group(child_negative_case)
                                     )
-                            my_negative_cases = with_child_negative_cases
+                            negative_cases_for_chosen_constraint = with_child_negative_cases
                             continue
                         # just add groups
-                        # TODO: Test with (c1 ^ c2 ^ (c3 v c4 v (c5 ^ c6)) ^ (c7 ^ c8))
+                        # TODO: Test with (c1 ^ c2 ^ (c3 v c4 v (c5 ^ c6)) ^ (c7 ^ c8)) when c2 is actual range
                         # size, color, producer, fabric, creation date, layers amount, amount, category, descr as format
                         my_negative_cases_times_plain_child_group = list()
-                        for my_negative_case in my_negative_cases:
+                        for specific_negative_case in negative_cases_for_chosen_constraint:
                             my_negative_cases_times_plain_child_group.append(
-                                my_negative_case.merge_my_copy_with_group(const_group)
+                                specific_negative_case.merge_my_copy_with_group(const_group)
                             )
-                        my_negative_cases = my_negative_cases_times_plain_child_group
-                    negative_cases.extend(my_negative_cases)
+                        negative_cases_for_chosen_constraint = my_negative_cases_times_plain_child_group
+
+                    negative_cases.extend(negative_cases_for_chosen_constraint)
 
             return negative_cases
 

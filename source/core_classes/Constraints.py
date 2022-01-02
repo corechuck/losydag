@@ -5,7 +5,7 @@ import datetime
 import math
 from owlready2 import Thing, destroy_entity
 
-from utils.utils import MergingException
+from utils.utils import MergingException, ValueGenerationException
 from utils.context import ExtensionContext
 
 
@@ -379,15 +379,19 @@ def extend_core(context: ExtensionContext):
         def prepare_relevant_partition_values(self):
             self._assert_range_boundaries_are_valid()
 
-            self.partition_relevant_value_options = [
-                self._get_minimum_viable_value(),
-                self.__generate_not_boundary_value(),
-                self._get_maximum_viable_value()
-            ]
-            # if self.has_left_boundary.has_boundary_value != MIN_RANGE:
-            #     self.partition_relevant_value_options.append(MIN_RANGE)
-            # if self.has_right_boundary.has_boundary_value != MAX_RANGE:
-            #     self.partition_relevant_value_options.append(MAX_RANGE)
+            min_value = self._get_minimum_viable_value()
+            max_value = self._get_maximum_viable_value()
+            non_boundary_value = None
+            try:
+                non_boundary_value = self.__generate_not_boundary_value()
+            except ValueGenerationException:
+                pass
+
+            self.partition_relevant_value_options = [self._get_minimum_viable_value()]
+            if non_boundary_value:
+                self.partition_relevant_value_options.append(non_boundary_value)
+            if max_value > min_value:
+                self.partition_relevant_value_options.append(max_value)
 
         def __generate_not_boundary_value(self):
             loop = 0
@@ -399,20 +403,20 @@ def extend_core(context: ExtensionContext):
                 if isinstance(self.has_left_boundary, _core.ClosedRangeBoundary):
                     _is_meeting_left = self.has_left_boundary.has_boundary_value < chosen_number
                 else:
-                    _is_meeting_left = self.__get_minimum_viable_value() < chosen_number
+                    _is_meeting_left = self._get_minimum_viable_value() < chosen_number
 
-                _is_meeting_left = ( self.has_left_boundary.has_boundary_value < chosen_number)
+                _is_meeting_left = (self.has_left_boundary.has_boundary_value < chosen_number)
 
                 _is_meeting_right = False
                 if isinstance(self.has_right_boundary, _core.ClosedRangeBoundary):
                     _is_meeting_right = chosen_number < self.has_right_boundary.has_boundary_value
                 else:
-                    _is_meeting_right = chosen_number < self.__get_maximum_viable_value()
+                    _is_meeting_right = chosen_number < self._get_maximum_viable_value()
 
                 if _is_meeting_left and _is_meeting_right:
                     return chosen_number
 
-            raise Exception(f"ERROR: {self.name} could not generate non boundary value.")
+            raise ValueGenerationException(f"ERROR: {self.name} could not generate non boundary value.")
 
         def does_value_match_constraint(self, _value_under_question):
             self._prepare_min_max()

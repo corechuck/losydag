@@ -14,14 +14,14 @@ onto_path.append(f"{os.getcwd()}/resources/core/")
 onto_path.append(f"{os.getcwd()}/resources/development/")
 
 
-@pytest.fixture(scope="session")
-def realized_case_positive():
-    print("INFO: Generating RealizationCase.Check1 in fixture:")
-    loaded_onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
-    loaded_onto.load(only_local=True)
-    generator: LosydagGenerator = LosydagGenerator(loaded_onto)
-    realized_cases = generator.generate_all_positive_datasets_from_generic_group("RealizationCase.Check1")
-    return realized_cases
+# @pytest.fixture(scope="session")
+# def realized_case_positive():
+#     print("INFO: Generating RealizationCase.Check1 in fixture:")
+#     loaded_onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
+#     loaded_onto.load(only_local=True)
+#     generator: LosydagGenerator = LosydagGenerator(loaded_onto)
+#     realized_cases = generator.generate_all_positive_datasets_from_generic_group("RealizationCase.Check1")
+#     return realized_cases
 
 
 # def test_generated_data_have_all_needed_tables(realized_case_positive):

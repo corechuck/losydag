@@ -33,6 +33,7 @@ def test_inverting_inverted_range_constraint(prepared_core, invert, actual_range
     assert actual_negation_group
     assert isinstance(actual_negation_group, prepared_core.AndGroup)
     assert len(actual_negation_group.has_constraints) == 1
+    assert len(actual_negation_group.contains_constraint_groups) == 0
     double_negated_range = actual_negation_group.has_constraints[0]
     assert double_negated_range.left_limit == actual_range_constraint_under_test.left_limit
     assert double_negated_range.right_limit == actual_range_constraint_under_test.right_limit

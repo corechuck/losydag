@@ -27,6 +27,7 @@ def test_multiplication_with_and_to_or(
 
     right_group = prepared_core.ConstraintGroup("right_group_2")
     right_group.is_a.append(prepared_core.OrGroup)
+    right_group.is_a.remove(prepared_core.AndGroup)
     right_group.has_constraints = [min_range_constraint_under_test, regex_constraint_under_test]
 
     multiplicator = MultiplicationSupervisor(prepared_core)

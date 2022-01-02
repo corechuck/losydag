@@ -59,6 +59,7 @@ class ConstraintInverter:
     def _invert_range_constraint(self, range_constraint):
         container_group = self.core.ConstraintGroup(f"temp_{round(random() * 100000)}")
         container_group.is_a.append(self.core.OrGroup)
+        container_group.is_a.remove(self.core.AndGroup)
         container_group.has_constraints = list()
 
         if range_constraint.right_limit < range_constraint.get_maximum_value_for_data_type():
@@ -144,15 +145,22 @@ class ConstraintInverter:
 
         for constraint in constraint_group.has_constraints:
             negated_constraint = self.invert(constraint)
-            both_or_groups = isinstance(container_group, self.core.OrGroup) and isinstance(negated_constraint, self.core.OrGroup)
-            both_and_groups = isinstance(container_group, self.core.AndGroup) and (
-                    isinstance(negated_constraint, self.core.AndGroup) or not isinstance(negated_constraint, self.core.OrGroup)
-            )
-            negated_group_has_single_constaraint = len(negated_constraint.has_constraints) == 1
-            if both_or_groups or both_and_groups or negated_group_has_single_constaraint:
-                container_group.has_constraints.extend(negated_constraint.has_constraints)
+            both_or_groups = isinstance(container_group, self.core.OrGroup) and \
+                             isinstance(negated_constraint, self.core.OrGroup)
+            both_and_groups = isinstance(container_group, self.core.AndGroup) and \
+                              isinstance(negated_constraint, self.core.AndGroup)
+
+            negated_group_has_single_constraint = len(negated_constraint.has_constraints) == 1
+            if both_or_groups or both_and_groups:
+                if not negated_group_has_single_constraint:
+                    container_group.has_constraints.extend(negated_constraint.has_constraints)
+                else:
+                    container_group.has_constraints.append(negated_constraint.has_constraints[0])
             else:
-                container_group.has_constraints.append(negated_constraint)
+                if not negated_group_has_single_constraint:
+                    container_group.contains_constraint_groups.append(negated_constraint)
+                else:
+                    container_group.has_constraints.append(negated_constraint.has_constraints[0])
 
         container_group.unify_constraints()
         return container_group
