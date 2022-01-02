@@ -270,5 +270,5 @@ def test_negated_value_dependency_for_string(prepared_core, prepared_table):
     assert realized_case["internal_test_table_01"][0]['column_02'] == 'None'
 
 # test order of value dependencies, when dependency constraints col2 and formats values in later columns
-# it will have to get into second try of fulfilling constraints, therefore idenftifies that somehting has already
+# it will have to get into second try of fulfilling constraints, therefore identifies that something has already
 # fulfilled constraint for later columns.

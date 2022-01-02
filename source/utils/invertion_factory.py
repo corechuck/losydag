@@ -3,12 +3,6 @@ from random import random
 # Invert negation to compliment set
 # negate != invert that class is actually inversion factory
 
-class ConstraintRestrictor:
-    core = None
-
-    def __init__(self, _core):
-        self.core = _core
-
 
 class ConstraintInverter:
     core = None
@@ -80,16 +74,6 @@ class ConstraintInverter:
             )
             container_group.has_constraints.append(negated_left_part_constraint)
 
-        # contained_in_range_not_picks_list = \
-        #     [v for v in range_constraint.not_picks if range_constraint.has_min_range < v < range_constraint.has_max_range]
-        # if len(contained_in_range_not_picks_list) > 0:
-        #     negated_part_constraint_internal = self.core.ListConstraint(f"temp_{round(random()*100000)}")
-        #     negated_part_constraint_internal.is_constraining_column = range_constraint.is_constraining_column
-        #     negated_part_constraint_internal.has_picks = contained_in_range_not_picks_list
-        #     container_group.has_constraints.append(negated_part_constraint_internal)
-
-        #container_group.unify_constraints()
-        # sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
         return container_group
 
     def _invert_basic_constraint(self, constraint):
@@ -98,39 +82,6 @@ class ConstraintInverter:
 
         inverted_constraint = constraint.toggle_restriction()
         container_group.has_constraints = [inverted_constraint]
-
-        # # has_picks -> not_picks
-        # if len(constraint.has_picks) > 0:
-        #     negated_part_constraint = self.core.Constraint(f"temp_{round(random()*100000)}")
-        #     negated_part_constraint.is_constraining_column = constraint.is_constraining_column
-        #     negated_part_constraint.not_picks = constraint.has_picks.copy()
-        #     container_group.has_constraints.append(negated_part_constraint)
-        #
-        # # not_picks -> has_picks
-        # if len(constraint.not_picks) > 0:
-        #     negated_part_constraint = self.core.ListConstraint(f"temp_{round(random()*100000)}")
-        #     negated_part_constraint.is_constraining_column = constraint.is_constraining_column
-        #     negated_part_constraint.has_picks = constraint.not_picks.copy()
-        #     container_group.has_constraints.append(negated_part_constraint)
-        #
-        # # not_matching_regexes -> multiple(RegexConstraint.has_regex_format)
-        # if len(constraint.not_matching_regexes) > 0:
-        #     for not_matching_regex in constraint.not_matching_regexes:
-        #         negated_part_constraint = self.core.RegexConstraint(f"temp_{round(random()*100000)}")
-        #         negated_part_constraint.is_constraining_column = constraint.is_constraining_column
-        #         negated_part_constraint.has_regex_format = not_matching_regex
-        #         container_group.has_constraints.append(negated_part_constraint)
-        #
-        # # has_regex_format -> not_matching_regexes
-        # if constraint.has_regex_format:
-        #     negated_part_constraint = self.core.Constraint(f"temp_{round(random()*100000)}")
-        #     negated_part_constraint.is_constraining_column = constraint.is_constraining_column
-        #     negated_part_constraint.not_matching_regexes = list()
-        #     negated_part_constraint.not_matching_regexes.append(constraint.has_regex_format)
-        #     container_group.has_constraints.append(negated_part_constraint)
-        #
-        # container_group.unify_constraints()
-        # sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
         return container_group
 
     def _invert_constraint_group(self, constraint_group):

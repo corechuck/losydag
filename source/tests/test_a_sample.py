@@ -85,11 +85,6 @@ def test_min_requirement_overridden_by_custom_from_realization_definition(realiz
     assert realized_case['Table.Test1'][0]['Col3_text'] in ["Tree", "Rock"]
 
 
-def test_generic_constraint_was_merged_with_minimum_requirement_for_given_column(realized_case):
-    """ TODO: Implement that feature """
-    pytest.skip("TODO: Implement that feature: https://github.com/corechuck/losydag/issues/11")
-
-
 def test_all_realizations_have_been_overridden(realized_case):
     assert realized_case['Table.Test2'][0]['Col3_text'] not in ["London", "Tokio", "Paris"]
     assert realized_case['Table.Test2'][1]['Col3_text'] not in ["London", "Tokio", "Paris"]

@@ -1,3 +1,0 @@
-
-class GenerationTypeException(Exception):
-    pass

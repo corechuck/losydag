@@ -11,6 +11,7 @@ from core_classes.ConstraintGroups import extend_core as extend_constraint_group
 from core_classes.SimpleExtensions import extend_core as extend_simple_types
 from core_classes.Dependencies import extend_core as extend_dependencies
 from core_classes.RealizationCase import extend_core as extend_realization_case
+from core_classes.LogicalOperators import extend_core as extend_logical_operator
 from utils.context import ExtensionContext
 from utils.value_generator_supervisor import ValueGenerationSupervisor
 
@@ -32,6 +33,7 @@ def prepared_core():
     extend_constraint_groups(context)
     extend_simple_types(context)
     extend_realization_case(context)
+    extend_logical_operator(context)
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
     return core
