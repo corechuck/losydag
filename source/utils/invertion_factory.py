@@ -4,6 +4,7 @@ from random import random
 # negate != invert that class is actually inversion factory
 
 
+
 class ConstraintInverter:
     core = None
     
@@ -25,28 +26,37 @@ class ConstraintInverter:
     def _invert_dependency_constraint(self, dependency):
         container_group = self.core.ConstraintGroup(f"temp_{round(random() * 100000)}")
         container_group.is_a.append(self.core.OrGroup)
-        container_group.has_constraints = [dependency]
+        container_group.has_constraints = []
 
+        inverted_dependency = None
         if isinstance(dependency, self.core.GreaterOrEqualThenDependency):
-            dependency.is_a.append(self.core.SmallerThenDependency)
-            dependency.is_a.remove(self.core.GreaterOrEqualThenDependency)
+            inverted_dependency = self.core.SmallerThenDependency()
 
         elif isinstance(dependency, self.core.SmallerThenDependency):
-            dependency.is_a.append(self.core.GreaterOrEqualThenDependency)
-            dependency.is_a.remove(self.core.SmallerThenDependency)
+            inverted_dependency = self.core.GreaterOrEqualThenDependency()
 
         elif isinstance(dependency, self.core.SmallerOrEqualThenDependency):
-            dependency.is_a.append(self.core.GreaterThenDependency)
-            dependency.is_a.remove(self.core.SmallerOrEqualThenDependency)
+            inverted_dependency = self.core.GreaterThenDependency()
 
         elif isinstance(dependency, self.core.GreaterThenDependency):
-            dependency.is_a.append(self.core.SmallerOrEqualThenDependency)
-            dependency.is_a.remove(self.core.GreaterThenDependency)
+            inverted_dependency = self.core.SmallerOrEqualThenDependency()
 
-        elif not isinstance(dependency, self.core.Negation):
-            dependency.is_a.append(self.core.Negation)
-        else:
-            dependency.is_a.remove(self.core.Negation)
+        elif isinstance(dependency, self.core.FormatDependency):
+            inverted_dependency = self.core.FormatDependency()
+            inverted_dependency.is_a.append(self.core.Negation)
+
+        inverted_dependency.is_constraining_column = dependency.is_constraining_column
+        if dependency.is_depending_on_column:
+            inverted_dependency.is_depending_on_column = dependency.is_depending_on_column
+
+        if dependency.has_format_definition:
+            inverted_dependency.has_format_definition = dependency.has_format_definition
+
+        container_group.has_constraints.append(inverted_dependency)
+        # elif not isinstance(dependency, self.core.Negation):
+        #     dependency.is_a.append(self.core.Negation)
+        # else:
+        #     dependency.is_a.remove(self.core.Negation)
 
         return container_group
 
@@ -56,20 +66,20 @@ class ConstraintInverter:
         container_group.is_a.remove(self.core.AndGroup)
         container_group.has_constraints = list()
 
-        if range_constraint.right_limit < range_constraint.get_maximum_value_for_data_type():
+        if range_constraint.right_limit() < range_constraint.get_maximum_value_for_data_type():
             negated_right_part_constraint = self.core.RangeConstraint(f"temp_{round(random() * 100000)}")
             negated_right_part_constraint.is_constraining_column = range_constraint.is_constraining_column
             negated_right_part_constraint.set_left_boundary(
-                range_constraint.right_limit,
+                range_constraint.right_limit(),
                 is_open=isinstance(range_constraint.has_right_boundary, self.core.ClosedRangeBoundary)
             )
             container_group.has_constraints.append(negated_right_part_constraint)
 
-        if range_constraint.left_limit > range_constraint.get_minimum_value_for_data_type():
+        if range_constraint.left_limit() > range_constraint.get_minimum_value_for_data_type():
             negated_left_part_constraint = self.core.RangeConstraint(f"temp_{round(random() * 100000)}")
             negated_left_part_constraint.is_constraining_column = range_constraint.is_constraining_column
             negated_left_part_constraint.set_right_boundary(
-                range_constraint.left_limit,
+                range_constraint.left_limit(),
                 is_open=isinstance(range_constraint.has_left_boundary, self.core.ClosedRangeBoundary)
             )
             container_group.has_constraints.append(negated_left_part_constraint)

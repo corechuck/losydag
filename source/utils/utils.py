@@ -1,4 +1,15 @@
+from owlready2 import OwlReadyInconsistentOntologyError
+
 _verbal = False
+
+
+# def sync_reasoner_pellet(x = None, infer_property_values = False, infer_data_property_values = False, debug = 1, keep_tmp_file = False):
+#     try:
+#         from owlready2 import sync_reasoner_pellet
+#         sync_reasoner_pellet(x, infer_property_values, infer_data_property_values, debug, keep_tmp_file)
+#     except OwlReadyInconsistentOntologyError:
+#
+#         raise
 
 
 def _merge_groups_left_prio(group1, group2):
@@ -46,4 +57,8 @@ class ValueGenerationException(Exception):
 
 
 class NotUnifiedConstraintsException(Exception):
+    pass
+
+
+class DataTypeIssueException(Exception):
     pass

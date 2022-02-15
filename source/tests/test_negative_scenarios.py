@@ -37,7 +37,7 @@ def test_negative_cases_for_simple_and_group_with_range_and_list(
     assert len(negative_cases) == 3
     lower_range_case, lower_end_constraint = find_first_constraint_meeting(
         negative_cases,
-        lambda c: c.has_left_boundary and c.has_right_boundary.has_boundary_value ==
+        lambda c: c.has_right_boundary and c.has_right_boundary.has_boundary_value ==
                   actual_range_constraint_under_test.has_left_boundary.has_boundary_value
     )
     assert lower_end_constraint

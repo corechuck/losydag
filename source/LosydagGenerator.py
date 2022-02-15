@@ -7,6 +7,7 @@ from core_classes.SimpleExtensions import extend_core as extend_simple_types
 from core_classes.Dependencies import extend_core as extend_dependencies
 from core_classes.RealizationCase import extend_core as extend_realization_case
 from core_classes.LogicalOperators import extend_core as extend_logical_operators
+from core_classes.DataTypes import extend_core as extend_date_types
 from utils.context import ExtensionContext
 from utils.value_generator_supervisor import ValueGenerationSupervisor
 
@@ -34,8 +35,12 @@ class LosydagGenerator:
         extend_simple_types(context)
         extend_realization_case(context)
         extend_logical_operators(context)
+        extend_date_types(context)
         # sync_reasoner_hermit(infer_property_values=True)
-        sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+        try:
+            sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+        except OwlReadyInconsistentOntologyError:
+            self.core.save(file="foo.owl")
 
     def realize_fresh(self, realization_case_iri, is_silent=False):
         real_case = self.onto.search_one(iri=f"*{realization_case_iri}")

@@ -215,7 +215,8 @@ def extend_core(context: ExtensionContext):
         def compliment_with_min_reqs(self):
             if len(self.has_constraints) > 0 and not self.is_complimented_with_min_reqs:
                 self.original_constraints = self.has_constraints.copy()
-                self.compliment_with(self.constraints_table().has_min_reqs)
+                if self.constraints_table().has_min_reqs:
+                    self.compliment_with(self.constraints_table().has_min_reqs)
                 self.is_complimented_with_min_reqs = True
 
         def is_ready(self):

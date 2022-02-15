@@ -19,6 +19,8 @@ That is outdated. Not reviewed after refactor of ranges.
 
 """
 from random import random
+from typing import Callable
+
 import pytest
 from utils.invertion_factory import ConstraintInverter
 
@@ -26,7 +28,7 @@ from utils.invertion_factory import ConstraintInverter
 
 
 @pytest.fixture()
-def invert(prepared_core):
+def invert(prepared_core) -> Callable:
     inverter = ConstraintInverter(prepared_core)
     return inverter.invert
 
@@ -80,15 +82,15 @@ def test_inverting_range_with_closed_right(prepared_core, invert, max_range_cons
     assert actual_negation_group_2.has_constraints
     assert len(actual_negation_group_2.has_constraints) == 1
     actual_negated_constraint = actual_negation_group_2.has_constraints[0]
-    assert actual_negated_constraint.left_limit == max_range_constraint_under_test.right_limit
-    assert actual_negated_constraint.right_limit == \
+    assert actual_negated_constraint.left_limit() == max_range_constraint_under_test.right_limit()
+    assert actual_negated_constraint.right_limit() == \
            max_range_constraint_under_test.get_maximum_value_for_data_type()
     assert isinstance(actual_negated_constraint.has_left_boundary, prepared_core.OpenRangeBoundary)
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
 
 
 def test_inverting_range_with_open_right(prepared_core, invert, max_range_constraint_under_test):
-    max_range_constraint_under_test.set_right_boundary(max_range_constraint_under_test.right_limit, is_open=True)
+    max_range_constraint_under_test.set_right_boundary(max_range_constraint_under_test.right_limit(), is_open=True)
     actual_negation_group = invert(max_range_constraint_under_test)
 
     assert actual_negation_group
@@ -96,8 +98,8 @@ def test_inverting_range_with_open_right(prepared_core, invert, max_range_constr
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]
-    assert actual_negated_constraint.left_limit == max_range_constraint_under_test.right_limit
-    assert actual_negated_constraint.right_limit == \
+    assert actual_negated_constraint.left_limit() == max_range_constraint_under_test.right_limit()
+    assert actual_negated_constraint.right_limit() == \
            max_range_constraint_under_test.get_maximum_value_for_data_type()
     assert isinstance(actual_negated_constraint.has_left_boundary, prepared_core.ClosedRangeBoundary)
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
@@ -111,15 +113,15 @@ def test_inverting_range_with_closed_left(prepared_core, invert, min_range_const
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]
-    assert actual_negated_constraint.right_limit == min_range_constraint_under_test.left_limit
-    assert actual_negated_constraint.left_limit == \
+    assert actual_negated_constraint.right_limit() == min_range_constraint_under_test.left_limit()
+    assert actual_negated_constraint.left_limit() == \
            min_range_constraint_under_test.get_minimum_value_for_data_type()
     assert isinstance(actual_negated_constraint.has_right_boundary, prepared_core.OpenRangeBoundary)
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
 
 
 def test_inverting_range_with_open_left(prepared_core, invert, min_range_constraint_under_test):
-    min_range_constraint_under_test.set_left_boundary(min_range_constraint_under_test.left_limit, is_open=True)
+    min_range_constraint_under_test.set_left_boundary(min_range_constraint_under_test.left_limit(), is_open=True)
     actual_negation_group = invert(min_range_constraint_under_test)
 
     assert actual_negation_group
@@ -127,8 +129,8 @@ def test_inverting_range_with_open_left(prepared_core, invert, min_range_constra
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 1
     actual_negated_constraint = actual_negation_group.has_constraints[0]
-    assert actual_negated_constraint.right_limit == min_range_constraint_under_test.left_limit
-    assert actual_negated_constraint.left_limit == \
+    assert actual_negated_constraint.right_limit() == min_range_constraint_under_test.left_limit()
+    assert actual_negated_constraint.left_limit() == \
            min_range_constraint_under_test.get_minimum_value_for_data_type()
     assert isinstance(actual_negated_constraint.has_right_boundary, prepared_core.ClosedRangeBoundary)
     assert not hasattr(actual_negated_constraint, 'not_picks') or len(actual_negated_constraint.not_picks) == 0
@@ -136,7 +138,7 @@ def test_inverting_range_with_open_left(prepared_core, invert, min_range_constra
 
 def test_negation_of_actual_range_right_open_to_or_group(prepared_core, invert, actual_range_constraint_under_test):
     """ Too spice it up it is open on right side"""
-    actual_range_constraint_under_test.set_left_boundary(actual_range_constraint_under_test.left_limit, is_open=True)
+    actual_range_constraint_under_test.set_left_boundary(actual_range_constraint_under_test.left_limit(), is_open=True)
     actual_negation_group = invert(actual_range_constraint_under_test)
 
     min_range = actual_range_constraint_under_test.get_minimum_value_for_data_type()
@@ -146,9 +148,9 @@ def test_negation_of_actual_range_right_open_to_or_group(prepared_core, invert, 
     assert isinstance(actual_negation_group, prepared_core.OrGroup)
     assert actual_negation_group.has_constraints
     assert len(actual_negation_group.has_constraints) == 2
-    lower_range = next(c for c in actual_negation_group.has_constraints if c.left_limit == min_range)
-    assert lower_range.right_limit == actual_range_constraint_under_test.left_limit
+    lower_range = next(c for c in actual_negation_group.has_constraints if c.left_limit() == min_range)
+    assert lower_range.right_limit() == actual_range_constraint_under_test.left_limit()
     assert isinstance(lower_range.has_right_boundary, prepared_core.ClosedRangeBoundary)
-    higher_range = next(c for c in actual_negation_group.has_constraints if c.right_limit == max_range)
-    assert higher_range.left_limit == actual_range_constraint_under_test.right_limit
+    higher_range = next(c for c in actual_negation_group.has_constraints if c.right_limit() == max_range)
+    assert higher_range.left_limit() == actual_range_constraint_under_test.right_limit()
     assert isinstance(higher_range.has_left_boundary, prepared_core.OpenRangeBoundary)

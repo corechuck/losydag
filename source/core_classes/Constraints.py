@@ -5,7 +5,7 @@ import datetime
 import math
 from owlready2 import Thing, destroy_entity
 
-from utils.utils import MergingException, ValueGenerationException
+from utils.utils import MergingException, ValueGenerationException, DataTypeIssueException
 from utils.context import ExtensionContext
 
 
@@ -24,7 +24,10 @@ def extend_core(context: ExtensionContext):
             self.partition_relevant_value_options = list()
 
         def generate(self, local_dict):
-            return str(self._generate(local_dict))
+            self._assert_column_has_data_type()
+            generated_value = self._generate(local_dict)
+            self._assert_proposed_value_is_valid(generated_value)
+            return self._get_constrained_data_type().convert_to_string(generated_value)
 
         def has_more_relevant_options(self):
             return len(self.partition_relevant_value_options) > 0
@@ -40,7 +43,10 @@ def extend_core(context: ExtensionContext):
             return True
 
         def _get_constrained_data_type(self):
-            if self.is_constraining_column is None:
+            try:
+                if self.is_constraining_column is None:
+                    return None
+            except AttributeError:
                 return None
             return self.is_constraining_column.has_data_type
 
@@ -55,9 +61,26 @@ def extend_core(context: ExtensionContext):
                 decimal_type = self._get_constrained_data_type()
                 expanded_scale = math.pow(10, decimal_type.has_scale)
                 expanded_precision = math.pow(10, decimal_type.has_precision)
-                return round((random.random()-0.5)*expanded_scale)/expanded_precision
+                return round((random.random() - 0.5) * expanded_scale) / expanded_precision
 
             return "#non-value"
+
+        def _assert_column_is_set(self):
+            if not self.is_constraining_column:
+                raise DataTypeIssueException(f"ERROR: Range Constraint {self.name} need to have set column.")
+
+        def _assert_column_has_data_type(self):
+            self._assert_column_is_set()
+            if self._get_constrained_data_type() is None:
+                raise DataTypeIssueException(
+                    f"Column {self.is_constraining_column.name} has not defined data type")
+
+        def _assert_proposed_value_is_valid(self, value):
+            self._assert_column_has_data_type()
+            if not self._get_constrained_data_type().is_value_valid(value):
+                raise DataTypeIssueException(
+                    f"ERROR: Boundary value {value} is not valid for "
+                    f"data type {self._get_constrained_data_type().name} for constraint {self.name}.")
 
         def is_constraining_same_column_as(self, _other_constraint):
             return _other_constraint.is_constraining_column.name == self.is_constraining_column.name
@@ -118,7 +141,7 @@ def extend_core(context: ExtensionContext):
 
     class RestrictiveConstraint(Constraint):
 
-        def __init__(self, name=None, namespace=None, restricting_constraint=None,  **kwargs):
+        def __init__(self, name=None, namespace=None, restricting_constraint=None, **kwargs):
             super().__init__(name=name, namespace=namespace, **kwargs)
             self.restriction_definition = restricting_constraint
 
@@ -187,20 +210,19 @@ def extend_core(context: ExtensionContext):
 
         def _generate(self, __yagni):
             generated_value = rstr.xeger(self.has_regex_format)
-            if self.is_constraining_column is None:
-                return generated_value
-
-            if isinstance(self._get_constrained_data_type(), _core.Date):
-                # to do check if generated is date !!
-                return generated_value
-
-            if isinstance(self._get_constrained_data_type(), _core.Decimal):
-                if not generated_value.isnumeric():
-                    raise Exception(
-                        f"Regex Constraint could not generate number from {self.has_regex_format}")
-                return generated_value
-
             return generated_value
+            # if self.is_constraining_column is None:
+            #     return generated_value
+
+            # if isinstance(self._get_constrained_data_type(), _core.Date):
+            #     # to do check if generated is date !!
+            #     return generated_value
+            #
+            # if isinstance(self._get_constrained_data_type(), _core.Decimal):
+            #     if not generated_value.isnumeric():
+            #         raise Exception(
+            #             f"Regex Constraint could not generate number from {self.has_regex_format}")
+            #     return generated_value
 
         def _merge_with(self, right_constraint):
             if right_constraint.is_regex:
@@ -231,101 +253,132 @@ def extend_core(context: ExtensionContext):
         precision = 5
         scale = 2
 
-        def __init__(self, name, namespace=None,
-                     left_boundary=None, right_boundary=None, is_left_open=False, is_right_open=False, **kwargs):
+        def __init__(self, name, namespace=None, left_boundary=None, right_boundary=None,
+                     is_left_open=False, is_right_open=False, is_constraining_column=None, **kwargs):
             super().__init__(name=name, namespace=namespace, **kwargs)
 
-            if self._get_constrained_data_type() is not None:
-                self.precision = self._get_constrained_data_type().has_precision
-                self.scale = self._get_constrained_data_type().has_scale
+            if is_constraining_column is not None:
+                self.is_constraining_column = is_constraining_column
 
-            if self.has_left_boundary is None and left_boundary is not None:
+            # if self._get_constrained_data_type() is not None:
+            #     self.precision = self._get_constrained_data_type().has_precision
+            #     self.scale = self._get_constrained_data_type().has_scale
+            if not self._get_constrained_data_type():
+                return
+
+            if not self._has_defined_left_boundary() and left_boundary is not None:
                 self.set_left_boundary(left_boundary, is_left_open)
-            if self.has_right_boundary is None and right_boundary is not None:
+
+            if not self._has_defined_right_boundary() and right_boundary is not None:
                 self.set_right_boundary(right_boundary, is_right_open)
 
             self._prepare_min_max()
 
+        def _has_defined_left_boundary(self):
+            return "has_left_boundary" in [p.get_name() for p in self.get_properties()]
+
+        def _has_defined_right_boundary(self):
+            return "has_right_boundary" in [p.get_name() for p in self.get_properties()]
+
+        def _assert_proposed_boundary_value_is_valid(self, value, boundary_value):
+            self._assert_column_has_data_type()
+            try:
+                self._assert_proposed_value_is_valid(value)
+            except DataTypeIssueException as internal_error:
+                raise DataTypeIssueException(
+                    f"ERROR: {boundary_value} boundary value {value} is not valid for "
+                    f"data type {self._get_constrained_data_type().name} for constraint {self.name}.") \
+                    from internal_error
+
+        def get_maximum_value_for_data_type(self):
+            self._assert_column_has_data_type()
+            return self._get_constrained_data_type().get_maximum_value()
+
+        def get_minimum_value_for_data_type(self):
+            self._assert_column_has_data_type()
+            return self._get_constrained_data_type().get_minimum_value()
+
         def set_left_boundary(self, value, is_open=False):
+            self._assert_proposed_boundary_value_is_valid(value, "Proposed left value")
             if is_open:
                 self.has_left_boundary = _core.OpenRangeBoundary()
             else:
                 self.has_left_boundary = _core.ClosedRangeBoundary()
 
-            self.has_left_boundary.has_boundary_value = value
+            self.has_left_boundary.has_boundary_value = \
+                self._get_constrained_data_type().parse_if_needed(value)
 
         def set_right_boundary(self, value, is_open=False):
+            self._assert_proposed_boundary_value_is_valid(value, "Proposed right value")
             if is_open:
                 self.has_right_boundary = _core.OpenRangeBoundary()
             else:
                 self.has_right_boundary = _core.ClosedRangeBoundary()
 
-            self.has_right_boundary.has_boundary_value = value
+            self.has_right_boundary.has_boundary_value = \
+                self._get_constrained_data_type().parse_if_needed(value)
 
         def _prepare_min_max(self):
-            if self._get_constrained_data_type() is not None:
-                self.precision = self._get_constrained_data_type().has_precision
-                self.scale = self._get_constrained_data_type().has_scale
+            self._assert_column_has_data_type()
 
+            if not self._has_defined_left_boundary():
+                self.set_left_boundary(self._get_constrained_data_type().get_minimum_value())
+            if not self._has_defined_right_boundary():
+                self.set_right_boundary(self._get_constrained_data_type().get_maximum_value())
+
+        def _assert_range_boundaries_are_valid(self):
             if self.has_left_boundary is None:
-                self.set_left_boundary(self.get_minimum_value_for_data_type())
-            if self.has_right_boundary is None:
-                self.set_right_boundary(self.get_maximum_value_for_data_type())
+                raise Exception(f"ERROR: Left boundary is not defined for Range {self.name}. You set min and max?")
+            if self.has_left_boundary is None or self.has_right_boundary is None:
+                raise Exception(f"ERROR: Right boundary is not defined for Range {self.name}. You set min and max?")
 
-        def get_minimum_value_for_data_type(self):
-            return sum(math.pow(10, d)*9 for d in range(0, self.precision))*-1 / math.pow(10, self.scale)
+            if self.has_left_boundary.has_boundary_value > self.has_right_boundary.has_boundary_value:
+                raise Exception(f"ERROR: Left boundary is greater then right for Range {self.name}.")
 
-        def get_maximum_value_for_data_type(self):
-            return sum(math.pow(10, d)*9 for d in range(0, self.precision)) / math.pow(10, self.scale)
+            self._assert_proposed_boundary_value_is_valid(self.has_right_boundary.has_boundary_value, "Right")
+            self._assert_proposed_boundary_value_is_valid(self.has_left_boundary.has_boundary_value, "Left")
+
+            if self.has_left_boundary.has_boundary_value == self.has_right_boundary.has_boundary_value and \
+                    (
+                            not isinstance(self.has_left_boundary, _core.ClosedRangeBoundary) or
+                            not isinstance(self.has_right_boundary, _core.ClosedRangeBoundary)
+                    ):
+                raise Exception(f"ERROR: Left boundary is equal to right for Range {self.name}.")
+
+        # todo: TESTS for those boundary conditions !!!!!
 
         def _get_minimum_viable_value(self):
             min_viable = self.has_left_boundary.has_boundary_value
             if isinstance(self.has_left_boundary, _core.OpenRangeBoundary):
-                min_viable += (1 / math.pow(10, self.scale))
+                min_viable += self._get_constrained_data_type().get_minimal_increment_value()
             return min_viable
-        # todo: TESTS for those boundary conditions !!!!!
 
         def _get_maximum_viable_value(self):
             max_viable = self.has_right_boundary.has_boundary_value
             if isinstance(self.has_right_boundary, _core.OpenRangeBoundary):
-                max_viable -= (1 / math.pow(10, self.scale))
+                max_viable -= self._get_constrained_data_type().get_minimal_increment_value()
             return max_viable
 
         def _generate(self, __yagni=None):
-            self._assert_range_boundaries_are_valid()
             self._prepare_min_max()
+            self._assert_range_boundaries_are_valid()
 
-            if type(self._get_constrained_data_type()) == _core.Date:
-                raise Exception(f"ERROR: No range for dates (yet) :| sorry.")
-
-            if type(self._get_constrained_data_type()) == _core.Varchar:
-                raise Exception(f"ERROR: No range for strings/varchars :| sorry.")
-
-            if type(self._get_constrained_data_type()) == _core.Decimal:
-                self.precision = self._get_constrained_data_type().has_precision
-                self.scale = self._get_constrained_data_type().has_scale
-                # for decimal we can do some check if max range is greater then scale - precision for decimals.
-
-            if self._get_minimum_viable_value() < self.get_minimum_value_for_data_type():
+            if self._get_minimum_viable_value() < self._get_constrained_data_type().get_minimum_value():
                 raise Exception(f"ERROR: Set left limit outside of precision "
                                 f"for column {self.is_constraining_column.name}")
 
-            if self._get_maximum_viable_value() > self.get_maximum_value_for_data_type():
+            if self._get_maximum_viable_value() > self._get_constrained_data_type().get_maximum_value():
                 raise Exception(f"ERROR: Set right limit outside of decimal precision "
                                 f"for column {self.is_constraining_column.name}")
+            return self._get_constrained_data_type().generate_for_closed_range(
+                self._get_minimum_viable_value(), self._get_maximum_viable_value())
 
-            scaleless_min_viable_value = int(self._get_minimum_viable_value() * math.pow(10, self.scale))
-            scaleless_max_viable_value = int(self._get_maximum_viable_value() * math.pow(10, self.scale))
-
-            chosen_number = random.randint(scaleless_min_viable_value, scaleless_max_viable_value)
-            return chosen_number / math.pow(10, self.scale)
-
-        @property
         def left_limit(self):
+            self._prepare_min_max()
             return self.has_left_boundary.has_boundary_value
 
-        @property
         def right_limit(self):
+            self._prepare_min_max()
             return self.has_right_boundary.has_boundary_value
 
         def _merge_with(self, right_constraint):
@@ -339,42 +392,34 @@ def extend_core(context: ExtensionContext):
             if not right_constraint.is_range:
                 raise Exception("ERROR: Right constraint of unknown type.")
 
-            if self.has_left_boundary.has_boundary_value < right_constraint.has_left_boundary.has_boundary_value:
+            if (right_constraint.has_left_boundary and
+                self.has_left_boundary.has_boundary_value < right_constraint.has_left_boundary.has_boundary_value
+            ):
                 self.has_left_boundary = right_constraint.has_left_boundary
 
-            if (self.has_left_boundary.has_boundary_value ==
-                right_constraint.has_left_boundary.has_boundary_value) and \
-               not isinstance(self.has_left_boundary, _core.ClosedRangeBoundary) and \
-               isinstance(right_constraint.has_left_boundary, _core.ClosedRangeBoundary):
+            if (right_constraint.has_right_boundary
+                and self.has_left_boundary.has_boundary_value == right_constraint.has_left_boundary.has_boundary_value
+                and not isinstance(self.has_left_boundary, _core.ClosedRangeBoundary)
+                and isinstance(right_constraint.has_left_boundary, _core.ClosedRangeBoundary)
+            ):
                 self.has_left_boundary = right_constraint.has_left_boundary
 
-            if right_constraint.has_right_boundary.has_boundary_value < self.has_right_boundary.has_boundary_value:
+            if (right_constraint.has_right_boundary and
+                right_constraint.has_right_boundary.has_boundary_value < self.has_right_boundary.has_boundary_value
+            ):
                 self.has_right_boundary = right_constraint.has_right_boundary
 
-            if (self.has_right_boundary.has_boundary_value ==
-                    right_constraint.has_right_boundary.has_boundary_value) and \
-               not isinstance(self.has_right_boundary, _core.ClosedRangeBoundary) and \
-               isinstance(right_constraint.has_right_boundary, _core.ClosedRangeBoundary):
+            if (right_constraint.has_right_boundary
+                and self.has_right_boundary.has_boundary_value == right_constraint.has_right_boundary.has_boundary_value
+                and not isinstance(self.has_right_boundary, _core.ClosedRangeBoundary)
+                and isinstance(right_constraint.has_right_boundary, _core.ClosedRangeBoundary)
+            ):
                 self.has_right_boundary = right_constraint.has_right_boundary
 
             self._assert_range_boundaries_are_valid()
 
             super()._merge_with(right_constraint)
             return self
-
-        def _assert_range_boundaries_are_valid(self):
-            if self.has_left_boundary is None or self.has_right_boundary is None:
-                return
-
-            if self.has_left_boundary.has_boundary_value > self.has_right_boundary.has_boundary_value:
-                raise Exception(f"ERROR: Left boundary is greater then right for Range {self.name}.")
-
-            if self.has_left_boundary.has_boundary_value == self.has_right_boundary.has_boundary_value and \
-               (
-                    not isinstance(self.has_left_boundary, _core.ClosedRangeBoundary) or
-                    not isinstance(self.has_right_boundary, _core.ClosedRangeBoundary)
-               ):
-                raise Exception(f"ERROR: Left boundary is equal to right for Range {self.name}.")
 
         def prepare_relevant_partition_values(self):
             self._assert_range_boundaries_are_valid()

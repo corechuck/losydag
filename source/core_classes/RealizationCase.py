@@ -2,7 +2,8 @@ import rstr
 import random
 import datetime
 import math
-from owlready2 import Thing, sync_reasoner_pellet, sync_reasoner, sync_reasoner_hermit
+from owlready2 import Thing, sync_reasoner_pellet, sync_reasoner, sync_reasoner_hermit, \
+    OwlReadyInconsistentOntologyError
 
 from utils.utils import _supervise_constraint_generation
 from utils.context import ExtensionContext
@@ -65,6 +66,7 @@ def extend_core(context: ExtensionContext):
 
             self.__prepare_min_reqs_for_not_custom_constrained_but_referred_tables()
             sync_reasoner_pellet(infer_data_property_values=False, infer_property_values=True)
+
             self.__prepare_table_name_to_singular_realization_def_dict()
             self.__setup_external_dependencies_with_single_realizations_definitions()
 

@@ -55,6 +55,8 @@ def extend_core(context: ExtensionContext):
                         continue
                     # just add groups
                     # TODO: Test with (c1 ^ c2 ^ (c3 v c4 v (c5 ^ c6)) ^ (c7 ^ c8)) when c2 is actual range
+
+                    # c1 ^ (c2 v c3) == c1^c2 v c1^c3
                     # size, color, producer, fabric, creation date, layers amount, amount, category, descr as format
                     my_negative_cases_times_plain_child_group = list()
                     for specific_negative_case in negative_cases_for_chosen_constraint:
