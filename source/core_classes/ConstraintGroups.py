@@ -1,28 +1,49 @@
+from datetime import datetime
 from collections import defaultdict
+from typing import List
 
 import rstr
 import random
 from owlready2 import Thing, sync_reasoner_pellet
-from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio
+
+from utils.invertion_factory import ConstraintInverter
+from utils.sentence_processing import MultiplicationSupervisor
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, NotUnifiedConstraintsException, \
+    RealizationDefinitionException
+from utils.context import ExtensionContext
 
 
-def extend_core(_core):
+def extend_core(context: ExtensionContext):
+    _core = context.core
+    _value_generation_supervisor = context.value_generation_supervisor
 
     class ConstraintGroup(Thing):
-        namespace = _core
-        
+        namespace = context.core
+        multiplicator = None
+        meta = ""
+        my_restriction_variations = None
+        inverter = None
+
+        def __init__(self, name=None, namespace=None):
+            super().__init__(name=name, namespace=namespace)
+            if not isinstance(self, _core.OrGroup):
+                self.is_a.append(_core.AndGroup)
+            self.multiplicator = MultiplicationSupervisor(_core)
+            self.inverter = ConstraintInverter(_core)
+
         def fulfill_constraints(self):
             list_of_constraints = self.has_constraints
             return f"{self.name} has {len(list_of_constraints)} constraints."
 
         def compliment_with(self, _other_constraint_group):
             self.has_constraints = _merge_groups_left_prio(self, _other_constraint_group)
-            
+
         def merge_with_override(self, _other_constraint_group):
             self.has_constraints = _merge_groups_left_prio(_other_constraint_group, self)
 
         def names_of_constrained_columns(self):
-            return [const.is_constraining_column.name for const in self.has_constraints]
+            return [const.is_constraining_column.name
+                    for const in self.has_constraints if not isinstance(const, _core.RestrictiveConstraint)]
 
         def has_dependencies(self):
             return list(filter(lambda cons: isinstance(cons, _core.ValueDependency), self.has_constraints))
@@ -54,7 +75,11 @@ def extend_core(_core):
                 return
 
             column_to_merged_constraint = dict()
+            restrictive_constraints = list()
             for constraint in self.has_constraints:
+                if isinstance(constraint, _core.RestrictiveConstraint):
+                    restrictive_constraints.append(constraint)
+                    continue
                 column_name = constraint.is_constraining_column.name
                 if column_name not in column_to_merged_constraint:
                     column_to_merged_constraint[column_name] = constraint
@@ -62,6 +87,7 @@ def extend_core(_core):
                     left_constraint = column_to_merged_constraint[column_name]
                     column_to_merged_constraint[column_name] = left_constraint.merge_with(constraint)
             self.has_constraints = list(column_to_merged_constraint.values())
+            self.has_constraints.extend(restrictive_constraints)
 
         def convert_to_realization_definition(self):
             if not self._is_constraining_single_table():
@@ -73,7 +99,10 @@ def extend_core(_core):
         def build_realization_case(self):
             table_to_group_cache = defaultdict(_core.ConstraintGroup)
             for constraint_under in self.has_constraints:
-                tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
+                if isinstance(constraint_under, _core.RestrictiveConstraint):
+                    tbl_name = constraint_under.restricting_column.is_part_of_table.name
+                else:
+                    tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
                 table_to_group_cache[tbl_name].has_constraints.append(constraint_under)
 
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
@@ -85,32 +114,111 @@ def extend_core(_core):
             realization_case.contains_realizations = list(table_to_group_cache.values())
             return realization_case
 
-        def convert_to_positive_cases(self):
-            # 1. Break down OR groups with not second branches -> list of groups with negated recursively groups
-            # 2. Merge groups
-            # 3. Convert to Realization cases
-            # 4. Return
-            pass
+        def prepare_relevant_partition_values(self):
+            for constraint in self.has_constraints:
+                constraint.prepare_relevant_partition_values()
 
-        def convert_to_positive_cases(self):
-            # 1. for each constraint negate it and make new group out of it recursively
-            # 2. Merge groups
-            # 3. Convert to Realization cases
-            # 4. Return
-            pass
+        def pick_branches_from_or_groups(self):
+            flatted_list_of_branch_constraints = list()
+            meta_info_list = list()
+
+            # TODO: Write TESTS !
+            if isinstance(self, _core.OrGroup):
+                random_main_constraint = random.choice(self.has_constraints)
+                self.has_constraints.clear()
+                self.has_constraints.append(random_main_constraint)
+                meta_info_list.append(random_main_constraint.name)
+
+            for group in self.contains_constraint_groups:
+                if isinstance(group, _core.OrGroup):
+                    random_subgroup_constraint = random.choice(group.has_constraints)
+                    flatted_list_of_branch_constraints.append(random_subgroup_constraint)
+                    meta_info_list.append(random_subgroup_constraint.name)
+                else:
+                    flatted_list_of_branch_constraints.extend(group.has_constraints)
+
+                child_meta = group.pick_branches_from_or_groups()
+                meta_info_list.extend(child_meta)
+
+            if len(meta_info_list) > 0:
+                self.has_constraints.extend(flatted_list_of_branch_constraints)
+                self.unify_constraints()
+            return meta_info_list
+
+        def make_all_restricting_variations(self):
+            if self.my_restriction_variations:
+                return self.my_restriction_variations
+
+            self.my_restriction_variations = list()
+            if isinstance(self, _core.OrGroup):
+                new_and_group = _core.ConstraintGroup()
+                self.my_restriction_variations.append(new_and_group)
+                new_and_group.has_constraints.extend([
+                    constr.toggle_restriction() for constr in self.has_constraints
+                ])
+            elif isinstance(self, _core.AndGroup):
+                for to_be_breaking_constraint in self.has_constraints:
+                    new_variation_group = _core.ConstraintGroup()
+                    new_variation_group.meta = \
+                        f"Value in {to_be_breaking_constraint.is_constraining_column.name} " \
+                        f"breaking constraint sentence {self.name}"
+                    for under_process in self.has_constraints:
+                        if under_process == to_be_breaking_constraint:
+                            new_variation_group.has_constraints.append(under_process.toggle_restriction())
+                        else:
+                            new_variation_group.has_constraints.append(under_process)
+                    self.my_restriction_variations.append(new_variation_group)
+
+            if len(self.my_restriction_variations) == 0:
+                raise Exception("ERROR: 2o8340ijfos8dy")
+            return self.my_restriction_variations
+
+        def merge_my_copy_with_group(self, group_b):
+            my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name} {datetime.now()}")
+            my_copy.has_constraints = list()
+            my_copy.has_constraints.extend(self.has_constraints)
+            my_copy.has_constraints.extend(group_b.has_constraints)
+            my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
+            return my_copy
+
+        def merge_my_copy_with_constraint(self, group_b):
+            my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name} {datetime.now()}")
+            my_copy.has_constraints = list()
+            my_copy.has_constraints.extend(self.has_constraints)
+            my_copy.has_constraints.extend(group_b.has_constraints)
+            my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
+            return my_copy
+
+        def multiply_list_of_cases_times_group(self, list_of_cases, group):
+            multiplied_list = list()
+            for case in list_of_cases:
+                new_cases = self.multiplicator.multiply_groups(case, group)
+                for new_case_constraints in new_cases:
+                    gr = _core.ConstraintGroup()
+                    gr.has_constraints = new_case_constraints
+                    multiplied_list.append(gr)
+            return multiplied_list
 
     class RealizationDefinition(Thing):
         namespace = _core
         _return_dict = dict()
         has_realized_constraints = False
+        original_constraints = None
+        is_complimented_with_min_reqs = False
 
-        def __init__(self, name, namespace=None):
+        def __init__(self, name=None, namespace=None):
             super().__init__(name=name, namespace=namespace)
+
+        def prepare_for_realization(self):
+            self._prepare_return_dict()
             self.compliment_with_min_reqs()
 
         def compliment_with_min_reqs(self):
-            if len(self.has_constraints) > 0:
-                self.compliment_with(self.constraints_table().has_min_reqs)
+            if len(self.has_constraints) > 0 and not self.is_complimented_with_min_reqs:
+                self.original_constraints = self.has_constraints.copy()
+                if self.constraints_table().has_min_reqs:
+                    self.compliment_with(self.constraints_table().has_min_reqs)
+                self.is_complimented_with_min_reqs = True
 
         def is_ready(self):
             part_list = []
@@ -137,28 +245,27 @@ def extend_core(_core):
                         f"ERROR: Constraint {dependency.name} have external dependency "
                         f"and no realization definition could be chosen from {_table_to_def_dict}. "
                         "Verify setup of this constraint.")
-        
+
         def fulfill_constraints_renew(self):
             self._return_dict = dict()
             self.has_realized_constraints = False
             return self.fulfill_constraints()
-        
+
         def fulfill_constraints(self):
             if self.has_realized_constraints:
                 return self._return_dict
 
             if not self._is_constraining_single_table():
-                print("ERROR: Realization def should be defined for one table." 
-                      "TODO: serious exception!")
+                raise RealizationDefinitionException("ERROR: Realization def should be defined for one table.")
 
-            self._prepare_return_dict()
+            self.prepare_for_realization()
 
             # Heavy lifting
             self.has_realized_constraints = (
                 _supervise_constraint_generation(
-                    self._try_generating_for_all_constraints, 
+                    self._try_generating_for_all_constraints,
                     f"RD {self.name}"
-                    )
+                )
             )
             return self._return_dict
 
@@ -175,20 +282,39 @@ def extend_core(_core):
                 self._return_dict[column.plain_name] = None
 
         def _try_generating_for_all_constraints(self, not_ready_accumulator):
-            for constraint in self.has_constraints:
+            generator_constraints = [c for c in self.has_constraints if not isinstance(c, _core.RestrictiveConstraint)]
+            for constraint in generator_constraints:
                 if not constraint.is_ready(self._return_dict):
                     if constraint.is_externally_dependent():
-                        raise Exception("ERROR: should not be here yet !! External dependencies" 
+                        raise Exception("ERROR: should not be here yet !! External dependencies"
                                         "should be ready before calling this.")
                     not_ready_accumulator.append(constraint)
                     continue
 
                 if self._return_dict[constraint.is_constraining_column.plain_name] is None:
                     self._return_dict[constraint.is_constraining_column.plain_name] = (
-                        constraint.generate(self._return_dict)
+                        _value_generation_supervisor.generate(
+                            constraint, self.get_sibling_restrictive_constraints(constraint), self._return_dict)
                     )
                     self._fulfilled_constraints.append(constraint.name)
 
                 elif constraint.name not in self._fulfilled_constraints:
-                    raise Exception(f"ERROR: Multiple constraints defined for column "
+                    raise NotUnifiedConstraintsException(f"ERROR: Multiple constraints defined for column "
                                     f"{constraint.is_constraining_column.name}. Try unification of constraints.")
+
+        def get_sibling_restrictive_constraints(self, constraint):
+            return [
+                potentially_restrictive_constraint
+                for potentially_restrictive_constraint in self.has_constraints
+                if isinstance(potentially_restrictive_constraint, _core.RestrictiveConstraint) and (
+                    potentially_restrictive_constraint.restricting_column.plain_name ==
+                    constraint.is_constraining_column.plain_name
+                )
+            ]
+
+        def prepare_relevant_partition_values(self):
+            for constraint in self.original_constraints:
+                constraint.prepare_relevant_partition_values()
+
+        def has_more_relevant_options(self):
+            return any([constraint.has_more_relevant_options() for constraint in self.has_constraints])

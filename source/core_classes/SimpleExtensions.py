@@ -1,7 +1,9 @@
 from owlready2 import Thing
+from utils.context import ExtensionContext
 
 
-def extend_core(_core):
+def extend_core(context: ExtensionContext):
+    _core = context.core
 
     class Column(Thing):
         namespace = _core

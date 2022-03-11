@@ -28,7 +28,7 @@ def realized_case():
 def test_generated_data_have_all_needed_tables(realized_case):
     assert len(realized_case) == 4
 
-    
+
 def test_that_equal_external_dependency_are_equal(realized_case):
     assert realized_case['Table.Ref_01'][0]['Col0_id'] == (
         realized_case['Table.Test3'][0]['Col2_property1_number']
@@ -44,7 +44,9 @@ def test_that_id_column_format_is_valid(realized_case):
 
 
 def test_column_follows_list_constraint(realized_case):
-    assert realized_case['Table.Test1'][0]['Col1_n'] in ["32", "14"]
+    working_or_group_value = float(realized_case['Table.Test1'][0]['Col1_n'])
+    assert realized_case['Table.Test1'][0]['Col1_n'] not in ["32", "14"]
+    assert -1000 < working_or_group_value < 1000 or 10000 < working_or_group_value < 20000
 
 
 def test_that_column_has_date_simple(realized_case):
@@ -81,11 +83,6 @@ def test_all_realizations_follow_its_own_internal_dependency(realized_case):
 
 def test_min_requirement_overridden_by_custom_from_realization_definition(realized_case):
     assert realized_case['Table.Test1'][0]['Col3_text'] in ["Tree", "Rock"]
-
-
-def test_generic_constraint_was_merged_with_minimum_requirement_for_given_column(realized_case):
-    """ TODO: Implement that feature """
-    pytest.skip("TODO: Implement that feature: https://github.com/corechuck/losydag/issues/11")
 
 
 def test_all_realizations_have_been_overridden(realized_case):
