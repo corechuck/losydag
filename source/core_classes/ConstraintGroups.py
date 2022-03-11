@@ -8,7 +8,8 @@ from owlready2 import Thing, sync_reasoner_pellet
 
 from utils.invertion_factory import ConstraintInverter
 from utils.sentence_processing import MultiplicationSupervisor
-from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, NotUnifiedConstraintsException
+from utils.utils import _supervise_constraint_generation, _merge_groups_left_prio, NotUnifiedConstraintsException, \
+    RealizationDefinitionException
 from utils.context import ExtensionContext
 
 
@@ -255,8 +256,7 @@ def extend_core(context: ExtensionContext):
                 return self._return_dict
 
             if not self._is_constraining_single_table():
-                print("ERROR: Realization def should be defined for one table."
-                      "TODO: serious exception!")
+                raise RealizationDefinitionException("ERROR: Realization def should be defined for one table.")
 
             self.prepare_for_realization()
 

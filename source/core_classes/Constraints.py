@@ -345,8 +345,6 @@ def extend_core(context: ExtensionContext):
                     ):
                 raise Exception(f"ERROR: Left boundary is equal to right for Range {self.name}.")
 
-        # todo: TESTS for those boundary conditions !!!!!
-
         def _get_minimum_viable_value(self):
             min_viable = self.has_left_boundary.has_boundary_value
             if isinstance(self.has_left_boundary, _core.OpenRangeBoundary):

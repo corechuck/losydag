@@ -1,8 +1,9 @@
+import copy
 from random import random
 
 # Invert negation to compliment set
 # negate != invert that class is actually inversion factory
-
+from owlready2 import sync_reasoner_pellet
 
 
 class ConstraintInverter:
@@ -26,6 +27,7 @@ class ConstraintInverter:
     def _invert_dependency_constraint(self, dependency):
         container_group = self.core.ConstraintGroup(f"temp_{round(random() * 100000)}")
         container_group.is_a.append(self.core.OrGroup)
+        container_group.is_a.remove(self.core.AndGroup)
         container_group.has_constraints = []
 
         inverted_dependency = None
@@ -41,9 +43,17 @@ class ConstraintInverter:
         elif isinstance(dependency, self.core.GreaterThenDependency):
             inverted_dependency = self.core.SmallerOrEqualThenDependency()
 
+        elif isinstance(dependency, self.core.EqualToDependency):
+            inverted_dependency = self.core.EqualToDependency()
+            if not isinstance(dependency, self.core.Negation):
+                inverted_dependency.is_a.append(self.core.Negation)
+
         elif isinstance(dependency, self.core.FormatDependency):
             inverted_dependency = self.core.FormatDependency()
-            inverted_dependency.is_a.append(self.core.Negation)
+            if not isinstance(dependency, self.core.Negation):
+                inverted_dependency.is_a.append(self.core.Negation)
+
+        container_group.has_constraints.append(inverted_dependency)
 
         inverted_dependency.is_constraining_column = dependency.is_constraining_column
         if dependency.is_depending_on_column:
@@ -52,11 +62,7 @@ class ConstraintInverter:
         if dependency.has_format_definition:
             inverted_dependency.has_format_definition = dependency.has_format_definition
 
-        container_group.has_constraints.append(inverted_dependency)
-        # elif not isinstance(dependency, self.core.Negation):
-        #     dependency.is_a.append(self.core.Negation)
-        # else:
-        #     dependency.is_a.remove(self.core.Negation)
+        # sync_reasoner_pellet(infer_property_values=True)
 
         return container_group
 

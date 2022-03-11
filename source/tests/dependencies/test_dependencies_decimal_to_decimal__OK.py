@@ -71,6 +71,7 @@ def test_decimals_for_greater_then_or_equal_dependency(
 
 def test_decimals_for_smaller_then_or_equal_dependency(
         prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
+    # This failed occasionally
     print("INFO: Generating RealizationCase.Check1 in fixture:")
     testing_iri = "http://corechuck.com/testing/dependency_namespace"
     test_ontology = get_ontology(testing_iri)

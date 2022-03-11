@@ -158,7 +158,6 @@ def extend_core(context: ExtensionContext):
                         lambda rd: rd.constraints_table().name == needed_table.name,
                         self.contains_realizations))
                 if not is_needed_table_in_realization_case:
-                    # TODO: this part should not be here but somewhere deeper
                     new_def = _core.RealizationDefinition(
                         f"{needed_table.has_min_reqs.name}_temp_{random.randint(10000,99999)}")
                     new_def.compliment_with(needed_table.has_min_reqs)
