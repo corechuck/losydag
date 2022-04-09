@@ -71,7 +71,7 @@ class GenerationRequestSyntaxParser:
                 break
         # line = file1.readline().strip()
         # red_realization_case = self.core.RealizationCase(line)
-        return self.context.constraint_groups_heap
+        return self.context.peek_latest_group()
 
     def parse_request_query(self, request_query: str):
         """This method takes multiline string and parses line by line to create RealizationCase and

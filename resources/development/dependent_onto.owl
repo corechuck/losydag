@@ -119,7 +119,7 @@
     <!-- http://corechuck.com/modeling/dependent_onto#Column.Test1.Col4_not_constrained -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col4_not_constrained">
-        <core_check:has_data_type rdf:resource="http://corechuck.com/modeling/dependent_onto#Decimal_10_3"/>
+        <core_check:has_data_type rdf:resource="http://corechuck.com/modeling/core_check#DataType_String"/>
     </owl:NamedIndividual>
     
 

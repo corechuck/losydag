@@ -11,6 +11,9 @@ def test_parser_reads_query_from_files(prepared_core):
     sync_reasoner_pellet(infer_data_property_values=False, infer_property_values=True)
 
     parser = GenerationRequestSyntaxParser(onto)
-    realization_case = parser.parse_request_from_file("source/tests/query_language/test_queries/query1.grs")
-    assert realization_case
+    query_group = parser.parse_request_from_file("source/tests/query_language/test_queries/query1.grs")
+    query_group.pick_branches_from_or_groups()
+    realization_case = query_group.build_realization_case()
+    data = realization_case.realize()
+    assert data
 

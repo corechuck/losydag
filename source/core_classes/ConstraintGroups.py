@@ -100,10 +100,22 @@ def extend_core(context: ExtensionContext):
             table_to_group_cache = defaultdict(_core.ConstraintGroup)
             for defined_constraint in self.has_constraints:
                 if isinstance(defined_constraint, _core.RestrictiveConstraint):
-                    tbl_name = defined_constraint.restricting_column.is_part_of_table.name
+                    group_by = defined_constraint.restricting_column.is_part_of_table.name
                 else:
-                    tbl_name = defined_constraint.is_constraining_column.is_part_of_table.name
-                table_to_group_cache[tbl_name].has_constraints.append(defined_constraint)
+                    rds_containing_defined_constraint = [
+                        c for c
+                        in defined_constraint.is_part_of_constraints
+                        if isinstance(c, _core.RealizationDefinition)
+                    ]
+                    if len(rds_containing_defined_constraint) > 1:
+                        raise RealizationDefinitionException(
+                            f"Cannot build Realization case. "
+                            f"Constraint {self.name} is part of more than two Realization definitions.")
+                    if len(rds_containing_defined_constraint) == 1:
+                        group_by = rds_containing_defined_constraint[0].name
+                    else:
+                        group_by = defined_constraint.is_constraining_column.is_part_of_table.name
+                table_to_group_cache[group_by].has_constraints.append(defined_constraint)
 
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -329,15 +341,15 @@ def extend_core(context: ExtensionContext):
 
                 elif constraint.name not in self._fulfilled_constraints:
                     raise NotUnifiedConstraintsException(f"ERROR: Multiple constraints defined for column "
-                                    f"{constraint.is_constraining_column.name}. Try unification of constraints.")
+                                                         f"{constraint.is_constraining_column.name}. Try unification of constraints.")
 
         def get_sibling_restrictive_constraints(self, constraint):
             return [
                 potentially_restrictive_constraint
                 for potentially_restrictive_constraint in self.has_constraints
                 if isinstance(potentially_restrictive_constraint, _core.RestrictiveConstraint) and (
-                    potentially_restrictive_constraint.restricting_column.plain_name ==
-                    constraint.is_constraining_column.plain_name
+                        potentially_restrictive_constraint.restricting_column.plain_name ==
+                        constraint.is_constraining_column.plain_name
                 )
             ]
 

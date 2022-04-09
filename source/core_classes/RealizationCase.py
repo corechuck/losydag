@@ -118,7 +118,8 @@ def extend_core(context: ExtensionContext):
                 # if isinstance(realization_definition, _core.OrGroup):
                 #     realization_definition.is_a.remove(_core.OrGroup)
                 #     realization_definition.is_a.append(_core.AndGroup)
-                # realization_definition.has_constraints = flat_list  #TODO: this is good place to assign to work_constraints
+                # realization_definition.has_constraints = flat_list
+                # #TODO: this is good place to assign to work_constraints
                 # realization_definition.is_constraining_tables = list()
                 # realization_definition.unify_constraints()
             return chosen_branches

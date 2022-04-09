@@ -97,10 +97,13 @@ class WhereRules(SectionRulesBased):
         build_constraint.is_constraining_column = column
 
     # Todo:
-    # 0. Implement regex and range and dependencies
-    # 1. cope with operators and validation if not messing up
-    # 2. cope with groups
+    # 0. Implement regex - done
+    # 0. and range and dependencies
+    # 1. cope with operators and validation if not messing up - done
+    # 2. cope with groups - done
     # 3. No realization names
+    # 4. restrictive constraints
+    # 5. Format dependency
 
     def set_operator_to_latest_group(self, line_number, operator, query_context: QueryContext):
         if not operator:
@@ -149,7 +152,7 @@ class WhereRules(SectionRulesBased):
                 name=f"constraint_from_line_{line_number}", namespace=self.query_namespace)
             query_context.peek_latest_group().has_constraints.append(build_constraint)
 
-            pattern = match["pattern"][1:-1].replace(" ", "")
+            pattern = match["pattern"]
             build_constraint.has_regex_format = pattern
 
             self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
