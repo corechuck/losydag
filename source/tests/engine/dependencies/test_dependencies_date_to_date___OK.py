@@ -275,8 +275,9 @@ def test_dates_from_hours_to_months_precision(
     assert realized_case
     assert realized_case["internal_test_table_01"][0]['column_06']
     assert prepared_table_2.has_columns[3].has_data_type.parse_if_needed(
-        realized_case["internal_test_table_02"][0]['column_04']) >= prepared_table.has_columns[
-               5].has_data_type.parse_if_needed(realized_case['internal_test_table_01'][0]['column_06'])
+                realized_case["internal_test_table_02"][0]['column_04']) \
+           >= prepared_table.has_columns[5].has_data_type.parse_if_needed(
+                realized_case['internal_test_table_01'][0]['column_06'])
 
 
 
