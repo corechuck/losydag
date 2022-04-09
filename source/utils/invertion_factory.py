@@ -26,8 +26,8 @@ class ConstraintInverter:
 
     def _invert_dependency_constraint(self, dependency):
         container_group = self.core.ConstraintGroup(f"temp_{round(random() * 100000)}")
-        container_group.is_a.append(self.core.OrGroup)
-        container_group.is_a.remove(self.core.AndGroup)
+        container_group.change_to_or_operator()
+        #container_group.is_a.append(self.core.OrGroup)
         container_group.has_constraints = []
 
         inverted_dependency = None
@@ -68,8 +68,8 @@ class ConstraintInverter:
 
     def _invert_range_constraint(self, range_constraint):
         container_group = self.core.ConstraintGroup(f"temp_{round(random() * 100000)}")
-        container_group.is_a.append(self.core.OrGroup)
-        container_group.is_a.remove(self.core.AndGroup)
+        container_group.change_to_or_operator()
+        #container_group.is_a.append(self.core.OrGroup)
         container_group.has_constraints = list()
 
         if range_constraint.right_limit() < range_constraint.get_maximum_value_for_data_type():
@@ -94,7 +94,8 @@ class ConstraintInverter:
 
     def _invert_basic_constraint(self, constraint):
         container_group = self.core.ConstraintGroup(f"temp_{round(random()*100000)}")
-        container_group.is_a.append(self.core.OrGroup)
+        container_group.change_to_or_operator()
+        #container_group.is_a.append(self.core.OrGroup)
 
         inverted_constraint = constraint.toggle_restriction()
         container_group.has_constraints = [inverted_constraint]

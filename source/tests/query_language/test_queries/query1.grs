@@ -1,0 +1,9 @@
+GENERATE {test cases|example}
+FOR Table.Test1 as realization_1
+FOR Table.Test1 as realization_2
+WHERE
+    realization_1.Col1_n IN ('3', '0.111', '14')
+    AND (
+        realization_2.Col3_text IN ('moo', 'boo', 'foo')
+        OR realization_2.Col4_not_constrained MATCH 'Ref_{Col3_text}_\d\d\d'
+    )

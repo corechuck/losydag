@@ -1,0 +1,6 @@
+GENERATE example
+FOR Table.Test2
+FOR Table.Test1
+    based on Column.Test2.Col5_external_dep = Column.Test1.Col0_id
+    # derived based on min generation requirements stored in graph
+WHERE Table.Test2.Col3_text IN (‘copper’, ‘iron’, ‘nickel’, ‘astronium’)

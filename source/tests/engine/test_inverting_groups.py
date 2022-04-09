@@ -69,8 +69,8 @@ def test_inverting_group_with_range_and_list_with_or_operator(
         prepared_core, invert, actual_range_constraint_under_test, list_constraint_under_test):
     """ This test checks if a result of negation is a group with single constraint is unpacked from its group."""
     container_group = prepared_core.ConstraintGroup()
-    container_group.is_a.append(prepared_core.OrGroup)
-    container_group.is_a.remove(prepared_core.AndGroup)
+    container_group.change_to_or_operator()
+    #container_group.is_a.append(prepared_core.OrGroup)
     container_group.has_constraints = [actual_range_constraint_under_test, list_constraint_under_test]
 
     actual_negation_group = invert(container_group)

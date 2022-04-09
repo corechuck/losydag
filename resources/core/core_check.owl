@@ -28,14 +28,7 @@
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#contains_constraint_groups">
         <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_part_of_constraint_group"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#Constraint"/>
-                    <rdf:Description rdf:about="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
     </owl:ObjectProperty>
     
 
@@ -46,6 +39,7 @@
         <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_part_of_case"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RealizationCase"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
+        <rdfs:comment>This is a edge that points from Realization case to ConstraintGroup that has been validated that it containts only constraints for only one table. I do not know how to introduce that validation into ontology so it validation is done in python.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -94,6 +88,7 @@
     <!-- http://corechuck.com/modeling/core_check#has_left_boundary -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_left_boundary">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_left_boundary_for_constraint"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeConstraint"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
@@ -120,6 +115,7 @@
     <!-- http://corechuck.com/modeling/core_check#has_right_boundary -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#has_right_boundary">
+        <owl:inverseOf rdf:resource="http://corechuck.com/modeling/core_check#is_right_boundary_for_constraint"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#RangeConstraint"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RangeBoundary"/>
@@ -187,6 +183,14 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#is_left_boundary_for_constraint -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_left_boundary_for_constraint">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#is_part_of_case -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_part_of_case"/>
@@ -211,6 +215,14 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Column"/>
         <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#Table"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#is_right_boundary_for_constraint -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_right_boundary_for_constraint">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
     </owl:ObjectProperty>
     
 
@@ -518,6 +530,14 @@
 
     <owl:Class rdf:about="http://corechuck.com/modeling/core_check#OrGroup">
         <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#Operators"/>
+    </owl:Class>
+    
+
+
+    <!-- http://corechuck.com/modeling/core_check#QueryGroup -->
+
+    <owl:Class rdf:about="http://corechuck.com/modeling/core_check#QueryGroup">
+        <rdfs:subClassOf rdf:resource="http://corechuck.com/modeling/core_check#ConstraintGroup"/>
     </owl:Class>
     
 

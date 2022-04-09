@@ -98,12 +98,12 @@ def extend_core(context: ExtensionContext):
 
         def build_realization_case(self):
             table_to_group_cache = defaultdict(_core.ConstraintGroup)
-            for constraint_under in self.has_constraints:
-                if isinstance(constraint_under, _core.RestrictiveConstraint):
-                    tbl_name = constraint_under.restricting_column.is_part_of_table.name
+            for defined_constraint in self.has_constraints:
+                if isinstance(defined_constraint, _core.RestrictiveConstraint):
+                    tbl_name = defined_constraint.restricting_column.is_part_of_table.name
                 else:
-                    tbl_name = constraint_under.is_constraining_column.is_part_of_table.name
-                table_to_group_cache[tbl_name].has_constraints.append(constraint_under)
+                    tbl_name = defined_constraint.is_constraining_column.is_part_of_table.name
+                table_to_group_cache[tbl_name].has_constraints.append(defined_constraint)
 
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
@@ -198,6 +198,35 @@ def extend_core(context: ExtensionContext):
                     gr.has_constraints = new_case_constraints
                     multiplied_list.append(gr)
             return multiplied_list
+
+        # def assure_logical_operator_is_set(self):
+        #     if not(isinstance(self, _core.OrGroup) or isinstance(self, _core.AndGroup)):
+        #         self.is_a.append(_core.AndGroup)
+
+        def is_or_operator(self):
+            return isinstance(self, _core.OrGroup)
+
+        def is_and_operator(self):
+            return isinstance(self, _core.AndGroup)
+
+        def change_to_or_operator(self):
+            if self.is_and_operator():
+                self.is_a.append(_core.OrGroup)
+                self.is_a.remove(_core.AndGroup)
+
+        def change_to_and_operator(self):
+            if self.is_or_operator():
+                self.is_a.append(_core.AndGroup)
+                self.is_a.remove(_core.OrGroup)
+
+        def toggle_logical_operator(self):
+            if self.is_or_operator():
+                self.is_a.append(_core.AndGroup)
+                self.is_a.remove(_core.OrGroup)
+
+            if self.is_and_operator():
+                self.is_a.append(_core.OrGroup)
+                self.is_a.remove(_core.AndGroup)
 
     class RealizationDefinition(Thing):
         namespace = _core
