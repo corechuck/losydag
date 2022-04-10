@@ -60,6 +60,22 @@ class TableRealizationRules(SectionRulesBased):
         query_context.defined_realization[alias] = (table, realization_def)
 
 
+# Todo:
+# 0. Implement regex - done
+# 1. cope with operators and validation if not messing up - done
+# 2. cope with groups - done
+# 0. Range
+# 5. Format dependency
+# 0. Equal Dependencies
+# 0. Greater Then Dependencies
+# 0. Greater or Equal Then Dependencies
+# 0. Smaller Then Dependencies
+# 0. Smaller or Equal Then Dependencies
+# 4. Restrictive constraints
+# 3. No realization names
+# 6. Tests for specific rules from query
+
+
 class WhereRules(SectionRulesBased):
 
     def __init__(self, _core, _query_namespace):
@@ -96,15 +112,6 @@ class WhereRules(SectionRulesBased):
             column = self.core.search_one(iri=column_name)
         build_constraint.is_constraining_column = column
 
-    # Todo:
-    # 0. Implement regex - done
-    # 0. and range and dependencies
-    # 1. cope with operators and validation if not messing up - done
-    # 2. cope with groups - done
-    # 3. No realization names
-    # 4. restrictive constraints
-    # 5. Format dependency
-
     def set_operator_to_latest_group(self, line_number, operator, query_context: QueryContext):
         if not operator:
             return
@@ -112,7 +119,7 @@ class WhereRules(SectionRulesBased):
         if not query_context.is_new_group:
             if query_context.peek_latest_group().is_or_operator() and operator.strip() == "AND":
                 raise QueryMissformatException(f"Mixed logical operators in line {line_number}")
-            if query_context.peek_latest_group().is_AND_operator() and operator.strip() == "OR":
+            if query_context.peek_latest_group().is_and_operator() and operator.strip() == "OR":
                 raise QueryMissformatException(f"Mixed logical operators in line {line_number}")
 
         query_context.is_new_group = False
@@ -124,10 +131,6 @@ class WhereRules(SectionRulesBased):
     def match_01_or_and_list_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
             self.set_operator_to_latest_group(line_number, match["operator"], query_context)
-            line = line.replace("\t", "")
-            line = line.replace("AND ", "")
-            line = line.replace("OR ", "")
-            print(f"Constraint for parsing: {line}")
 
             list_constraint = self.core.ListConstraint(
                 name=f"constraint_from_line_{line_number}", namespace=self.query_namespace)
@@ -143,10 +146,6 @@ class WhereRules(SectionRulesBased):
     def match_02_or_and_regex_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
             self.set_operator_to_latest_group(line_number, match["operator"], query_context)
-            line = line.replace("\t", "")
-            line = line.replace("AND ", "")
-            line = line.replace("OR ", "")
-            print(f"Constraint for parsing: {line}")
 
             build_constraint = self.core.RegexConstraint(
                 name=f"constraint_from_line_{line_number}", namespace=self.query_namespace)
@@ -159,7 +158,78 @@ class WhereRules(SectionRulesBased):
 
         return "(?P<operator>(AND|OR) )?(?P<target>.*) MATCH \'(?P<pattern>.*)\'", process_line
 
-    def match_03_or_and_new_group(self):
+    # def match_03_or_and_range_greater_constraint(self):
+    #     def process_line(line_number: int, line: str, match, query_context: QueryContext):
+    #         self.set_operator_to_latest_group(line_number, match["operator"], query_context)
+    #         build_constraint = self.core.RangeConstraint(
+    #             f"constraint_from_line_{line_number}",
+    #             right_boundary=match["constant"],
+    #             is_left_open=True)
+    #         query_context.peek_latest_group().has_constraints.append(build_constraint)
+    #         self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
+    #
+    #     return "(?P<operator>(AND|OR) )?(?P<target>.*) > \'(?P<constant>.*)\'", process_line
+
+    def match_04_or_and_range_greater_equal_constraint(self):
+        def process_line(line_number: int, line: str, match, query_context: QueryContext):
+            self.set_operator_to_latest_group(line_number, match["operator"], query_context)
+            build_constraint = self.core.RangeConstraint(f"constraint_from_line_{line_number}")
+            query_context.peek_latest_group().has_constraints.append(build_constraint)
+            self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
+            build_constraint.set_left_boundary(match["constant"], False)
+
+        return "(?P<operator>(AND|OR) )?(?P<target>.*) >= \'(?P<constant>.*)\'", process_line
+
+    def match_05_or_and_range_greater_constraint(self):
+        def process_line(line_number: int, line: str, match, query_context: QueryContext):
+            self.set_operator_to_latest_group(line_number, match["operator"], query_context)
+            build_constraint = self.core.RangeConstraint(f"constraint_from_line_{line_number}")
+            query_context.peek_latest_group().has_constraints.append(build_constraint)
+            self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
+            build_constraint.set_left_boundary(match["constant"], True)
+
+        return "(?P<operator>(AND|OR) )?(?P<target>.*) > \'(?P<constant>.*)\'", process_line
+
+    def match_06_or_and_range_smaller_equal_constraint(self):
+        def process_line(line_number: int, line: str, match, query_context: QueryContext):
+            self.set_operator_to_latest_group(line_number, match["operator"], query_context)
+            build_constraint = self.core.RangeConstraint(f"constraint_from_line_{line_number}")
+            query_context.peek_latest_group().has_constraints.append(build_constraint)
+            self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
+            build_constraint.set_right_boundary(match["constant"], False)
+
+        return "(?P<operator>(AND|OR) )?(?P<target>.*) <= \'(?P<constant>.*)\'", process_line
+
+    def match_07_or_and_range_smaller_constraint(self):
+        def process_line(line_number: int, line: str, match, query_context: QueryContext):
+            self.set_operator_to_latest_group(line_number, match["operator"], query_context)
+            build_constraint = self.core.RangeConstraint(f"constraint_from_line_{line_number}")
+            query_context.peek_latest_group().has_constraints.append(build_constraint)
+            self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
+            build_constraint.set_right_boundary(match["constant"], True)
+
+        return "(?P<operator>(AND|OR) )?(?P<target>.*) < \'(?P<constant>.*)\'", process_line
+
+    # def match_10_or_and_greater_constraint(self):
+    #     def process_line(line_number: int, line: str, match, query_context: QueryContext):
+    #         self.set_operator_to_latest_group(line_number, match["operator"], query_context)
+    #
+    #         build_constraint = self.core.GreaterThenDependency(
+    #             name=f"constraint_from_line_{line_number}", namespace=self.query_namespace)
+    #
+    #         build_constraint.is_constraining_column = prepared_table_2.has_columns[2]
+    #         build_constraint.is_depending_on_column = prepared_table.has_columns[3]
+    #
+    #         query_context.peek_latest_group().has_constraints.append(build_constraint)
+    #
+    #         pattern = match["pattern"]
+    #         build_constraint.has_regex_format = pattern
+    #
+    #         self.set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
+    #
+    #     return "(?P<operator>(AND|OR) )?(?P<target>.*) > \'(?P<constant>.*)\'", process_line
+
+    def match_50_or_and_new_group(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
             self.set_operator_to_latest_group(line_number, match["operator"], query_context)
             print(f"New group in line {line_number}")
@@ -172,7 +242,7 @@ class WhereRules(SectionRulesBased):
 
         return "(?P<operator>(AND|OR) )?\\(", process_line
 
-    def match_20_close_group(self):
+    def match_51_close_group(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
             print(f"Close group in line {line_number}")
             query_context.pop_latest_group()

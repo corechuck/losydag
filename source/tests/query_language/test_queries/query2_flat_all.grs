@@ -1,0 +1,12 @@
+GENERATE [positive cases|negative cases|all cases|example]
+FOR Table.Test1 as realization_1
+FOR Table.Test1 as realization_2
+WHERE
+    realization_1.Col1_n < '0.1'
+    AND realization_1.Col1_n <= '0.2'
+    AND realization_1.Col1_n >= '0.3'
+    AND realization_1.Col1_n > '0.4'
+    AND realization_1.Col2_d > '1990-02-14'
+    AND realization_1.Col2_d <= '1990-02-15'
+    AND realization_2.Col3_text IN ('moo', 'boo', 'foo')
+    AND realization_2.Col4_not_constrained MATCH 'Ref_{Col3_text}_\d\d\d'
