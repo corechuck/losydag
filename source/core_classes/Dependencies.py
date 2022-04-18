@@ -131,7 +131,7 @@ def extend_core(context: ExtensionContext):
             # return rstr.xeger(resolved_format)
             return resolved_format
 
-    class GreaterOrEqualThenDependency(ValueDependency):
+    class SmallerThenDependency(ValueDependency):
         namespace = _core
         can_handle_string_to_string = False
 
@@ -139,7 +139,21 @@ def extend_core(context: ExtensionContext):
                 self, _local_dict, from_column_name, dependent_parsed_value, data_type_defined_column):
             converted_range = _core.RangeConstraint(
                 f"range_from_external_dependency_of_{from_column_name}_{round(random() * 100000)}",
-                left_boundary=dependent_parsed_value,
+                right_boundary=dependent_parsed_value,
+                is_right_open=True,
+                is_constraining_column=data_type_defined_column)
+            generated_value = converted_range._generate()
+            return generated_value
+
+    class SmallerOrEqualThenDependency(ValueDependency):
+        namespace = _core
+        can_handle_string_to_string = False
+
+        def _generate_dependency(
+                self, _local_dict, from_column_name, dependent_parsed_value, data_type_defined_column):
+            converted_range = _core.RangeConstraint(
+                f"range_from_external_dependency_of_{from_column_name}_{round(random() * 100000)}",
+                right_boundary=dependent_parsed_value,
                 is_constraining_column=data_type_defined_column)
             generated_value = converted_range._generate()
             return generated_value
@@ -158,7 +172,7 @@ def extend_core(context: ExtensionContext):
             generated_value = converted_range._generate()
             return generated_value
 
-    class SmallerOrEqualThenDependency(ValueDependency):
+    class GreaterOrEqualThenDependency(ValueDependency):
         namespace = _core
         can_handle_string_to_string = False
 
@@ -166,21 +180,7 @@ def extend_core(context: ExtensionContext):
                 self, _local_dict, from_column_name, dependent_parsed_value, data_type_defined_column):
             converted_range = _core.RangeConstraint(
                 f"range_from_external_dependency_of_{from_column_name}_{round(random() * 100000)}",
-                right_boundary=dependent_parsed_value,
-                is_constraining_column=data_type_defined_column)
-            generated_value = converted_range._generate()
-            return generated_value
-
-    class SmallerThenDependency(ValueDependency):
-        namespace = _core
-        can_handle_string_to_string = False
-
-        def _generate_dependency(
-                self, _local_dict, from_column_name, dependent_parsed_value, data_type_defined_column):
-            converted_range = _core.RangeConstraint(
-                f"range_from_external_dependency_of_{from_column_name}_{round(random() * 100000)}",
-                right_boundary=dependent_parsed_value,
-                is_right_open=True,
+                left_boundary=dependent_parsed_value,
                 is_constraining_column=data_type_defined_column)
             generated_value = converted_range._generate()
             return generated_value

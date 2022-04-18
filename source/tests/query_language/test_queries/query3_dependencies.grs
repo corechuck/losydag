@@ -1,0 +1,11 @@
+GENERATE [positive cases|negative cases|all cases|example]
+FOR Table.Test1 as realization_1
+FOR Table.Test1 as realization_2
+WHERE
+    realization_1.Col1_n FORMAT 'Here{Col2_d}XX0000{Col3_text}'
+    AND realization_1.Col1_n EQUAL realization_2.Col4_not_constrained
+    AND realization_1.Col1_n = realization_2.Col4_not_constrained
+    AND realization_1.Col1_n < realization_2.Col4_not_constrained
+    AND realization_1.Col2_d <= realization_2.Col1_n
+    AND realization_1.Col2_d > realization_2.Col4_not_constrained
+    AND realization_1.Col1_n >= realization_2.Col2_d
