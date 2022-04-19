@@ -133,10 +133,10 @@ def extend_core(context: ExtensionContext):
         def prepare_relevant_partition_values(self):
             self.partition_relevant_value_options = []
 
-        def toggle_restriction(self):
+        def toggle_restriction(self, with_name: str = None):
             """ This is a wierd name. This method will make restriction or return internal constraint."""
             if not self.my_restrictor:
-                self.my_restrictor = _core.RestrictiveConstraint(restricting_constraint=self)
+                self.my_restrictor = _core.RestrictiveConstraint(name=with_name, restricting_constraint=self)
             return self.my_restrictor
 
     class RestrictiveConstraint(Constraint):

@@ -116,8 +116,11 @@ class WhereRules(SectionRulesBased):
 
     def _build_constraint(self, line_number: int, line: str, match, query_context: QueryContext, constraint_init):
         self._set_operator_to_latest_group(line_number, match["operator"], query_context)
-        build_constraint = constraint_init(f"constraint_from_line_{line_number}", namespace=self.query_namespace)
-        query_context.peek_latest_group().has_constraints.append(build_constraint)
+        appending_constraint = build_constraint = \
+            constraint_init(f"constraint_from_line_{line_number}", namespace=self.query_namespace)
+        if match["is_not"]:
+            appending_constraint = build_constraint.toggle_restriction(f"restriction_from_line_{line_number}")
+        query_context.peek_latest_group().has_constraints.append(appending_constraint)
         self._set_realization_definition_and_column_from_target(build_constraint, match["target"], query_context)
         return build_constraint
 
@@ -164,7 +167,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.ListConstraint)
             build_constraint.has_picks = match["list_def"][1:-1].replace("'", "").replace(" ", "").split(",")
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.*) IN (?P<list_def>.*)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? IN (?P<list_def>.*)", process_line
 
     def match_02_or_and_regex_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -172,7 +175,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.RegexConstraint)
             build_constraint.has_regex_format = match["pattern"]
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.*) MATCH \'(?P<pattern>.+)\'", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? MATCH \'(?P<pattern>.+)\'", process_line
 
     def match_04_or_and_range_greater_equal_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -180,7 +183,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.RangeConstraint)
             build_constraint.set_left_boundary(match["constant"], False)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.*) >= \'(?P<constant>.+)\'", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? >= \'(?P<constant>.+)\'", process_line
 
     def match_05_or_and_range_greater_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -188,7 +191,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.RangeConstraint)
             build_constraint.set_left_boundary(match["constant"], True)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.*) > \'(?P<constant>.+)\'", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? > \'(?P<constant>.+)\'", process_line
 
     def match_06_or_and_range_smaller_equal_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -196,7 +199,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.RangeConstraint)
             build_constraint.set_right_boundary(match["constant"], False)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.*) <= \'(?P<constant>.+)\'", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? <= \'(?P<constant>.+)\'", process_line
 
     def match_07_or_and_range_smaller_constraint(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -204,7 +207,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.RangeConstraint)
             build_constraint.set_right_boundary(match["constant"], True)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.*) < \'(?P<constant>.+)\'", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? < \'(?P<constant>.+)\'", process_line
 
     """                                                         """
     """-------------------  DEPENDENCIES  ----------------------"""
@@ -216,7 +219,7 @@ class WhereRules(SectionRulesBased):
                 line_number, line, match, query_context, self.core.FormatDependency)
             build_constraint.has_format_definition = match["format"]
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) FORMAT \'(?P<format>.+)\'", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? FORMAT \'(?P<format>.+)\'", process_line
 
     def match_11_or_and_equal_word_dependency(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -225,7 +228,7 @@ class WhereRules(SectionRulesBased):
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"], query_context)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) EQUAL (?P<dependent>.+)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? EQUAL (?P<dependent>.+)", process_line
 
     def match_12_or_and_equal_sign_dependency(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -234,7 +237,7 @@ class WhereRules(SectionRulesBased):
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"], query_context)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) = (?P<dependent>.+)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? = (?P<dependent>.+)", process_line
 
     def match_13_or_and_smaller_then_dependency(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -243,7 +246,7 @@ class WhereRules(SectionRulesBased):
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"], query_context)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) < (?P<dependent>.+)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? < (?P<dependent>.+)", process_line
 
     def match_14_or_and_smaller_or_equal_then_dependency(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -252,7 +255,7 @@ class WhereRules(SectionRulesBased):
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"], query_context)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) <= (?P<dependent>.+)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? <= (?P<dependent>.+)", process_line
 
     def match_15_or_and_greater_then_dependency(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -261,7 +264,7 @@ class WhereRules(SectionRulesBased):
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"], query_context)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) > (?P<dependent>.+)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? > (?P<dependent>.+)", process_line
 
     def match_16_or_and_greater_or_equal_then_dependency(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):
@@ -270,7 +273,7 @@ class WhereRules(SectionRulesBased):
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"], query_context)
 
-        return "(?P<operator>(AND|OR) )?(?P<target>.+) >= (?P<dependent>.+)", process_line
+        return "(?P<operator>(AND|OR) )?(?P<target>.+?)(?P<is_not> NOT)? >= (?P<dependent>.+)", process_line
 
     def match_50_or_and_new_group(self):
         def process_line(line_number: int, line: str, match, query_context: QueryContext):

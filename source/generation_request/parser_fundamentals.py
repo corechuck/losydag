@@ -2,9 +2,13 @@ from utils.utils import QueryMissformatException
 
 
 class QueryContext:
-    defined_realization: dict = dict()
-    constraint_groups_heap: list = list()
+    defined_realization: dict
+    constraint_groups_heap: list
     is_new_group = True
+
+    def __init__(self):
+        self.defined_realization = dict()
+        self.constraint_groups_heap = list()
 
     def peek_latest_group(self):
         if len(self.constraint_groups_heap) == 0:

@@ -10,12 +10,13 @@ class GenerationRequestSyntaxParser:
     schema_iri: str = None
     loaded_rules: Dict = dict()
     processors: List[SectionRulesBased] = None
-    context: QueryContext = QueryContext()
+    context: QueryContext = None
 
     def __init__(self, loaded_onto):
         self.onto = loaded_onto
         self.core = self.onto.imported_ontologies[0]
         self.process_rule_classes()
+        self.context = QueryContext()
         self.context.constraint_groups_heap = [self.core.QueryGroup(name="query_main_group", namespace=self.onto)]
 
     def process_rule_classes(self):
