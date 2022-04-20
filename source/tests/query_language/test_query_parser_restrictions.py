@@ -32,105 +32,105 @@ class TestingRestrictions:
         destroy_entity(query_group)
 
     def test_not_in_list_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 5
+        for_line_number = 6
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.ListConstraint)
 
     def test_not_smaller_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 6
-        found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
-        assert found_line_constraint
-        assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
-        assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
-
-    def test_not_smaller_equal_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 7
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
 
-    def test_not_greater_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+    def test_not_smaller_equal_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 8
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
 
-    def test_not_greater_equal_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+    def test_not_greater_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 9
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
 
-    def test_not_smaller_or_equal_then_date_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+    def test_not_greater_equal_then_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 10
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
 
-    def test_not_greater_then_date_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+    def test_not_smaller_or_equal_then_date_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 11
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
 
-    def test_not_match_regex_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+    def test_not_greater_then_date_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 12
+        found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
+        assert found_line_constraint
+        assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
+        assert isinstance(found_line_constraint.restriction_definition, prepared_core.RangeConstraint)
+
+    def test_not_match_regex_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+        for_line_number = 13
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.RegexConstraint)
 
     def test_not_format_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 13
+        for_line_number = 14
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.FormatDependency)
 
     def test_not_equal_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 14
-        found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
-        assert found_line_constraint
-        assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
-        assert isinstance(found_line_constraint.restriction_definition, prepared_core.ValueDependency)
-
-    def test_not_equal_sign_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 15
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.ValueDependency)
 
-    def test_not_smaller_then_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+    def test_not_equal_sign_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
         for_line_number = 16
+        found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
+        assert found_line_constraint
+        assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
+        assert isinstance(found_line_constraint.restriction_definition, prepared_core.ValueDependency)
+
+    def test_not_smaller_then_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
+        for_line_number = 17
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.SmallerThenDependency)
 
     def test_not_smaller_or_equal_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 17
+        for_line_number = 18
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.SmallerOrEqualThenDependency)
 
     def test_not_greater_then_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 18
+        for_line_number = 19
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"
         assert isinstance(found_line_constraint.restriction_definition, prepared_core.GreaterThenDependency)
 
     def test_not_greater_or_equal_dependency_is_parsed(self, prepared_core, parsed_query_4, loaded_onto):
-        for_line_number = 19
+        for_line_number = 20
         found_line_constraint = get_line_constraint(parsed_query_4, for_line_number)
         assert found_line_constraint
         assert found_line_constraint.restriction_definition.name == f"constraint_from_line_{for_line_number}"

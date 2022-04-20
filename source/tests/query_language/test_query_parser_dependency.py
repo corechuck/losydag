@@ -32,12 +32,20 @@ class TestDependencies:
         destroy_entity(query_group)
 
     def test_format_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_3, 5)
+        found_line_constraint = get_line_constraint(parsed_query_3, 6)
         assert isinstance(found_line_constraint, prepared_core.FormatDependency)
         assert found_line_constraint.has_format_definition == "Here{Col2_d}XX0000{Col3_text}"
 
     def test_equal_to_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_3, 6)
+        found_line_constraint = get_line_constraint(parsed_query_3, 7)
+        assert isinstance(found_line_constraint, prepared_core.ValueDependency)
+        assert found_line_constraint.is_depending_on_realization
+        assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
+        assert found_line_constraint.is_depending_on_column == \
+               loaded_onto.search_one(iri="*Column.Test1.Col4_not_constrained")
+
+    def test_equal_sign_to_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
+        found_line_constraint = get_line_constraint(parsed_query_3, 8)
         assert isinstance(found_line_constraint, prepared_core.ValueDependency)
         assert found_line_constraint.is_depending_on_realization
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
@@ -45,7 +53,7 @@ class TestDependencies:
                loaded_onto.search_one(iri="*Column.Test1.Col4_not_constrained")
 
     def test_smaller_then_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_3, 8)
+        found_line_constraint = get_line_constraint(parsed_query_3, 9)
         assert isinstance(found_line_constraint, prepared_core.SmallerThenDependency)
         assert found_line_constraint.is_depending_on_realization
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
@@ -53,7 +61,7 @@ class TestDependencies:
                loaded_onto.search_one(iri="*Column.Test1.Col4_not_constrained")
 
     def test_smaller_then_or_equal_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_3, 9)
+        found_line_constraint = get_line_constraint(parsed_query_3, 10)
         assert isinstance(found_line_constraint, prepared_core.SmallerOrEqualThenDependency)
         assert found_line_constraint.is_depending_on_realization
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col2_d")
@@ -61,7 +69,7 @@ class TestDependencies:
                loaded_onto.search_one(iri="*Column.Test1.Col1_n")
 
     def test_greater_then_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_3, 10)
+        found_line_constraint = get_line_constraint(parsed_query_3, 11)
         assert isinstance(found_line_constraint, prepared_core.GreaterThenDependency)
         assert found_line_constraint.is_depending_on_realization
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col2_d")
@@ -69,7 +77,7 @@ class TestDependencies:
                loaded_onto.search_one(iri="*Column.Test1.Col4_not_constrained")
 
     def test_greater_then_or_equal_is_parsed(self, prepared_core, parsed_query_3, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_3, 11)
+        found_line_constraint = get_line_constraint(parsed_query_3, 12)
         assert isinstance(found_line_constraint, prepared_core.GreaterOrEqualThenDependency)
         assert found_line_constraint.is_depending_on_realization
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")

@@ -1,16 +1,30 @@
+import argparse
 import pprint
 from owlready2 import *
 from LosydagGenerator import LosydagGenerator
+from generation_request.syntax_parser import GenerationRequestSyntaxParser
+
+parser = argparse.ArgumentParser(description='Losydag entry for parsing query and generating data.')
+parser.add_argument("--location", help="Set location from which to read local ontology.")
+parser.add_argument("--query-path", help="Provide path to a query that should be parsed.")
+
+args = parser.parse_args()
+
+parser = GenerationRequestSyntaxParser(loaded_onto)
+query_group = parser.parse_request_from_file(
+    "source/tests/query_language/test_queries/query4_restrictions.grs")
 
 
-generator = LosydagGenerator("http://corechuck.com/modeling/dependent_onto")
-pp = pprint.PrettyPrinter(indent=2)
+print(args.query_path)
 
-cons = generator.core.Constraint()
 
-cons_2 = generator.onto.search_one(iri=f"*Constraint.Test2_Col3__list")
-
-pp.pprint(generator.realize_fresh("RealizationCase.Check1"))
+# generator = LosydagGenerator("http://corechuck.com/modeling/dependent_onto")
+# pp = pprint.PrettyPrinter(indent=2)
+#
+# cons = generator.core.Constraint()
+# cons_2 = generator.onto.search_one(iri=f"*Constraint.Test2_Col3__list")
+#
+# pp.pprint(generator.realize_fresh("RealizationCase.Check1"))
 
 
 

@@ -1,19 +1,11 @@
 from enum import Enum
 
 from owlready2 import *
-from core_classes.Constraints import extend_core as extend_constraints
-from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
-from core_classes.SimpleExtensions import extend_core as extend_simple_types
-from core_classes.Dependencies import extend_core as extend_dependencies
-from core_classes.RealizationCase import extend_core as extend_realization_case
-from core_classes.LogicalOperators import extend_core as extend_logical_operators
-from core_classes.DataTypes import extend_core as extend_date_types
-from utils.context import ExtensionContext
-from utils.value_generator_supervisor import ValueGenerationSupervisor
+
+import utils.context as CONTEXT
 
 onto_path.append(f"{os.getcwd()}/resources/core/")
 onto_path.append(f"{os.getcwd()}/resources/development/")
-
 
 
 class LosydagGenerator:
@@ -23,24 +15,14 @@ class LosydagGenerator:
         # self.onto.load(only_local=True)
 
         self.onto = loaded_onto
-        self.core = self.onto.imported_ontologies[0]  # <- core classes are in wrong ontology
+        # todo: check if if self.onto.imported_ontologies contains core
+        self.core = CONTEXT.core_context.core
 
-        context = ExtensionContext()
-        context.core = self.core
-        context.value_generation_supervisor = ValueGenerationSupervisor()
-
-        extend_constraints(context)
-        extend_dependencies(context)
-        extend_constraint_groups(context)
-        extend_simple_types(context)
-        extend_realization_case(context)
-        extend_logical_operators(context)
-        extend_date_types(context)
         # sync_reasoner_hermit(infer_property_values=True)
         try:
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
         except OwlReadyInconsistentOntologyError:
-            self.core.save(file="foo.owl")
+            self.core.save(file="inconsistent_on_load.owl")
 
     def realize_fresh(self, realization_case_iri, is_silent=False):
         real_case = self.onto.search_one(iri=f"*{realization_case_iri}")

@@ -1,3 +1,4 @@
+USE 'http://corechuck.com/modeling/dependent_onto'
 GENERATE [positive cases|negative cases|all cases|example]
 FOR Table.Test1 as realization_1
 FOR Table.Test1 as realization_2

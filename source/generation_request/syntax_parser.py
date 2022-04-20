@@ -1,6 +1,7 @@
 import re
 from typing import List, Dict
 
+from core_classes.ConstraintGroups import ConstraintGroup
 from generation_request.parser_fundamentals import QueryContext
 from generation_request.parser_rules import GenerationRules, TableRealizationRules, WhereRules, SectionRulesBased
 
@@ -59,7 +60,7 @@ class GenerationRequestSyntaxParser:
                     if self.process_line_by_processor(line_number, line, match_rule, processor):
                         return
 
-    def parse_request_from_file(self, filename: str):
+    def parse_request_from_file(self, filename: str) -> ConstraintGroup:
         """This method takes file name from which to read request"""
         file1 = open(filename, 'r')
         count = 0

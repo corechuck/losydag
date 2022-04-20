@@ -1,15 +1,8 @@
+import string
+
 from owlready2 import OwlReadyInconsistentOntologyError
 
 _verbal = False
-
-
-# def sync_reasoner_pellet(x = None, infer_property_values = False, infer_data_property_values = False, debug = 1, keep_tmp_file = False):
-#     try:
-#         from owlready2 import sync_reasoner_pellet
-#         sync_reasoner_pellet(x, infer_property_values, infer_data_property_values, debug, keep_tmp_file)
-#     except OwlReadyInconsistentOntologyError:
-#
-#         raise
 
 
 def _merge_groups_left_prio(group1, group2):
@@ -46,6 +39,68 @@ def _supervise_constraint_generation(__internal_generation_function_with_leftove
         if _verbal: print(f"DEBUG: Supervised generation. Not resolved dependencies {not_ready_constraints}")
 
     return True
+
+
+class GenerationTrackingFormatter(string.Formatter):
+
+    def __init__(self, _tracker):
+        self.not_ready_columns = list()
+        self.tracker = _tracker
+
+    def format_field(self, value, spec):
+        return value
+
+    def set_increment(self, dependency):
+        self.const_table = dependency.is_constraining_column.is_part_of_table.name
+        if self.const_table not in self.tracker:
+            self.tracker[self.const_table] = dict()
+
+        self.composed_key = "__".join(map(
+            lambda c: c.plain_name,
+            dependency.has_composed_key_over_columns
+        ))
+        if self.composed_key not in self.tracker[self.const_table]:
+            self.tracker[self.const_table][self.composed_key] = 0
+
+    def __increment_and_return_set_column(self):
+        self.tracker[self.const_table][self.composed_key] += 1
+        return str(self.tracker[self.const_table][self.composed_key])
+
+    def get_field(self, field_name, args, kwargs):
+        _passed_dict = kwargs  # I dont care about other for now or ever.
+
+        if "autoincrement" == field_name:
+            return self.__increment_and_return_set_column(), field_name
+
+        return _passed_dict[field_name], field_name
+
+
+class CheckingDictFormatter(string.Formatter):
+
+    def __init__(self):
+        self.not_ready_columns = list()
+
+    def format_field(self, value, spec):
+        intu = 0
+        return value
+
+    def get_field(self, field_name, args, kwargs):
+        _passed_dict = kwargs  # I dont care about other for now or ever.
+
+        if "autoincrement" == field_name:
+            return "0", field_name
+        if field_name not in _passed_dict.keys():
+            self.not_ready_columns.append(field_name)
+            return "-", field_name
+            # raise Exception(f"ERROR: referenced in format not existing key {field_name}")
+        if _passed_dict[field_name] is None:
+            self.not_ready_columns.append(field_name)
+            return "~", field_name
+        return _passed_dict[field_name], field_name
+
+    @property
+    def has_all_values_ready(self):
+        return len(self.not_ready_columns) == 0
 
 
 class MergingException(Exception):

@@ -33,50 +33,50 @@ class TestConstraints:
         destroy_entity(query_group)
 
     def test_smaller_then_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 5)
+        found_line_constraint = get_line_constraint(parsed_query_2, 6)
         assert found_line_constraint.has_right_boundary.has_boundary_value == 0.1
         assert isinstance(found_line_constraint.has_right_boundary, prepared_core.OpenRangeBoundary)
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
 
     def test_smaller_equal_then_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 6)
+        found_line_constraint = get_line_constraint(parsed_query_2, 7)
         assert found_line_constraint.has_right_boundary.has_boundary_value == 0.2
         assert isinstance(found_line_constraint.has_right_boundary, prepared_core.ClosedRangeBoundary)
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
 
     def test_great_then_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 7)
+        found_line_constraint = get_line_constraint(parsed_query_2, 8)
         assert found_line_constraint.has_left_boundary.has_boundary_value == 0.3
         assert isinstance(found_line_constraint.has_left_boundary, prepared_core.ClosedRangeBoundary)
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
 
     def test_great_equal_then_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 8)
+        found_line_constraint = get_line_constraint(parsed_query_2, 9)
         assert found_line_constraint.has_left_boundary.has_boundary_value == 0.4
         assert isinstance(found_line_constraint.has_left_boundary, prepared_core.OpenRangeBoundary)
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col1_n")
 
     def test_smaller_then_date_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 9)
+        found_line_constraint = get_line_constraint(parsed_query_2, 10)
         assert found_line_constraint.has_left_boundary.has_boundary_value == datetime.strptime("1990-02-14", '%Y-%m-%d')
         assert isinstance(found_line_constraint.has_left_boundary, prepared_core.OpenRangeBoundary)
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col2_d")
 
     def test_great_equal_then_date_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 10)
+        found_line_constraint = get_line_constraint(parsed_query_2, 11)
         assert found_line_constraint.has_right_boundary.has_boundary_value == datetime.strptime("1990-02-15", '%Y-%m-%d')
         assert isinstance(found_line_constraint.has_right_boundary, prepared_core.ClosedRangeBoundary)
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col2_d")
 
     def test_in_list_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 11)
+        found_line_constraint = get_line_constraint(parsed_query_2, 12)
         assert "moo" in found_line_constraint.has_picks
         assert "boo" in found_line_constraint.has_picks
         assert "foo" in found_line_constraint.has_picks
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(iri="*Column.Test1.Col3_text")
 
     def test_match_regex_is_parsed(self, prepared_core, parsed_query_2, loaded_onto):
-        found_line_constraint = get_line_constraint(parsed_query_2, 12)
+        found_line_constraint = get_line_constraint(parsed_query_2, 13)
         assert found_line_constraint.has_regex_format == "Ref_{Col3_text}_\d\d\d"
         assert found_line_constraint.is_constraining_column == loaded_onto.search_one(
             iri="*Column.Test1.Col4_not_constrained")

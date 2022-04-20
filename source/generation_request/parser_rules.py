@@ -71,9 +71,9 @@ class TableRealizationRules(SectionRulesBased):
 #  Greater or Equal Then Dependencies - done
 #  Smaller Then Dependencies - done
 #  Smaller or Equal Then Dependencies - done
-#  Restrictive constraints
-#  No realization names
+#  Restrictive constraints - done
 #  Tests for specific rules from query - done
+#  No realization names
 #  Move to not single file
 #  Cope with commands < slightly bigger architectural situation
 
