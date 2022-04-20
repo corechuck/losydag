@@ -1,224 +1,233 @@
-from datetime import datetime
-
-import pytest
-from owlready2 import get_ontology, sync_reasoner_pellet, OwlReadyInconsistentOntologyError
-
-from LosydagGenerator import LosydagGenerator
-from tests.dependencies.conftest import perform_dependency_test
-from utils.utils import DataTypeIssueException
+from tests.engine.dependencies.conftest import perform_dependency_test
 
 EXPECTED_DATE_FORMAT = "%Y-%m-%d"
 
 
-def test_from_decimal_to_string_greater_dependency_boundary(
+def test_from_date_to_string_greater_dependency_boundary(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
-    date_rng_const = prepared_table.has_min_reqs.has_constraints[1]
-    date_rng_const.set_left_boundary("99999998")
-    date_rng_const.set_right_boundary("99999998")
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("2200-12-30")
+    date_rng_const.set_right_boundary("2200-12-30")
 
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.GreaterThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert float(realized_case["internal_test_table_01"][0]['column_04']) == 99999998
-    assert float(realized_case["internal_test_table_02"][0]['column_02']) == 99999999
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert realized_case["internal_test_table_01"][0]['column_06'] in ["2200-12-30"]
+    assert realized_case["internal_test_table_02"][0]['column_02'] in ["2200-12-31"]
 
 
-def test_from_decimal_to_string_greater_dependency_nominal(
+def test_from_date_to_string_greater_dependency_nominal(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("1900-12-30")
+    date_rng_const.set_right_boundary("2200-11-30")
+
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.GreaterThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert prepared_table.has_columns[3].has_data_type.parse_if_needed(
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert prepared_table.has_columns[5].has_data_type.parse_if_needed(
         realized_case["internal_test_table_02"][0]['column_02']) > \
-           prepared_table.has_columns[3].has_data_type.parse_if_needed(
-               realized_case['internal_test_table_01'][0]['column_04'])
+           prepared_table.has_columns[5].has_data_type.parse_if_needed(
+               realized_case['internal_test_table_01'][0]['column_06'])
 
 
-def test_from_decimal_to_string_greater_or_equal_dependency_boundary(
+def test_from_date_to_string_greater_or_equal_dependency_boundary(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
-    date_rng_const = prepared_table.has_min_reqs.has_constraints[1]
-    date_rng_const.set_left_boundary("99999999")
-    date_rng_const.set_right_boundary("99999999")
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("2200-12-31")
+    date_rng_const.set_right_boundary("2200-12-31")
 
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.GreaterOrEqualThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert float(realized_case["internal_test_table_01"][0]['column_04']) == 99999999
-    assert float(realized_case["internal_test_table_02"][0]['column_02']) == 99999999
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert realized_case["internal_test_table_01"][0]['column_06'] in ["2200-12-31"]
+    assert realized_case["internal_test_table_02"][0]['column_02'] in ["2200-12-31"]
 
 
-def test_from_decimal_to_string_greater_or_equal_dependency_nominal(
+def test_from_date_to_string_greater_or_equal_dependency_nominal(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("1900-12-30")
+    date_rng_const.set_right_boundary("2200-11-30")
+
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.GreaterOrEqualThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert prepared_table.has_columns[3].has_data_type.parse_if_needed(
-        realized_case["internal_test_table_02"][0]['column_02']) > \
-           prepared_table.has_columns[3].has_data_type.parse_if_needed(
-               realized_case['internal_test_table_01'][0]['column_04'])
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert prepared_table.has_columns[5].has_data_type.parse_if_needed(
+        realized_case["internal_test_table_02"][0]['column_02']) >= \
+           prepared_table.has_columns[5].has_data_type.parse_if_needed(
+               realized_case['internal_test_table_01'][0]['column_06'])
 
 
-
-
-def test_from_decimal_to_string_smaller_dependency_boundary(
+def test_from_date_to_string_smaller_dependency_boundary(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
-    date_rng_const = prepared_table.has_min_reqs.has_constraints[1]
-    date_rng_const.set_left_boundary("-99999998")
-    date_rng_const.set_right_boundary("-99999998")
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("1900-01-02")
+    date_rng_const.set_right_boundary("1900-01-02")
 
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.SmallerThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert float(realized_case["internal_test_table_01"][0]['column_04']) == -99999998
-    assert float(realized_case["internal_test_table_02"][0]['column_02']) == -99999999
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert realized_case["internal_test_table_01"][0]['column_06'] in ["1900-01-02"]
+    assert realized_case["internal_test_table_02"][0]['column_02'] in ["1900-01-01"]
 
 
-def test_from_decimal_to_string_smaller_dependency_nominal(
+def test_from_date_to_string_smaller_dependency_nominal(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("1900-01-02")
+    date_rng_const.set_right_boundary("2200-01-02")
 
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.SmallerThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert prepared_table.has_columns[3].has_data_type.parse_if_needed(
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert prepared_table.has_columns[5].has_data_type.parse_if_needed(
         realized_case["internal_test_table_02"][0]['column_02']) < \
-           prepared_table.has_columns[3].has_data_type.parse_if_needed(
-               realized_case['internal_test_table_01'][0]['column_04'])
+           prepared_table.has_columns[5].has_data_type.parse_if_needed(
+               realized_case['internal_test_table_01'][0]['column_06'])
 
 
-def test_from_decimal_to_string_smaller_or_equal_dependency_boundary(
+def test_from_date_to_string_smaller_or_equal_dependency_boundary(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
-    date_rng_const = prepared_table.has_min_reqs.has_constraints[1]
-    date_rng_const.set_left_boundary("-99999999")
-    date_rng_const.set_right_boundary("-99999999")
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("1900-01-01")
+    date_rng_const.set_right_boundary("1900-01-01")
 
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.SmallerOrEqualThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert float(realized_case["internal_test_table_01"][0]['column_04']) == -99999999
-    assert float(realized_case["internal_test_table_02"][0]['column_02']) == -99999999
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert realized_case["internal_test_table_01"][0]['column_06'] in ["1900-01-01"]
+    assert realized_case["internal_test_table_02"][0]['column_02'] in ["1900-01-01"]
 
 
-def test_from_decimal_to_string_smaller_or_equal_dependency_nominal(
+def test_from_date_to_string_smaller_or_equal_dependency_nominal(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("1900-12-30")
+    date_rng_const.set_right_boundary("2200-11-30")
+
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.SmallerOrEqualThenDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
-    assert prepared_table.has_columns[3].has_data_type.parse_if_needed(
+    assert realized_case["internal_test_table_01"][0]['column_06']
+    assert prepared_table.has_columns[5].has_data_type.parse_if_needed(
         realized_case["internal_test_table_02"][0]['column_02']) <= \
-           prepared_table.has_columns[3].has_data_type.parse_if_needed(
-               realized_case['internal_test_table_01'][0]['column_04'])
+           prepared_table.has_columns[5].has_data_type.parse_if_needed(
+               realized_case['internal_test_table_01'][0]['column_06'])
 
 
-
-
-def test_from_decimal_to_string_equal_dependency(
+def test_from_date_to_string_equal_dependency(
         request, prepared_core, prepared_table, prepared_table_2, min_req_for_prepared_table):
+    test_case_title = request.node.name
+    date_rng_const = prepared_table.has_min_reqs.has_constraints[2]
+    date_rng_const.set_left_boundary("2000-01-01")
+    date_rng_const.set_right_boundary("2100-12-31")
+
     test_case_title = request.node.name
 
     def dependency_maker(test_ontology):
         dependency_under_test = prepared_core.EqualToDependency(
             name=test_case_title, namespace=test_ontology)
-        dependency_under_test.is_depending_on_column = prepared_table.has_columns[3]
+        dependency_under_test.is_depending_on_column = prepared_table.has_columns[5]
         dependency_under_test.is_constraining_column = prepared_table_2.has_columns[1]
         return dependency_under_test
 
     realized_case = perform_dependency_test(prepared_core, test_case_title, dependency_maker)
 
     assert realized_case
-    assert realized_case["internal_test_table_01"][0]['column_04']
+    assert realized_case["internal_test_table_01"][0]['column_06']
     assert realized_case["internal_test_table_02"][0]['column_02'] == \
-           realized_case["internal_test_table_01"][0]['column_04']
+           realized_case["internal_test_table_01"][0]['column_06']
 
 
 
 
 
-# def test_from_decimal_to_string_greater_dependency
-# def test_from_decimal_to_string_greater_or_equal_dependency
-# def test_from_decimal_to_string_smaller_dependency
-# def test_from_decimal_to_string_smaller_or_equal_dependency
-# def test_from_decimal_to_string_equal_dependency
-# def test_from_decimal_to_string_format_dependency
+# def test_from_date_to_string_greater_dependency
+# def test_from_date_to_string_greater_or_equal_dependency
+# def test_from_date_to_string_smaller_dependency
+# def test_from_date_to_string_smaller_or_equal_dependency
+# def test_from_date_to_string_equal_dependency
+# def test_from_date_to_string_format_dependency
 
 # def test_from_decimal_to_date_greater_dependency
 # def test_from_decimal_to_date_greater_or_equal_dependency

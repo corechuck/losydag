@@ -119,7 +119,7 @@
     <!-- http://corechuck.com/modeling/dependent_onto#Column.Test1.Col4_not_constrained -->
 
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col4_not_constrained">
-        <core_check:has_data_type rdf:resource="http://corechuck.com/modeling/dependent_onto#Decimal_10_3"/>
+        <core_check:has_data_type rdf:resource="http://corechuck.com/modeling/core_check#DataType_String"/>
     </owl:NamedIndividual>
     
 
@@ -273,7 +273,7 @@
     <owl:NamedIndividual rdf:about="http://corechuck.com/modeling/dependent_onto#Constraint.Test1_Col0__autoincrement">
         <core_check:has_composed_key_over_columns rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col0_id"/>
         <core_check:is_constraining_column rdf:resource="http://corechuck.com/modeling/dependent_onto#Column.Test1.Col0_id"/>
-        <core_check:has_format_definition>temp_\w\w\w_{autoincrement}</core_check:has_format_definition>
+        <core_check:has_format_definition>temp_{Col1_n}_{autoincrement}</core_check:has_format_definition>
     </owl:NamedIndividual>
     
 

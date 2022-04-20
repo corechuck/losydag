@@ -61,8 +61,8 @@ def test_negative_cases_for_fun(
     addition = "_9"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
     group_3 = prepared_core.ConstraintGroup(f"group_grandchild{addition}")
 
     regex_constraint_under_test.is_constraining_column = prepared_table.has_columns[1]

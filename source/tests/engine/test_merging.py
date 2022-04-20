@@ -36,7 +36,8 @@ def test_not_unified_constraint_or_group_merges(
     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
     constraint_group.is_a.append(prepared_core.RealizationDefinition)
-    constraint_group.is_a.append(prepared_core.OrGroup)
+    constraint_group.change_to_or_operator()
+    #constraint_group.is_a.append(prepared_core.OrGroup)
     constraint_group.pick_branches_from_or_groups()
     constraint_group.compliment_with_min_reqs()
     obj = constraint_group.fulfill_constraints_renew()
@@ -481,5 +482,8 @@ def test_constraints_for_multiple_tables_in_constraints_group_turns_into_realiza
     assert "column_01" in generated_result['internal_test_table_02'][0]
     assert generated_result['internal_test_table_02'][0]['column_01'] in ['foo', 'moo', '1', 'baa', '-3.14', 'xD', '54']
 
+
+def test_constraints_for_same_table_but_different_realization_definitions_do_not_merge():
+    pytest.skip("Not implemented yet")
 
 

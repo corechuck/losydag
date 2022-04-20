@@ -33,8 +33,8 @@ def test_positive_breadown_3_levels_deep(prepared_core, list_constraint_under_te
                                          actual_range_constraint_under_test):
     group_1 = prepared_core.ConstraintGroup("group_root")
     group_2 = prepared_core.ConstraintGroup("group_child")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
     group_3 = prepared_core.ConstraintGroup("group_grandchild")
 
     group_1.has_constraints = [list_constraint_under_test]
@@ -54,8 +54,8 @@ def test_positive_breadown_2_levels_deep(prepared_core, list_constraint_under_te
                                          actual_range_constraint_under_test):
     group_1 = prepared_core.ConstraintGroup("group_root_2")
     group_2 = prepared_core.ConstraintGroup("group_child_2")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
 
     group_1.has_constraints = [list_constraint_under_test]
     group_2.has_constraints = \
@@ -73,8 +73,8 @@ def test_positive_breadown_2_levels_deep_v2(prepared_core, list_constraint_under
     addition = "_3"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
 
     group_1.has_constraints = [list_constraint_under_test]
     group_2.has_constraints = \
@@ -91,11 +91,11 @@ def test_positive_breadown_2_levels_deep_v4(
         max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
     addition = "_4"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
-    group_1.is_a.append(prepared_core.OrGroup)
-    group_1.is_a.remove(prepared_core.AndGroup)
+    group_1.change_to_or_operator()
+    #group_1.is_a.append(prepared_core.OrGroup)
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
 
     group_1.has_constraints = [list_constraint_under_test, actual_range_constraint_under_test]
     group_2.has_constraints = \
@@ -113,11 +113,11 @@ def test_positive_breadown_2_levels_deep_v5(
         max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
     addition = "_5"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
-    group_1.is_a.append(prepared_core.OrGroup)
-    group_1.is_a.remove(prepared_core.AndGroup)
+    group_1.change_to_or_operator()
+    #group_1.is_a.append(prepared_core.OrGroup)
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
     group_3 = prepared_core.ConstraintGroup(f"group_grandchild{addition}")
 
     group_1.has_constraints = [list_constraint_under_test]
@@ -136,11 +136,11 @@ def test_positive_breakdown_2_generation_works(
         max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
     addition = "_6"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
-    group_1.is_a.append(prepared_core.OrGroup)
-    group_1.is_a.remove(prepared_core.AndGroup)
+    group_1.change_to_or_operator()
+    #group_1.is_a.append(prepared_core.OrGroup)
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
     group_3 = prepared_core.ConstraintGroup(f"group_grandchild{addition}")
 
     group_1.has_constraints = [list_constraint_under_test]
@@ -178,11 +178,11 @@ def test_positive_breakdown_2_generation_work_sep_column(
         max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
     addition = "_7"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
-    group_1.is_a.append(prepared_core.OrGroup)
-    group_1.is_a.remove(prepared_core.AndGroup)
+    group_1.change_to_or_operator()
+    #group_1.is_a.append(prepared_core.OrGroup)
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
     group_3 = prepared_core.ConstraintGroup(f"group_grandchild{addition}")
 
     regex_constraint_under_test.is_constraining_column = prepared_table.has_columns[1]
@@ -226,11 +226,11 @@ def test_positive_breakdown_2_generation_of_all_possibilities(
         max_range_constraint_under_test, regex_constraint_under_test, actual_range_constraint_under_test):
     addition = "_8"
     group_1 = prepared_core.ConstraintGroup(f"group_root{addition}")
-    group_1.is_a.append(prepared_core.OrGroup)
-    group_1.is_a.remove(prepared_core.AndGroup)
+    group_1.change_to_or_operator()
+    #group_1.is_a.append(prepared_core.OrGroup)
     group_2 = prepared_core.ConstraintGroup(f"group_child{addition}")
-    group_2.is_a.append(prepared_core.OrGroup)
-    group_2.is_a.remove(prepared_core.AndGroup)
+    group_2.change_to_or_operator()
+    #group_2.is_a.append(prepared_core.OrGroup)
     group_3 = prepared_core.ConstraintGroup(f"group_grandchild{addition}")
 
     regex_constraint_under_test.is_constraining_column = prepared_table.has_columns[1]

@@ -63,5 +63,10 @@ class NotUnifiedConstraintsException(Exception):
 class DataTypeIssueException(Exception):
     pass
 
+
 class RealizationDefinitionException(Exception):
+    pass
+
+
+class QueryMissformatException(Exception):
     pass

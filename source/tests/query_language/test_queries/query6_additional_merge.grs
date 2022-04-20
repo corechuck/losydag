@@ -1,0 +1,6 @@
+GENERATE example
+FOR Table.Test2
+FOR Table.Test1
+WHERE
+    Table.Test2.Col3_text IN (‘copper’, ‘iron’, ‘nickel’, ‘astronium’)
+    AND Column.Test2.Col5_external_dep = Column.Test1.Col0_id

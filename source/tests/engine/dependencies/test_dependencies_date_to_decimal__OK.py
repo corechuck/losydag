@@ -1,11 +1,7 @@
-from datetime import datetime
-
 import pytest
-from owlready2 import get_ontology, sync_reasoner_pellet, OwlReadyInconsistentOntologyError
 
-from LosydagGenerator import LosydagGenerator
 from utils.utils import DataTypeIssueException
-from tests.dependencies.conftest import perform_dependency_test
+from tests.engine.dependencies.conftest import perform_dependency_test
 
 EXPECTED_DATE_FORMAT = "%Y-%m-%d"
 

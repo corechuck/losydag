@@ -11,6 +11,9 @@ cons = generator.core.Constraint()
 cons_2 = generator.onto.search_one(iri=f"*Constraint.Test2_Col3__list")
 
 pp.pprint(generator.realize_fresh("RealizationCase.Check1"))
+
+
+
 # print("----------------------------")
 # pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
 # print("----------------------------")
