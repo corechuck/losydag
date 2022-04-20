@@ -1,4 +1,4 @@
-USE 'http://corechuck.com/modeling/dependent_onto'
+USES 'http://corechuck.com/modeling/dependent_onto'
 GENERATE example
 FOR Table.Test2
 FOR Table.Test1

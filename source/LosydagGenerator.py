@@ -1,18 +1,14 @@
 from enum import Enum
 
 from owlready2 import *
-
 import utils.context as CONTEXT
 
-onto_path.append(f"{os.getcwd()}/resources/core/")
-onto_path.append(f"{os.getcwd()}/resources/development/")
-
+# onto_path.append(f"{os.getcwd()}/resources/core/")
+# onto_path.append(f"{os.getcwd()}/resources/development/")
 
 class LosydagGenerator:
 
     def __init__(self, loaded_onto):  # , realization_case_iri):
-        # self.onto = get_ontology(schema_iri)
-        # self.onto.load(only_local=True)
 
         self.onto = loaded_onto
         # todo: check if if self.onto.imported_ontologies contains core
