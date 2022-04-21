@@ -12,63 +12,13 @@ args = parser.parse_args()
 parser = GenerationRequestSyntaxParser(args.onto_location)
 query_group = parser.parse_request_from_file(args.query_path)
 
-cases = query_group.prepare_positive_cases()
-
-query_group.pick_branches_from_or_groups()
-realization_case = query_group.build_realization_case()
-data = realization_case.realize()
-
 generator = LosydagGenerator(parser.context.schema_onto)
+datasets = generator.generate_data_for_all_positive_cases(group=query_group)
 pp = pprint.PrettyPrinter(indent=2)
-pp.pprint(data)
+pp.pprint(datasets)
 
 
 
-
-# print("----------------------------")
-# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-# print("----------------------------")
-# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-# print("----------------------------")
-# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-# print("----------------------------")
-# pp.pprint(generator.realize_fresh("RealizationCase.Check1", is_silent=True))
-
-# from core_classes.Constraints import extend_core as extend_constraints
-# from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
-# from core_classes.SimpleExtensions import extend_core as extend_simple_types
-# from core_classes.Dependencies import extend_core as extend_dependencies
-# from core_classes.RealizationCase import extend_core as extend_realization_case
-
-# onto_path.append("./resources/core/")
-# onto_path.append("./resources/development/")
-
-# print("INFO: Running Ontology")
-# onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
-# # core = get_ontology("http://corechuck.com/modeling/core_check")
-# onto.load()
-
-# # onto.get_namespace("http://purl.obolibrary.org/obo/")
-
-
-# core = onto.imported_ontologies[0]  # <- core classes are in wrong ontology
-# extend_constraints(core)
-# extend_dependencies(core)
-# extend_constraint_groups(core)
-# extend_simple_types(core)
-# extend_realization_case(core)
-
-# sync_reasoner_hermit(infer_property_values=True)
-# # sync_reasoner_pellet(infer_data_property_values=True, infer_property_values=True)
-# # sync_reasoner_pellet()  # infer_data_property_values=True, infer_property_values=True)
-# print("INFO: Reasoned with pellet.")
-
-# pp = pprint.PrettyPrinter(indent=2)
-# print("# Realization case:")
-# for real_case in onto.individuals():
-#     if isinstance(real_case, core.RealizationCase):
-#         print(f"INFO: Result based on: {real_case.name}")
-#         # contains_realizations
 
 
 

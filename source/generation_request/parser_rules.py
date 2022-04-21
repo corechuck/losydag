@@ -142,6 +142,7 @@ class WhereRules(SectionRulesBased):
             table, realization_def = self.query_context.defined_realization[realization_iri]
             column = table.get_column_by_name(column_name)
             realization_def.has_constraints.append(build_constraint)
+            build_constraint.is_assigned_to_realization_definition = realization_def
         else:
             column = self.core.search_one(iri=column_name)
         build_constraint.is_constraining_column = column
@@ -150,10 +151,12 @@ class WhereRules(SectionRulesBased):
         self._set_operator_to_latest_group(line_number, match["operator"])
         appending_constraint = build_constraint = \
             constraint_init(f"constraint_from_line_{line_number}", namespace=self.query_context.schema_onto)
+        self._set_realization_definition_and_column_from_target(build_constraint, match["target"])
+
         if match["is_not"]:
             appending_constraint = build_constraint.toggle_restriction(f"restriction_from_line_{line_number}")
+
         self.query_context.peek_latest_group().has_constraints.append(appending_constraint)
-        self._set_realization_definition_and_column_from_target(build_constraint, match["target"])
         return build_constraint
 
     def get_realization_and_column_from_dependent(self, dependent):

@@ -60,8 +60,13 @@ class ConstraintGroup(Thing):
             return None
 
         if len(self.is_constraining_tables) == 0:
-            columns = [c.is_constraining_column for c in self.has_constraints]
-            tables = []
+            columns = list()
+            tables = list()
+            for cstr in self.has_constraints:
+                if isinstance(cstr, _core.RestrictiveConstraint):
+                    columns.append(cstr.restricting_column)
+                else:
+                    columns.append(cstr.is_constraining_column)
             for col in columns:
                 if col.is_part_of_table not in tables:
                     tables.append(col.is_part_of_table)
@@ -97,26 +102,19 @@ class ConstraintGroup(Thing):
         self.is_a.append(_core.RealizationDefinition)
         self.compliment_with_min_reqs()
 
-    def build_realization_case(self):
-        table_to_group_cache = defaultdict(_core.ConstraintGroup)
+    def build_realization_case(self, groups_prefix: str = ""):
+        table_to_group_cache = dict()
         for defined_constraint in self.has_constraints:
-            if isinstance(defined_constraint, _core.RestrictiveConstraint):
-                group_by = defined_constraint.restricting_column.is_part_of_table.name
+            if defined_constraint.is_assigned_to_realization_definition:
+                group_name = defined_constraint.is_assigned_to_realization_definition.name
+            elif isinstance(defined_constraint, _core.RestrictiveConstraint):
+                group_name = defined_constraint.restricting_column.is_part_of_table.name
             else:
-                rds_containing_defined_constraint = [
-                    c for c
-                    in defined_constraint.is_part_of_constraints
-                    if isinstance(c, _core.RealizationDefinition)
-                ]
-                if len(rds_containing_defined_constraint) > 1:
-                    raise RealizationDefinitionException(
-                        f"Cannot build Realization case. "
-                        f"Constraint {self.name} is part of more than two Realization definitions.")
-                if len(rds_containing_defined_constraint) == 1:
-                    group_by = rds_containing_defined_constraint[0].name
-                else:
-                    group_by = defined_constraint.is_constraining_column.is_part_of_table.name
-            table_to_group_cache[group_by].has_constraints.append(defined_constraint)
+                group_name = defined_constraint.is_constraining_column.is_part_of_table.name
+            if group_name not in table_to_group_cache:
+                table_to_group_cache[group_name] = _core.ConstraintGroup(
+                    f"{groups_prefix}__{self.name}__{group_name}", namespace=self.namespace)
+            table_to_group_cache[group_name].has_constraints.append(defined_constraint)
 
         sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 

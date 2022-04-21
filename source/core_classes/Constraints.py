@@ -136,6 +136,7 @@ class Constraint(Thing):
         """ This is a wierd name. This method will make restriction or return internal constraint."""
         if not self.my_restrictor:
             self.my_restrictor = _core.RestrictiveConstraint(name=with_name, restricting_constraint=self)
+            self.my_restrictor.is_assigned_to_realization_definition = self.is_assigned_to_realization_definition
         return self.my_restrictor
 
 
