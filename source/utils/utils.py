@@ -1,8 +1,17 @@
 import string
-
-from owlready2 import OwlReadyInconsistentOntologyError
+from enum import Enum
 
 _verbal = False
+
+
+class GeneratorCommands(Enum):
+    EXAMPLE_POSITIVE_CASES = "example positive cases"
+    EXAMPLE_NEGATIVE_CASES = "example negative cases"
+    POSITIVE_CASES = "positive cases"
+    NEGATIVE_CASES = "negative cases"
+    ALL_CASES = "all cases"
+    EXAMPLE_ALL_CASES = "example all cases"
+    EXAMPLE = "example"
 
 
 def _merge_groups_left_prio(group1, group2):

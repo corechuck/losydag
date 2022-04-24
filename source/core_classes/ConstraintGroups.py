@@ -121,7 +121,7 @@ class ConstraintGroup(Thing):
         for future_realization_def in table_to_group_cache.values():
             future_realization_def.convert_to_realization_definition()
 
-        realization_case = _core.RealizationCase(f"made_case_from_{self.name}", _core)
+        realization_case = _core.RealizationCase(f"RC__{self.name}", _core)
         realization_case.contains_realizations = list(table_to_group_cache.values())
         return realization_case
 
@@ -185,27 +185,27 @@ class ConstraintGroup(Thing):
         return self.my_restriction_variations
 
     def merge_my_copy_with_group(self, group_b):
-        my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name} {datetime.now()}")
+        my_copy = _core.ConstraintGroup(f"{self.name}__merged_with__{group_b.name}")
         my_copy.has_constraints = list()
         my_copy.has_constraints.extend(self.has_constraints)
         my_copy.has_constraints.extend(group_b.has_constraints)
         my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
         return my_copy
 
-    def merge_my_copy_with_constraint(self, group_b):
-        my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name} {datetime.now()}")
-        my_copy.has_constraints = list()
-        my_copy.has_constraints.extend(self.has_constraints)
-        my_copy.has_constraints.extend(group_b.has_constraints)
-        my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
-        return my_copy
+    # def merge_my_copy_with_constraint(self, group_b):
+    #     my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name}")
+    #     my_copy.has_constraints = list()
+    #     my_copy.has_constraints.extend(self.has_constraints)
+    #     my_copy.has_constraints.extend(group_b.has_constraints)
+    #     my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
+    #     return my_copy
 
     def multiply_list_of_cases_times_group(self, list_of_cases, group):
         multiplied_list = list()
         for case in list_of_cases:
             new_cases = self.multiplicator.multiply_groups(case, group)
-            for new_case_constraints in new_cases:
-                gr = _core.ConstraintGroup()
+            for idx, new_case_constraints in enumerate(new_cases):
+                gr = _core.ConstraintGroup(f"M_{idx}__{case.name}__{group.name}")
                 gr.has_constraints = new_case_constraints
                 multiplied_list.append(gr)
         return multiplied_list

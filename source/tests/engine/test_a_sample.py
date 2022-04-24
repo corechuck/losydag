@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 import pytest
 from owlready2 import get_ontology, onto_path
-from LosydagGenerator import LosydagGenerator
 import utils.context
+from LosydagGenerator import LosydagGenerator
 from core_classes.RealizationCase import RealizationCase
 
 """ 

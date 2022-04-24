@@ -3,6 +3,7 @@ from owlready2 import get_ontology, onto_path, sync_reasoner_pellet
 from generation_request.parser_fundamentals import QueryContext
 from utils.utils import RealizationDefinitionException, QueryMissformatException
 
+# NOTE: Wandering if I will need that in the future <- not removing for now
 from core_classes import DataTypes
 from core_classes import SimpleExtensions
 from core_classes import Constraints
@@ -32,7 +33,7 @@ class LoadOntologyRules(SectionRulesBased):
 
     def match_section_template(self):
         def process_line(line_number: int, line: str, match):
-            print(f"INFO: Parsing line {line_number}: Using ontology: {match['schema_iri']}")
+            print(f"INFO: Matched line {line_number}: Using ontology: {match['schema_iri']}")
             # onto_path.append(f"{os.getcwd()}/resources/development/")
             onto_path.append(f"{os.getcwd()}/{self.query_context.load_location}")
 
@@ -43,7 +44,7 @@ class LoadOntologyRules(SectionRulesBased):
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
 
             self.query_context.constraint_groups_heap.append(
-                self.query_context.core.QueryGroup(name="query_main_group", namespace=self.query_context.schema_onto))
+                self.query_context.core.QueryGroup(name="main_query", namespace=self.query_context.schema_onto))
 
         return "USES \'(?P<schema_iri>.+?)\'", process_line
 
@@ -55,7 +56,7 @@ class GenerationRules(SectionRulesBased):
 
     def match_section_template(self):
         def process_line(line_number: int, line: str, match):
-            print(f"INFO: Parsing line {line_number}: command {match['command']}")
+            print(f"INFO: Matched line {line_number}: command {match['command']}")
             self.query_context.command = match["command"]
 
         return "GENERATE (?P<command>.+)", process_line
@@ -68,6 +69,7 @@ class TableRealizationRules(SectionRulesBased):
 
     def match_section_template(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             line = line.replace("FOR ", "")
             self.process_table_definition(line)
 
@@ -75,6 +77,7 @@ class TableRealizationRules(SectionRulesBased):
 
     def match_and_realizations(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             line = line.replace("AND ", "")
             self.process_table_definition(line)
 
@@ -105,9 +108,9 @@ class TableRealizationRules(SectionRulesBased):
 #  Smaller or Equal Then Dependencies - done
 #  Restrictive constraints - done
 #  Tests for specific rules from query - done
-#  No realization names
 #  Move to not single file
-#  Cope with commands < slightly bigger architectural situation
+#  Cope with commands < slightly bigger architectural situation - done
+#  No realization names
 
 
 class WhereRules(SectionRulesBased):
@@ -117,7 +120,7 @@ class WhereRules(SectionRulesBased):
 
     def match_section_template(self):
         def process_line(line_number: int, line: str, match):
-            print(f"INFO Starting WHERE section")
+            print(f"INFO: Matched line {line_number}: WHERE section")
 
         return "WHERE", process_line
 
@@ -198,6 +201,7 @@ class WhereRules(SectionRulesBased):
 
     def match_01_or_and_list_constraint(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.ListConstraint)
             build_constraint.has_picks = match["list_def"][1:-1].replace("'", "").replace(" ", "").split(",")
 
@@ -205,6 +209,7 @@ class WhereRules(SectionRulesBased):
 
     def match_02_or_and_regex_constraint(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.RegexConstraint)
             build_constraint.has_regex_format = match["pattern"]
 
@@ -212,6 +217,7 @@ class WhereRules(SectionRulesBased):
 
     def match_04_or_and_range_greater_equal_constraint(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.RangeConstraint)
             build_constraint.set_left_boundary(match["constant"], False)
 
@@ -219,6 +225,7 @@ class WhereRules(SectionRulesBased):
 
     def match_05_or_and_range_greater_constraint(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.RangeConstraint)
             build_constraint.set_left_boundary(match["constant"], True)
 
@@ -226,6 +233,7 @@ class WhereRules(SectionRulesBased):
 
     def match_06_or_and_range_smaller_equal_constraint(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.RangeConstraint)
             build_constraint.set_right_boundary(match["constant"], False)
 
@@ -233,6 +241,7 @@ class WhereRules(SectionRulesBased):
 
     def match_07_or_and_range_smaller_constraint(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.RangeConstraint)
             build_constraint.set_right_boundary(match["constant"], True)
 
@@ -244,6 +253,7 @@ class WhereRules(SectionRulesBased):
 
     def match_10_or_and_format_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.FormatDependency)
             build_constraint.has_format_definition = match["format"]
 
@@ -251,6 +261,7 @@ class WhereRules(SectionRulesBased):
 
     def match_11_or_and_equal_word_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.ValueDependency)
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"])
@@ -259,6 +270,7 @@ class WhereRules(SectionRulesBased):
 
     def match_12_or_and_equal_sign_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.ValueDependency)
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"])
@@ -267,6 +279,7 @@ class WhereRules(SectionRulesBased):
 
     def match_13_or_and_smaller_then_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.SmallerThenDependency)
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"])
@@ -275,6 +288,7 @@ class WhereRules(SectionRulesBased):
 
     def match_14_or_and_smaller_or_equal_then_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.SmallerOrEqualThenDependency)
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"])
@@ -283,6 +297,7 @@ class WhereRules(SectionRulesBased):
 
     def match_15_or_and_greater_then_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.GreaterThenDependency)
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"])
@@ -291,6 +306,7 @@ class WhereRules(SectionRulesBased):
 
     def match_16_or_and_greater_or_equal_then_dependency(self):
         def process_line(line_number: int, line: str, match):
+            print(f"INFO: Matched line {line_number}")
             build_constraint = self._build_constraint(line_number, line, match, self.core.GreaterOrEqualThenDependency)
             self._set_dependent_realization_and_column_from_dependent(
                 build_constraint, match["dependent"])
@@ -300,7 +316,7 @@ class WhereRules(SectionRulesBased):
     def match_50_or_and_new_group(self):
         def process_line(line_number: int, line: str, match):
             self._set_operator_to_latest_group(line_number, match["operator"])
-            print(f"New group in line {line_number}")
+            print(f"INFO: New group in line {line_number}")
             new_group = self.core.ConstraintGroup(
                 name=f"query_group_from_line_{line_number}",
                 namespace=self.query_context.schema_onto)
@@ -312,7 +328,7 @@ class WhereRules(SectionRulesBased):
 
     def match_51_close_group(self):
         def process_line(line_number: int, line: str, match):
-            print(f"Close group in line {line_number}")
+            print(f"INFO: Close group in line {line_number}")
             self.query_context.pop_latest_group()
 
         return "\)", process_line
