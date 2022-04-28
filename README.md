@@ -16,7 +16,7 @@ WHERE
     )
 ```
 
-I allows commands like: 
+It allows commands like: 
 ```
     EXAMPLE_POSITIVE_CASES = "example positive cases"
     EXAMPLE_NEGATIVE_CASES = "example negative cases"
@@ -28,9 +28,9 @@ I allows commands like:
 ```
 Other queries that are worked on are in source/tests/query_language/test_queries/
 
-There are features inside that data set like autoincrement that works, or deriving which tables have to be generated like Table.Ref1 (curently just single depth) and others
+There are features inside that data set like autoincrement that works, or deriving which tables have to be generated like Table.Ref1 (currently just single depth) and others
 
-Example end of output (currently not showing directly which are positive and which are negative cases):
+Example part of output (currently not showing directly which are positive and which are negative cases):
 ```
 (base) C:\ProgramData\Miniconda3\python.exe C:/work/Import_onto_project/source/parse_and_process_query.py --onto-location resources/development/ --query-path source/tests/query_language/test_queries/query1_and.grs
 
