@@ -189,16 +189,9 @@ class ConstraintGroup(Thing):
         my_copy.has_constraints = list()
         my_copy.has_constraints.extend(self.has_constraints)
         my_copy.has_constraints.extend(group_b.has_constraints)
-        my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
+        my_copy.meta = "; ".join([self.meta, group_b.meta])
         return my_copy
 
-    # def merge_my_copy_with_constraint(self, group_b):
-    #     my_copy = _core.ConstraintGroup(f"Copy of {self.name} merged with {group_b.name}")
-    #     my_copy.has_constraints = list()
-    #     my_copy.has_constraints.extend(self.has_constraints)
-    #     my_copy.has_constraints.extend(group_b.has_constraints)
-    #     my_copy.meta = ";".join([my_copy.meta, self.meta, group_b.meta])
-    #     return my_copy
 
     def multiply_list_of_cases_times_group(self, list_of_cases, group):
         multiplied_list = list()
@@ -207,12 +200,10 @@ class ConstraintGroup(Thing):
             for idx, new_case_constraints in enumerate(new_cases):
                 gr = _core.ConstraintGroup(f"M_{idx}__{case.name}__{group.name}")
                 gr.has_constraints = new_case_constraints
+                gr.meta = "; ".join([case.meta, group.meta])
                 multiplied_list.append(gr)
         return multiplied_list
 
-    # def assure_logical_operator_is_set(self):
-    #     if not(isinstance(self, _core.OrGroup) or isinstance(self, _core.AndGroup)):
-    #         self.is_a.append(_core.AndGroup)
 
     def is_or_operator(self):
         return isinstance(self, _core.OrGroup)

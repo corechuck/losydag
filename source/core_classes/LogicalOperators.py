@@ -19,6 +19,7 @@ class AndGroup(Thing):
 
     def prepare_positive_cases(self):
         positive_cases = list()
+        self.meta = f"No change {self.name}"
         if len(self.contains_constraint_groups) == 0:
             positive_cases.append(self)
         else:
@@ -36,12 +37,14 @@ class AndGroup(Thing):
             groups_for_processing = list()
             negative_case_under_process = _core.ConstraintGroup(
                 f"{ordinal(len(negative_cases)+1)}_negative_case_of_{self.name}")
+            negative_case_under_process.meta = \
+                f"Negating {constraint_or_group_to_invert.name} in group {self.name}"
             negative_cases_for_chosen_constraint = [negative_case_under_process]
             for constraint in self.has_constraints:
                 if constraint_or_group_to_invert == constraint:
                     inverted_constraint_to_group = self.inverter.invert(constraint)
-                    negative_case_under_process.meta = \
-                        f"inverted constraint for column {constraint.is_constraining_column.name}"
+                    # negative_case_under_process.meta = \
+                    #     f"Inverted constraint {constraint.name}"
                     if len(inverted_constraint_to_group.has_constraints) == 1:
                         negative_case_under_process.has_constraints.append(
                             inverted_constraint_to_group.has_constraints[0])
@@ -95,6 +98,7 @@ class OrGroup(Thing):
         negative_case_under_process = _core.ConstraintGroup(
             f"negative_OR_case_{self.name}"
         )
+        negative_case_under_process.meta = f"Negated all constraints and child groups from {self.name}"
         negative_cases.append(negative_case_under_process)
         for constraint in self.has_constraints:
             inverted_constraint_to_group = self.inverter.invert(constraint)
@@ -129,7 +133,8 @@ class OrGroup(Thing):
                 if constraint_or_group_too_keep == constraint:
                     positive_case_under_process.has_constraints.append(constraint)
                     positive_case_under_process.meta = \
-                        f"Value for column {constraint.is_constraining_column.name} kept for case generation"
+                        f"Negated all, but chosen {constraint_or_group_too_keep.name} " \
+                        f"from OR group {self.name} for positive case"
                 else:  # not too keep constraint
                     positive_case_under_process.has_constraints.append(constraint.toggle_restriction())
 

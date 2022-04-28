@@ -1,5 +1,5 @@
 USES 'http://corechuck.com/modeling/dependent_onto'
-GENERATE all cases
+GENERATE examples of all cases
 FOR Table.Test1 as realization_1
 FOR Table.Test1 as realization_2
 WHERE

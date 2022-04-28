@@ -10,7 +10,7 @@ class GeneratorCommands(Enum):
     POSITIVE_CASES = "positive cases"
     NEGATIVE_CASES = "negative cases"
     ALL_CASES = "all cases"
-    EXAMPLE_ALL_CASES = "example all cases"
+    EXAMPLE_ALL_CASES = "examples of all cases"
     EXAMPLE = "example"
 
 

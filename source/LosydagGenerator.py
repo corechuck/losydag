@@ -84,7 +84,7 @@ class LosydagGenerator:
 
         sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
         self._realize_cases(realized_datasets, list_of_realization_cases, realization_type)
-        return realized_datasets
+        return realized_datasets, list_of_realization_cases
 
     def _pick_group_xor_group_iri(self, group_iri: str = "", group: ConstraintGroup = None):
         if not group_iri and not group:
@@ -103,9 +103,9 @@ class LosydagGenerator:
         This uses pairwise approach of defining positive cases."""
 
         group = self._pick_group_xor_group_iri(group_iri, group)
-        realized_datasets = self._make_cases_and_realizations(
+        realized_datasets, cases = self._make_cases_and_realizations(
             group, GeneratorCaseType.POSITIVE_CASES, GeneratorGenerationType.ALL_VARIATIONS)
-        return realized_datasets
+        return realized_datasets, cases
 
     def generate_all_variations_for_all_discovered_negative_cases(
             self, group_iri: str = "", group: ConstraintGroup = None):
@@ -113,9 +113,9 @@ class LosydagGenerator:
         custom constraints and generate all variants from that cases."""
 
         group = self._pick_group_xor_group_iri(group_iri, group)
-        realized_datasets = self._make_cases_and_realizations(
+        realized_datasets, cases = self._make_cases_and_realizations(
             group, GeneratorCaseType.NEGATIVE_CASES, GeneratorGenerationType.ALL_VARIATIONS)
-        return realized_datasets
+        return realized_datasets, cases
 
     def generate_examples_of_discovered_positive_cases(
             self, group_iri: str = "", group: ConstraintGroup = None):
@@ -124,9 +124,9 @@ class LosydagGenerator:
         This uses pairwise approach of defining positive cases."""
 
         group = self._pick_group_xor_group_iri(group_iri, group)
-        realized_datasets = self._make_cases_and_realizations(
+        realized_datasets, cases = self._make_cases_and_realizations(
             group, GeneratorCaseType.POSITIVE_CASES, GeneratorGenerationType.EXAMPLE)
-        return realized_datasets
+        return realized_datasets, cases
 
     def generate_examples_of_discovered_negative_cases(
             self, group_iri: str = "", group: ConstraintGroup = None):
@@ -134,9 +134,9 @@ class LosydagGenerator:
         custom constraints and generate examples from that cases."""
 
         group = self._pick_group_xor_group_iri(group_iri, group)
-        realized_datasets = self._make_cases_and_realizations(
+        realized_datasets, cases = self._make_cases_and_realizations(
             group, GeneratorCaseType.NEGATIVE_CASES, GeneratorGenerationType.EXAMPLE)
-        return realized_datasets
+        return realized_datasets, cases
 
     # def _breakdown_and_generate_data_for_all_positive_cases(self, constraint_group):
     #     constraint_group.convert_to_positive_cases()
