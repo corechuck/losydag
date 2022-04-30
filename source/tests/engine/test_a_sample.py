@@ -1,31 +1,29 @@
 import os
 from datetime import datetime
-
 import pytest
 from owlready2 import get_ontology, onto_path
-
+import utils.context
 from LosydagGenerator import LosydagGenerator
+from core_classes.RealizationCase import RealizationCase
 
 """ 
 This test suite does not explains how a realization case has been build, for that open Protege and check ontology. This
 is rather integration tests and overall generator functionality checks.
 """
 
-onto_path.append(f"{os.getcwd()}/resources/core/")
-onto_path.append(f"{os.getcwd()}/resources/development/")
-
 
 @pytest.fixture(scope="session")
-def realized_case():
+def realized_case(prepared_core):
     print("INFO: Generating RealizationCase.Check1 in fixture:")
     loaded_onto = get_ontology("http://corechuck.com/modeling/dependent_onto")
     loaded_onto.load(only_local=True)
+
     generator = LosydagGenerator(loaded_onto)
     realized_case = generator.realize_fresh("RealizationCase.Check1")
     return realized_case
 
 
-def test_generated_data_have_all_needed_tables(realized_case):
+def test_generated_data_have_all_needed_tables(realized_case: RealizationCase):
     assert len(realized_case) == 4
 
 

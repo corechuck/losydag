@@ -1,8 +1,11 @@
 import re
 from typing import List, Dict
 
+from core_classes.ConstraintGroups import ConstraintGroup
 from generation_request.parser_fundamentals import QueryContext
-from generation_request.parser_rules import GenerationRules, TableRealizationRules, WhereRules, SectionRulesBased
+from generation_request.parser_rules import LoadOntologyRules, GenerationRules, TableRealizationRules, \
+    WhereRules, SectionRulesBased
+import utils.context
 
 
 class GenerationRequestSyntaxParser:
@@ -12,18 +15,19 @@ class GenerationRequestSyntaxParser:
     processors: List[SectionRulesBased] = None
     context: QueryContext = None
 
-    def __init__(self, loaded_onto):
-        self.onto = loaded_onto
-        self.core = self.onto.imported_ontologies[0]
-        self.process_rule_classes()
-        self.context = QueryContext()
-        self.context.constraint_groups_heap = [self.core.QueryGroup(name="query_main_group", namespace=self.onto)]
+    def __init__(self, load_location): # , loaded_onto):
+        # self.onto = loaded_onto
+        # self.core = self.onto.imported_ontologies[0]
+        self.context = QueryContext(load_location)
+        self.context.core = utils.context.core_context.core
+        self.define_processors()
 
-    def process_rule_classes(self):
+    def define_processors(self):
         self.processors = [
-            GenerationRules(self.core, self.onto),
-            TableRealizationRules(self.core, self.onto),
-            WhereRules(self.core, self.onto)
+            LoadOntologyRules(self.context),
+            GenerationRules(self.context),
+            TableRealizationRules(self.context),
+            WhereRules(self.context)
         ]
 
     def deactivate_processors(self):
@@ -38,7 +42,7 @@ class GenerationRequestSyntaxParser:
         if match:
             self.deactivate_processors()
             processor.is_active = True
-            callback(line_number, line, match, self.context)
+            callback(line_number, line, match)
             return True
         return False
 
@@ -59,7 +63,7 @@ class GenerationRequestSyntaxParser:
                     if self.process_line_by_processor(line_number, line, match_rule, processor):
                         return
 
-    def parse_request_from_file(self, filename: str):
+    def parse_request_from_file(self, filename: str) -> ConstraintGroup:
         """This method takes file name from which to read request"""
         file1 = open(filename, 'r')
         count = 0

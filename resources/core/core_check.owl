@@ -123,6 +123,16 @@
     
 
 
+    <!-- http://corechuck.com/modeling/core_check#is_assigned_to_realization_definition -->
+
+    <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_assigned_to_realization_definition">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://corechuck.com/modeling/core_check#Constraint"/>
+        <rdfs:range rdf:resource="http://corechuck.com/modeling/core_check#RealizationDefinition"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://corechuck.com/modeling/core_check#is_constraining_column -->
 
     <owl:ObjectProperty rdf:about="http://corechuck.com/modeling/core_check#is_constraining_column">

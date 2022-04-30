@@ -1,46 +1,37 @@
 from enum import Enum
 
 from owlready2 import *
-from core_classes.Constraints import extend_core as extend_constraints
-from core_classes.ConstraintGroups import extend_core as extend_constraint_groups
-from core_classes.SimpleExtensions import extend_core as extend_simple_types
-from core_classes.Dependencies import extend_core as extend_dependencies
-from core_classes.RealizationCase import extend_core as extend_realization_case
-from core_classes.LogicalOperators import extend_core as extend_logical_operators
-from core_classes.DataTypes import extend_core as extend_date_types
-from utils.context import ExtensionContext
-from utils.value_generator_supervisor import ValueGenerationSupervisor
+import utils.context as CONTEXT
 
-onto_path.append(f"{os.getcwd()}/resources/core/")
-onto_path.append(f"{os.getcwd()}/resources/development/")
+# onto_path.append(f"{os.getcwd()}/resources/core/")
+# onto_path.append(f"{os.getcwd()}/resources/development/")
+from core_classes.ConstraintGroups import ConstraintGroup
+from utils.utils import MergingException, ValueGenerationException
 
+
+class GeneratorGenerationType(Enum):
+    EXAMPLE = 1
+    ALL_VARIATIONS = 2
+
+
+class GeneratorCaseType(Enum):
+    POSITIVE_CASES = "p_cases"
+    NEGATIVE_CASES = "n_cases"
 
 
 class LosydagGenerator:
 
     def __init__(self, loaded_onto):  # , realization_case_iri):
-        # self.onto = get_ontology(schema_iri)
-        # self.onto.load(only_local=True)
 
         self.onto = loaded_onto
-        self.core = self.onto.imported_ontologies[0]  # <- core classes are in wrong ontology
+        # todo: check if if self.onto.imported_ontologies contains core
+        self.core = CONTEXT.core_context.core
 
-        context = ExtensionContext()
-        context.core = self.core
-        context.value_generation_supervisor = ValueGenerationSupervisor()
-
-        extend_constraints(context)
-        extend_dependencies(context)
-        extend_constraint_groups(context)
-        extend_simple_types(context)
-        extend_realization_case(context)
-        extend_logical_operators(context)
-        extend_date_types(context)
         # sync_reasoner_hermit(infer_property_values=True)
         try:
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
         except OwlReadyInconsistentOntologyError:
-            self.core.save(file="foo.owl")
+            self.core.save(file="inconsistent_on_load.owl")
 
     def realize_fresh(self, realization_case_iri, is_silent=False):
         real_case = self.onto.search_one(iri=f"*{realization_case_iri}")
@@ -53,33 +44,109 @@ class LosydagGenerator:
         print(f"INFO: Realizing: {real_case.name}")
         return real_case.realize_random_fresh()
 
-    def generate_all_test_case_datasets_from_realization_case(self, group_iri):
-        realization_case = self.onto.search_one(iri=f"*{group_iri}")
-        realization_case._verbal = True  # for now
-        return realization_case.realize_all_test_case_relevant_datasets()
-
-    # def generate_all_negative_cases_from_realization_case(self, group_iri):
+    # def generate_all_test_case_datasets_from_realization_case(self, group_iri):
     #     realization_case = self.onto.search_one(iri=f"*{group_iri}")
-    #     list_of_realization_cases = realization_case.convert_to_negative_cases()
-    #     return self._realize_all_cases(list_of_realization_cases)
+    #     realization_case._verbal = True  # for now
+    #     return realization_case.realize_all_test_case_relevant_datasets()
 
-    @staticmethod
-    def _realize_all_cases(_list_of_realization_cases):
+    def _realize_cases(self, realized_datasets, _list_of_realization_cases,
+                       breakdownType: GeneratorCaseType, realization_type: GeneratorGenerationType):
+        prefix = ""
+        if breakdownType == GeneratorCaseType.POSITIVE_CASES:
+            prefix = "Positive_case"
+        elif breakdownType == GeneratorCaseType.NEGATIVE_CASES:
+            prefix = "Negative_case"
+
+        cases_index = 0
+        for case in _list_of_realization_cases:
+            cases_index += 1
+            print(f"INFO: Case {cases_index} with meta: {case.meta}")
+            try:
+                realization_case = case.build_realization_case(groups_prefix=prefix)
+            except MergingException as e:
+                print(f"Case {case.meta} resulted is empty choices")
+                print(e.args[0])
+                continue
+
+            try:
+                if realization_type == GeneratorGenerationType.ALL_VARIATIONS:
+                    realized_datasets[realization_case.name] = \
+                        realization_case.realize_all_test_case_relevant_datasets()
+                elif realization_type == GeneratorGenerationType.EXAMPLE:
+                    realized_datasets[realization_case.name] = realization_case.realize()
+
+            except ValueGenerationException:
+                print(f"ERROR: Could not generate value for case {case.meta}.")
+                continue
+
+    def _make_cases_and_realizations(
+            self, loaded_group, breakdownType: GeneratorCaseType, realization_type: GeneratorGenerationType):
         realized_datasets = defaultdict(list)
-        for realization_case in _list_of_realization_cases:
-            realized_datasets[realization_case.name] = realization_case.realize_all_test_case_relevant_datasets()
-        return realized_datasets
+        if breakdownType == GeneratorCaseType.POSITIVE_CASES:
+            list_of_realization_cases = loaded_group.prepare_positive_cases()
+        elif breakdownType == GeneratorCaseType.NEGATIVE_CASES:
+            list_of_realization_cases = loaded_group.prepare_negative_cases()
+        else:
+            raise Exception(f"ERROR: chosen wrong breakdown type {breakdownType}")
 
-    def generate_data_for_all_positive_cases_from_iri(self, group_iri):
+        sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+        self._realize_cases(realized_datasets, list_of_realization_cases, breakdownType, realization_type)
+        return realized_datasets, list_of_realization_cases
+
+    def _pick_group_xor_group_iri(self, group_iri: str = "", group: ConstraintGroup = None):
+        if not group_iri and not group:
+            raise Exception("ERROR: Please provide either group_iri or loaded constraint_group")
+
+        if group_iri and group:
+            raise Exception("ERROR: Please provide only one: ('iri for a group' or 'already loaded group')")
+        if group_iri:
+            group = self.onto.search_one(iri=f"*{group_iri}")
+        return group
+
+    def generate_all_variations_for_all_discovered_positive_cases(
+            self, group_iri: str = "", group: ConstraintGroup = None):
         """This method breaks down ConstraintGroup to all and precise POSITIVE cases of
-        modelled custom constraints. This uses pairwaise approach of defining positive cases."""
+        modelled custom constraints and generate all variants.
+        This uses pairwise approach of defining positive cases."""
 
-        generic_group = self.onto.search_one(iri=f"*{group_iri}")
-        list_of_realization_cases = generic_group.convert_to_negative_cases()
-        return self._realize_all_cases(list_of_realization_cases)
+        group = self._pick_group_xor_group_iri(group_iri, group)
+        realized_datasets, cases = self._make_cases_and_realizations(
+            group, GeneratorCaseType.POSITIVE_CASES, GeneratorGenerationType.ALL_VARIATIONS)
+        return realized_datasets, cases
 
-    def _breakdown_and_generate_data_for_all_positive_cases(self, constraint_group):
-        constraint_group.convert_to_positive_cases()
+    def generate_all_variations_for_all_discovered_negative_cases(
+            self, group_iri: str = "", group: ConstraintGroup = None):
+        """This method breaks down ConstraintGroup to all and precise NEGATIVE cases of
+        custom constraints and generate all variants from that cases."""
+
+        group = self._pick_group_xor_group_iri(group_iri, group)
+        realized_datasets, cases = self._make_cases_and_realizations(
+            group, GeneratorCaseType.NEGATIVE_CASES, GeneratorGenerationType.ALL_VARIATIONS)
+        return realized_datasets, cases
+
+    def generate_examples_of_discovered_positive_cases(
+            self, group_iri: str = "", group: ConstraintGroup = None):
+        """This method breaks down ConstraintGroup to all and precise POSITIVE cases of
+        modelled custom constraints and generate examples from that cases.
+        This uses pairwise approach of defining positive cases."""
+
+        group = self._pick_group_xor_group_iri(group_iri, group)
+        realized_datasets, cases = self._make_cases_and_realizations(
+            group, GeneratorCaseType.POSITIVE_CASES, GeneratorGenerationType.EXAMPLE)
+        return realized_datasets, cases
+
+    def generate_examples_of_discovered_negative_cases(
+            self, group_iri: str = "", group: ConstraintGroup = None):
+        """This method breaks down ConstraintGroup to all and precise NEGATIVE cases of
+        custom constraints and generate examples from that cases."""
+
+        group = self._pick_group_xor_group_iri(group_iri, group)
+        realized_datasets, cases = self._make_cases_and_realizations(
+            group, GeneratorCaseType.NEGATIVE_CASES, GeneratorGenerationType.EXAMPLE)
+        return realized_datasets, cases
+
+    # def _breakdown_and_generate_data_for_all_positive_cases(self, constraint_group):
+    #     constraint_group.convert_to_positive_cases()
 
     #
     # def negative_case_breakdown(self):
