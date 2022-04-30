@@ -103,6 +103,8 @@ class ConstraintGroup(Thing):
         self.compliment_with_min_reqs()
 
     def build_realization_case(self, groups_prefix: str = ""):
+        if groups_prefix == "":
+            groups_prefix = "RC"
         table_to_group_cache = dict()
         for defined_constraint in self.has_constraints:
             if defined_constraint.is_assigned_to_realization_definition:
@@ -121,7 +123,7 @@ class ConstraintGroup(Thing):
         for future_realization_def in table_to_group_cache.values():
             future_realization_def.convert_to_realization_definition()
 
-        realization_case = _core.RealizationCase(f"RC__{self.name}", _core)
+        realization_case = _core.RealizationCase(f"{groups_prefix}__{self.name}", _core)
         realization_case.contains_realizations = list(table_to_group_cache.values())
         return realization_case
 

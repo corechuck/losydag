@@ -59,10 +59,11 @@ group_descriptors = dict()
 group_data = dict()
 count = 0
 for key in datasets.keys():
+    stripped_key = key.replace("Positive_case__", "").replace("Negative_case__", "")
     count += 1
     group_descriptors[f"G{count}"] = {
         "case_name": key,
-        "meta": next(case.meta for case in all_cases if key[4:] in case.name)
+        "meta": next(case.meta for case in all_cases if stripped_key in case.name)
     }
     group_data[f"G{count}"] = datasets[key]
 

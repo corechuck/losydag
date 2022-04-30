@@ -49,13 +49,20 @@ class LosydagGenerator:
     #     realization_case._verbal = True  # for now
     #     return realization_case.realize_all_test_case_relevant_datasets()
 
-    def _realize_cases(self, realized_datasets, _list_of_realization_cases, realization_type: GeneratorGenerationType):
+    def _realize_cases(self, realized_datasets, _list_of_realization_cases,
+                       breakdownType: GeneratorCaseType, realization_type: GeneratorGenerationType):
+        prefix = ""
+        if breakdownType == GeneratorCaseType.POSITIVE_CASES:
+            prefix = "Positive_case"
+        elif breakdownType == GeneratorCaseType.NEGATIVE_CASES:
+            prefix = "Negative_case"
+
         cases_index = 0
         for case in _list_of_realization_cases:
             cases_index += 1
             print(f"INFO: Case {cases_index} with meta: {case.meta}")
             try:
-                realization_case = case.build_realization_case()
+                realization_case = case.build_realization_case(groups_prefix=prefix)
             except MergingException as e:
                 print(f"Case {case.meta} resulted is empty choices")
                 print(e.args[0])
@@ -83,7 +90,7 @@ class LosydagGenerator:
             raise Exception(f"ERROR: chosen wrong breakdown type {breakdownType}")
 
         sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
-        self._realize_cases(realized_datasets, list_of_realization_cases, realization_type)
+        self._realize_cases(realized_datasets, list_of_realization_cases, breakdownType, realization_type)
         return realized_datasets, list_of_realization_cases
 
     def _pick_group_xor_group_iri(self, group_iri: str = "", group: ConstraintGroup = None):
