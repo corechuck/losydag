@@ -6,6 +6,8 @@ Logic driven generator of synthetic data (Lodriges ?)
 
 It is an engine which reads modelled database structure in ontology and parse a generation request sentence (GRS) (sql-like query) to generate data sets and break down of given logical sentence.
 
+Overview:
+![Overview image](https://github.com/corechuck/losydag/blob/master/resources/blog_posts/losydag_engine_diagram_transparent.drawio.png)
 
 
 GRS example:
