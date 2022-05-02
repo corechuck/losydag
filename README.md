@@ -1,8 +1,14 @@
 # Losydag
 
-Logic driven synthetic data generator:
+Logic driven synthetic data generator.
+
+Logic driven generator of synthetic data (Lodriges ?)
 
 It is an engine which reads modelled database structure in ontology and parse a generation request sentence (GRS) (sql-like query) to generate data sets and break down of given logical sentence.
+
+
+
+GRS example:
 ```
 USES 'http://corechuck.com/modeling/dependent_onto'
 GENERATE all cases
