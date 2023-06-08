@@ -15,12 +15,14 @@ class GenerationRequestSyntaxParser:
     processors: List[SectionRulesBased] = None
     context: QueryContext = None
 
-    def __init__(self, load_location): # , loaded_onto):
-        # self.onto = loaded_onto
-        # self.core = self.onto.imported_ontologies[0]
+    def __init__(self, load_location):
         self.context = QueryContext(load_location)
         self.context.core = utils.context.core_context.core
         self.define_processors()
+
+    def __del__(self):
+        print("sdjkf")
+        pass
 
     def define_processors(self):
         self.processors = [

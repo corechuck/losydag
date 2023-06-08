@@ -1,4 +1,6 @@
 import os
+
+import owlready2
 from owlready2 import get_ontology, onto_path, sync_reasoner_pellet
 from generation_request.parser_fundamentals import QueryContext
 from utils.utils import RealizationDefinitionException, QueryMissformatException
@@ -37,16 +39,22 @@ class LoadOntologyRules(SectionRulesBased):
             # onto_path.append(f"{os.getcwd()}/resources/development/")
             onto_path.append(f"{os.getcwd()}/{self.query_context.load_location}")
 
-            schema_onto = get_ontology(match["schema_iri"])
+            schema_onto = get_ontology(match["schema_iri"], )
             schema_onto.load(only_local=True)
             self.query_context.schema_onto = schema_onto
-
-            sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+            try:
+                sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+            except owlready2.base.OwlReadyInconsistentOntologyError:
+                self.core.save(file="inconsistent_on_load_query_core.owl")
+                schema_onto.save(file="inconsistent_on_load_query_schema.owl")
 
             self.query_context.constraint_groups_heap.append(
                 self.query_context.core.QueryGroup(name="main_query", namespace=self.query_context.schema_onto))
 
         return "USES \'(?P<schema_iri>.+?)\'", process_line
+
+    def __del__(self):
+        self.query_context.schema_onto.destroy()
 
 
 class GenerationRules(SectionRulesBased):
