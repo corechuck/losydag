@@ -1,4 +1,6 @@
 from random import random
+
+import rstr
 from owlready2 import Thing
 from utils.utils import DataTypeIssueException, GenerationTrackingFormatter, CheckingDictFormatter
 import utils.context
@@ -130,7 +132,10 @@ class FormatDependency(ValueDependency):
     def _generate(self, _local_dict):
         _generation_formatter.set_increment(self)
         resolved_format = _generation_formatter.format(self.has_format_definition, **_local_dict)
-        # return rstr.xeger(resolved_format)
+        # Cannot make reference and full regex
+        #    [0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}
+        #    ... or maybe double {{ }} for reference?
+        resolved_format = rstr.xeger(resolved_format)
         return resolved_format
 
 

@@ -18,5 +18,6 @@ def prepared_core():
     from core_classes import RealizationCase
 
     onto_path.append(f"{os.getcwd()}/resources/development/")
+    utils.context.core_context.core.load()
 
     return utils.context.core_context.core

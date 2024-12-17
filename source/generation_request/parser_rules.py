@@ -155,7 +155,7 @@ class WhereRules(SectionRulesBased):
             realization_def.has_constraints.append(build_constraint)
             build_constraint.is_assigned_to_realization_definition = realization_def
         else:
-            column = self.core.search_one(iri=column_name)
+            column = self.core.search_one(iri=f"*{column_name}")
         build_constraint.is_constraining_column = column
 
     def _build_constraint(self, line_number: int, line: str, match, constraint_init):
@@ -179,7 +179,7 @@ class WhereRules(SectionRulesBased):
         else:
             # TODO: Test if dependencies without realization definition will work
             # TODO: Overall realization-definition-less query
-            column = self.core.search_one(iri=column_name)
+            column = self.core.search_one(iri=f"*{column_name}")
             return None, column
 
     def _set_dependent_realization_and_column_from_dependent(self, build_dependency, dependent):

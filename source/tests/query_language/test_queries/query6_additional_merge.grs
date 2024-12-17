@@ -1,7 +1,7 @@
 USES 'http://corechuck.com/modeling/dependent_onto'
-GENERATE example
-FOR Table.Test2
-FOR Table.Test1
+GENERATE positive cases
+FOR Table.Test2 as realization_1
+FOR Table.Test1 as realization_2
 WHERE
-    Table.Test2.Col3_text IN (‘copper’, ‘iron’, ‘nickel’, ‘astronium’)
+    realization_1.Col3_text IN (copper, iron, nickel, astronium)
     AND Column.Test2.Col5_external_dep = Column.Test1.Col0_id

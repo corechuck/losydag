@@ -22,16 +22,17 @@ class GeneratorCaseType(Enum):
 class LosydagGenerator:
 
     def __init__(self, loaded_onto):  # , realization_case_iri):
-
         self.onto = loaded_onto
         # todo: check if if self.onto.imported_ontologies contains core
         self.core = CONTEXT.core_context.core
 
         # sync_reasoner_hermit(infer_property_values=True)
         try:
+            # sync_reasoner_hermit(infer_property_values=True)
             sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
         except OwlReadyInconsistentOntologyError:
             self.core.save(file="inconsistent_on_load.owl")
+        # CONTEXT.core_context.core.load()
 
     def realize_fresh(self, realization_case_iri, is_silent=False):
         real_case = self.onto.search_one(iri=f"*{realization_case_iri}")
@@ -40,6 +41,12 @@ class LosydagGenerator:
         if not isinstance(real_case, self.core.RealizationCase):
             print(f"ERROR: {real_case} is not a RealizationCase, returning None.")
             return None
+
+        # try:
+        #     syn
+        #     sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=False)
+        # except OwlReadyInconsistentOntologyError:
+        #     self.core.save(file="inconsistent_on_load.owl")
 
         print(f"INFO: Realizing: {real_case.name}")
         return real_case.realize_random_fresh()

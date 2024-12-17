@@ -67,7 +67,7 @@ class GenerationRequestSyntaxParser:
 
     def parse_request_from_file(self, filename: str) -> ConstraintGroup:
         """This method takes file name from which to read request"""
-        file1 = open(filename, 'r')
+        file1 = open(filename, 'r', encoding="UTF-8")
         count = 0
         while True:
             count += 1

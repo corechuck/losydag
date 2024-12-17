@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Import_onto_project.iml" filepath="$PROJECT_DIR$/.idea/Import_onto_project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../intercars/db/schema_discovery/json/.idea/json.iml" filepath="$PROJECT_DIR$/../../intercars/db/schema_discovery/json/.idea/json.iml" />
     </modules>
   </component>
 </project>

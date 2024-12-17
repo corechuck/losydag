@@ -25,8 +25,8 @@ class ConstraintGroup(Thing):
     my_restriction_variations = None
     inverter = None
 
-    def __init__(self, name=None, namespace=None):
-        super().__init__(name=name, namespace=namespace)
+    def __init__(self, name=None, namespace=None, **kwargs):
+        super().__init__(name=name, namespace=namespace, **kwargs)
         if not isinstance(self, _core.OrGroup):
             self.is_a.append(_core.AndGroup)
         self.multiplicator = MultiplicationSupervisor(_core)
@@ -240,8 +240,8 @@ class RealizationDefinition(Thing):
     original_constraints = None
     is_complimented_with_min_reqs = False
 
-    def __init__(self, name=None, namespace=None):
-        super().__init__(name=name, namespace=namespace)
+    # def __init__(self, name=None, namespace=None):
+    #     super().__init__(name=name, namespace=namespace)
 
     def prepare_for_realization(self):
         self._prepare_return_dict()

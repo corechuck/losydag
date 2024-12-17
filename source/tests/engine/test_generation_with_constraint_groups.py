@@ -1,4 +1,4 @@
-from distutils.command.config import config
+# from distutils.command.config import config
 
 import pytest
 from owlready2 import sync_reasoner_pellet

@@ -1,4 +1,4 @@
-# Losydag
+# Lodriges
 
 Logic driven synthetic data generator.
 
@@ -22,7 +22,10 @@ WHERE
         realization_2.Col3_text IN ('aaa', 'bbb', 'ccc')
         OR realization_2.Col4_not_constrained MATCH 'Ref_\d\d\d'
     )
+THEN
+    realization_1.Col2_text MATCH 'Foo_[\w+]__\d\d' 
 ```
+Then whole realization can be utilized as some comparison object
 
 It allows commands like: 
 ```

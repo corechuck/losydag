@@ -15,7 +15,7 @@ class ExtensionContext:
     def __init__(self):
         schema_iri = "http://corechuck.com/modeling/core_check"
         self.core = get_ontology(schema_iri)
-        self.core.load(only_local=True)
+        # self.core.load(only_local=True)
         self.value_generation_supervisor = ValueGenerationSupervisor()
 
 
